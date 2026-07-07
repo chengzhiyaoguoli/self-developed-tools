@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>16进制字节转图片</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    background: #1a1a2e;
+    color: #eee;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 1100px;
+    background: #16213e;
+    border-radius: 12px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    overflow: hidden;
+  }
+
+  .header {
+    background: #0f3460;
+    padding: 16px 24px;
+    text-align: center;
+  }
+  .header h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  .header span { color: #e94560; }
+
+  .main {
+    display: flex;
+    gap: 0;
+    min-height: 500px;
+  }
+
+  /* 输入面板 */
+  .input-panel {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .input-panel label {
+    font-size: 0.85rem;
+    color: #a0aec0;
+    font-weight: 500;
+  }
+  .input-panel textarea {
+    flex: 1;
+    min-height: 280px;
+    background: #0d1b36;
+    border: 1px solid #2a3a5c;
+    border-radius: 8px;
+    color: #c8d6e5;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.85rem;
+    padding: 12px;
+    resize: vertical;
+    line-height: 1.6;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-panel textarea:focus {
+    border-color: #e94560;
+  }
+  .input-panel textarea::placeholder {
+    color: #4a5568;
+  }
+
+  .row-info {
+    font-size: 0.8rem;
+    color: #718096;
+    min-height: 1.2em;
+  }
+  .row-info.error { color: #fc8181; }
+  .row-info.success { color: #68d391; }
+
+  /* 控制 */
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .controls label {
+    font-size: 0.8rem;
+    color: #a0aec0;
+  }
+  .controls select, .controls input {
+    background: #0d1b36;
+    border: 1px solid #2a3a5c;
+    border-radius: 6px;
+    color: #c8d6e5;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    outline: none;
+  }
+  .controls select:focus, .controls input:focus {
+    border-color: #e94560;
+  }
+  .scale-input {
+    width: 60px;
+    text-align: center;
+  }
+
+  .btn {
+    padding: 8px 18px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .btn-generate {
+    background: #e94560;
+    color: #fff;
+  }
+  .btn-generate:hover { background: #d13350; }
+  .btn-download {
+    background: #0f3460;
+    color: #fff;
+  }
+  .btn-download:hover { background: #1a4a7a; }
+  .btn-clear {
+    background: transparent;
+    color: #a0aec0;
+    border: 1px solid #2a3a5c;
+  }
+  .btn-clear:hover { background: #1a2a4a; }
+
+  /* 预览面板 */
+  .preview-panel {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #0d1b36;
+    border-left: 1px solid #2a3a5c;
+    min-width: 300px;
+    overflow: auto;
+  }
+  .preview-panel .placeholder {
+    color: #4a5568;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+  .preview-panel canvas {
+    image-rendering: pixelated;
+    border-radius: 4px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    max-width: 100%;
+    max-height: 450px;
+  }
+  .pixel-info {
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: #718096;
+  }
+
+  /* 响应式 */
+  @media (max-width: 768px) {
+    .main { flex-direction: column; }
+    .preview-panel { border-left: none; border-top: 1px solid #2a3a5c; min-height: 300px; }
+  }
+
+  /* 示例快捷按钮 */
+  .example-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .example-btns button {
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    background: #1a2a4a;
+    border: 1px solid #2a3a5c;
+    border-radius: 4px;
+    color: #a0aec0;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .example-btns button:hover {
+    background: #0f3460;
+    color: #fff;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1><span>⬡</span> 16进制字节 → 图片转换工具</h1>
+  </div>
+
+  <div class="main">
+    <!-- 输入面板 -->
+    <div class="input-panel">
+      <label for="hexInput">16进制数据输入（换行分隔行，每行像素数据）</label>
+      <textarea id="hexInput" spellcheck="false" placeholder="粘贴16进制数据，例如：
+RGB: FF0000 00FF00 0000FF
+灰度8bit: FF 80 40 00
+灰度4bit: F 8 4 0
+
+支持格式：
+· RGB紧凑：FF00AB 或 字节空格：FF 00 AB
+· 灰度紧凑：FF8040 或 灰度4bit：F84
+· 纯连续：FF00AB00FF00
+· 以上格式换行混合"></textarea>
+
+      <div id="rowInfo" class="row-info"></div>
+
+      <div class="example-btns">
+        <span style="font-size:0.75rem;color:#718096;line-height:2;">RGB：</span>
+        <button onclick="loadExample('2x2')">2×2</button>
+        <button onclick="loadExample('3x3')">3×3</button>
+        <button onclick="loadExample('4x4')">4×4 棋盘</button>
+        <button onclick="loadExample('compact')">紧凑</button>
+        <button onclick="loadExample('spaced')">字节空格</button>
+        <button onclick="loadExample('single')">单行+宽</button>
+        <span style="font-size:0.75rem;color:#718096;line-height:2;margin-left:8px;">灰度：</span>
+        <button onclick="loadExample('gray8')">Gray8 渐变</button>
+        <button onclick="loadExample('gray4')">Gray4 渐变</button>
+      </div>
+
+      <div class="controls" style="margin-bottom:4px;">
+        <label for="pixelMode">像素模式：</label>
+        <select id="pixelMode" onchange="onModeChange()">
+          <option value="rgb">RGB (3字节/像素)</option>
+          <option value="gray8">灰度 8bit (1字节/像素)</option>
+          <option value="gray4">灰度 4bit</option>
+        </select>
+
+        <label for="imgWidth">图像宽度：</label>
+        <input type="number" id="imgWidth" class="scale-input" placeholder="自动" min="1" max="4096" step="1" style="width:70px;">
+        <span style="font-size:0.7rem;color:#718096;">像素（留空=按换行自动）</span>
+      </div>
+
+      <div class="controls">
+        <label for="format">输出格式：</label>
+        <select id="format">
+          <option value="image/png">PNG</option>
+          <option value="image/bmp">BMP</option>
+          <option value="image/jpeg">JPEG</option>
+        </select>
+
+        <label for="scale">缩放：</label>
+        <input type="number" id="scale" class="scale-input" value="16" min="1" max="64" step="1">
+        <span style="font-size:0.75rem;color:#718096;">×</span>
+        <label style="margin-left:4px;">
+          <input type="checkbox" id="autoScale" checked> 自动
+        </label>
+
+        <button class="btn btn-generate" onclick="generateImage()">生成图片</button>
+        <button class="btn btn-download" onclick="downloadImage()">⬇ 下载</button>
+        <button class="btn btn-clear" onclick="clearAll()">清空</button>
+      </div>
+    </div>
+
+    <!-- 预览面板 -->
+    <div class="preview-panel" id="previewPanel">
+      <div class="placeholder">在此处预览生成的图片</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== 解析引擎 ====================
+
+/**
+ * 从一行文本中提取 16 进制数值
+ * @param {string} line - 一行文本
+ * @returns {number[]} 解析后的字节值数组（0-255），每2位hex一个值
+ */
+function parseHexValues(line) {
+  // 匹配所有连续的 2 位 hex（大小写均可）
+  const matches = line.match(/[0-9a-fA-F]{2}/g);
+  if (!matches) return [];
+  return matches.map(h => parseInt(h, 16));
+}
+
+/**
+ * 解析全部输入数据
+ * @param {string} text - 原始输入文本
+ * @param {number|null} manualWidth - 手动指定的图像宽度
+ * @param {string} mode - 'rgb' | 'gray8' | 'gray4'
+ */
+function parseInput(text, manualWidth, mode) {
+  const rawLines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+
+  if (rawLines.length === 0) {
+    return { error: '请输入16进制数据' };
+  }
+
+  // 所有模式统一提取 2 位 hex 字节
+  const allBytes = [];
+  for (let i = 0; i < rawLines.length; i++) {
+    const bytes = parseHexValues(rawLines[i]);
+    if (bytes.length === 0) {
+      return { error: `第 ${i + 1} 行未识别到有效的16进制字节`, rawBytes: 0 };
+    }
+    allBytes.push({ line: i + 1, bytes: bytes });
+  }
+
+  const totalBytes = allBytes.reduce((sum, row) => sum + row.bytes.length, 0);
+
+  // RGB 模式：每像素 3 字节
+  if (mode === 'rgb' && totalBytes % 3 !== 0) {
+    return { error: `共 ${totalBytes} 个字节，不是3的倍数（无法组成RGB像素）`, rawBytes: totalBytes };
+  }
+
+  const stride = (mode === 'rgb') ? 3 : 1;
+  const totalPixels = mode === 'rgb' ? totalBytes / 3 : totalBytes;
+
+  // 生成像素
+  function makePixel(bytes, idx) {
+    if (mode === 'rgb') {
+      return { r: bytes[idx], g: bytes[idx + 1], b: bytes[idx + 2] };
+    }
+    // 灰度模式
+    const raw = bytes[idx];
+    // 4-bit 模式：值域 0-15（原始数据右移4位），左移4位恢复
+    const v = (mode === 'gray4') ? raw << 4 : raw;
+    return { r: v, g: v, b: v };
+  }
+
+  // 手动指定宽度
+  if (manualWidth && manualWidth > 0) {
+    if (totalPixels % manualWidth !== 0) {
+      return {
+        error: `共 ${totalPixels} 个像素，无法整除宽度 ${manualWidth}（余 ${totalPixels % manualWidth}）`,
+        rawBytes: totalBytes
+      };
+    }
+    const height = totalPixels / manualWidth;
+    const flatBytes = allBytes.flatMap(row => row.bytes);
+    const pixels = [];
+    for (let i = 0; i < flatBytes.length; i += stride) {
+      pixels.push(makePixel(flatBytes, i));
+    }
+    return { pixels, width: manualWidth, height, rawBytes: totalBytes };
+  }
+
+  // 按换行自动检测
+  const bytesPerLine = allBytes.map(r => r.bytes.length);
+  const firstLen = bytesPerLine[0];
+
+  if (mode === 'rgb' && firstLen % 3 !== 0) {
+    return { error: `第 1 行有 ${firstLen} 个字节，不是3的倍数`, rawBytes: totalBytes };
+  }
+
+  const allSame = bytesPerLine.every(len => len === firstLen);
+
+  if (allSame) {
+    const width = mode === 'rgb' ? firstLen / 3 : firstLen;
+    const rows = allBytes.map(row => {
+      const px = [];
+      for (let j = 0; j < row.bytes.length; j += stride) {
+        px.push(makePixel(row.bytes, j));
+      }
+      return px;
+    });
+    return { pixels: rows.flat(), width, height: rows.length, rawBytes: totalBytes };
+  }
+
+  // 各行不一致
+  const unit = mode === 'rgb' ? '像素' : '灰度值';
+  const detail = allBytes.map(r => {
+    const cnt = mode === 'rgb' ? r.bytes.length / 3 : r.bytes.length;
+    return `第${r.line}行: ${r.bytes.length}字节(${cnt}${unit})`;
+  }).join(', ');
+  return {
+    error: `各行数据数不一致，请手动指定图像宽度。详情：${detail}`,
+    rawBytes: totalBytes
+  };
+}
+
+// ==================== 图像渲染 ====================
+
+function renderToCanvas(parsed, scale) {
+  const { pixels, width, height } = parsed;
+
+  // 创建离屏 canvas（原始尺寸）
+  const offscreen = document.createElement('canvas');
+  offscreen.width = width;
+  offscreen.height = height;
+  const ctx = offscreen.getContext('2d');
+
+  const imageData = ctx.createImageData(width, height);
+  for (let i = 0; i < pixels.length; i++) {
+    const offset = i * 4;
+    imageData.data[offset]     = pixels[i].r;   // R
+    imageData.data[offset + 1] = pixels[i].g;   // G
+    imageData.data[offset + 2] = pixels[i].b;   // B
+    imageData.data[offset + 3] = 255;            // A
+  }
+  ctx.putImageData(imageData, 0, 0);
+
+  // 缩放到显示 canvas
+  const displayCanvas = document.createElement('canvas');
+  displayCanvas.width = width * scale;
+  displayCanvas.height = height * scale;
+  const dctx = displayCanvas.getContext('2d');
+  // 关闭平滑，保持像素锐利
+  dctx.imageSmoothingEnabled = false;
+  dctx.drawImage(offscreen, 0, 0, width * scale, height * scale);
+
+  return { canvas: displayCanvas, offscreen: offscreen };
+}
+
+// ==================== 状态 ====================
+
+let currentOffscreen = null; // 原始尺寸 canvas，用于下载
+let currentParsed = null;
+
+// ==================== UI 操作 ====================
+
+function generateImage() {
+  const input = document.getElementById('hexInput').value;
+  const infoEl = document.getElementById('rowInfo');
+  const previewPanel = document.getElementById('previewPanel');
+  const autoScale = document.getElementById('autoScale').checked;
+  const mode = document.getElementById('pixelMode').value;
+
+  // 读取手动宽度
+  const widthInput = document.getElementById('imgWidth').value.trim();
+  const manualWidth = widthInput ? parseInt(widthInput) : null;
+
+  if (manualWidth !== null && (isNaN(manualWidth) || manualWidth < 1 || manualWidth > 4096)) {
+    infoEl.textContent = '图像宽度需在 1-4096 之间';
+    infoEl.className = 'row-info error';
+    return;
+  }
+
+  const parsed = parseInput(input, manualWidth, mode);
+
+  if (parsed.error) {
+    infoEl.textContent = parsed.error;
+    infoEl.className = 'row-info error';
+    if (parsed.rawBytes > 0) {
+      infoEl.textContent += ` | 共检测到 ${parsed.rawBytes} 个hex字节`;
+    }
+    return;
+  }
+
+  // 尺寸限制
+  if (parsed.width > 4096 || parsed.height > 4096) {
+    infoEl.textContent = `图像尺寸过大（${parsed.width}×${parsed.height}，最大 4096×4096）`;
+    infoEl.className = 'row-info error';
+    return;
+  }
+
+  // 自动缩放
+  let scale = parseInt(document.getElementById('scale').value) || 16;
+  if (autoScale) {
+    const minDisplay = 250;
+    const autoW = Math.ceil(minDisplay / parsed.width);
+    const autoH = Math.ceil(minDisplay / parsed.height);
+    scale = Math.max(1, Math.min(autoW, autoH, 64));
+    document.getElementById('scale').value = scale;
+  }
+  if (scale < 1 || scale > 64) scale = Math.max(1, Math.min(scale, 64));
+
+  const { canvas, offscreen } = renderToCanvas(parsed, scale);
+
+  // 更新预览
+  previewPanel.innerHTML = '';
+  previewPanel.appendChild(canvas);
+
+  // 像素数据样本
+  const sampleCount = Math.min(5, parsed.pixels.length);
+  const samples = [];
+  for (let i = 0; i < sampleCount; i++) {
+    const p = parsed.pixels[i];
+    if (mode === 'rgb') {
+      const hex = [p.r, p.g, p.b].map(v => v.toString(16).padStart(2, '0').toUpperCase()).join('');
+      samples.push(`#${i+1}: ${hex}`);
+    } else {
+      // 灰度：显示灰度值和对应的 hex
+      samples.push(`#${i+1}: ${p.r} (0x${p.r.toString(16).padStart(2,'0').toUpperCase()})`);
+    }
+  }
+
+  // 显示信息
+  const modeLabel = { rgb: 'RGB', gray8: 'Gray8', gray4: 'Gray4' }[mode] || mode;
+  infoEl.textContent = `[${modeLabel}] ${parsed.width}×${parsed.height} (${parsed.pixels.length} px) | 缩放 ${scale}× | 显示 ${canvas.width}×${canvas.height}`;
+  infoEl.className = 'row-info success';
+
+  // 追加像素样本
+  const sampleInfo = document.createElement('div');
+  sampleInfo.className = 'pixel-info';
+  sampleInfo.textContent = `前${sampleCount}个像素: ${samples.join(' | ')}`;
+  previewPanel.appendChild(sampleInfo);
+
+  // 保存状态
+  currentOffscreen = offscreen;
+  currentParsed = parsed;
+}
+
+function downloadImage() {
+  if (!currentOffscreen) {
+    alert('请先生成图片');
+    return;
+  }
+
+  const format = document.getElementById('format').value;
+  const mimeType = format;
+
+  // BMP 需要特殊处理（Canvas 不直接支持）
+  if (format === 'image/bmp') {
+    downloadBMP();
+    return;
+  }
+
+  currentOffscreen.toBlob(blob => {
+    if (!blob) {
+      alert('生成图片失败');
+      return;
+    }
+    triggerDownload(blob, format);
+  }, mimeType);
+}
+
+// BMP 手动编码（Canvas 原生不支持 BMP MIME）
+function downloadBMP() {
+  const w = currentOffscreen.width;
+  const h = currentOffscreen.height;
+  const ctx = currentOffscreen.getContext('2d');
+  const imageData = ctx.getImageData(0, 0, w, h);
+  const data = imageData.data;
+
+  // BMP 每行需要 4 字节对齐
+  const rowBytes = (w * 3 + 3) & ~3;
+  const pixelDataSize = rowBytes * h;
+  const fileHeaderSize = 14;
+  const dibHeaderSize = 40;
+  const fileSize = fileHeaderSize + dibHeaderSize + pixelDataSize;
+  const buffer = new ArrayBuffer(fileSize);
+  const view = new DataView(buffer);
+
+  // BMP 文件头
+  view.setUint8(0, 0x42);           // 'B'
+  view.setUint8(1, 0x4D);           // 'M'
+  view.setUint32(2, fileSize, true); // 文件大小
+  view.setUint32(6, 0, true);        // 保留
+  view.setUint32(10, fileHeaderSize + dibHeaderSize, true); // 像素数据偏移
+
+  // DIB 头 (BITMAPINFOHEADER)
+  view.setUint32(14, 40, true);      // DIB 头大小
+  view.setInt32(18, w, true);        // 宽度
+  view.setInt32(22, -h, true);       // 高度（负值 = 从上到下）
+  view.setUint16(26, 1, true);       // 色彩平面数
+  view.setUint16(28, 24, true);      // 位深度 (24-bit)
+  view.setUint32(30, 0, true);       // 压缩方式（无）
+  view.setUint32(34, pixelDataSize, true);
+  view.setInt32(38, 2835, true);     // 水平分辨率 (72 DPI)
+  view.setInt32(42, 2835, true);     // 垂直分辨率 (72 DPI)
+  view.setUint32(46, 0, true);       // 调色板颜色数
+  view.setUint32(50, 0, true);       // 重要颜色数
+
+  // 像素数据 (BGR 顺序，从最后一行开始因为高度为负已处理方向)
+  let offset = fileHeaderSize + dibHeaderSize;
+  for (let y = 0; y < h; y++) {
+    const rowOffset = offset;
+    for (let x = 0; x < w; x++) {
+      const pixelIndex = (y * w + x) * 4;
+      view.setUint8(offset++, data[pixelIndex + 2]); // B
+      view.setUint8(offset++, data[pixelIndex + 1]); // G
+      view.setUint8(offset++, data[pixelIndex]);     // R
+    }
+    // 4 字节对齐填充
+    const padding = rowBytes - w * 3;
+    for (let p = 0; p < padding; p++) {
+      view.setUint8(offset++, 0);
+    }
+  }
+
+  const blob = new Blob([buffer], { type: 'image/bmp' });
+  triggerDownload(blob, 'image/bmp');
+}
+
+function triggerDownload(blob, mimeType) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+
+  const extMap = {
+    'image/png': 'png',
+    'image/bmp': 'bmp',
+    'image/jpeg': 'jpg'
+  };
+  const ext = extMap[mimeType] || 'png';
+  a.download = `output.${ext}`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function clearAll() {
+  document.getElementById('hexInput').value = '';
+  document.getElementById('imgWidth').value = '';
+  document.getElementById('rowInfo').textContent = '';
+  document.getElementById('rowInfo').className = 'row-info';
+  document.getElementById('previewPanel').innerHTML = '<div class="placeholder">在此处预览生成的图片</div>';
+  currentOffscreen = null;
+  currentParsed = null;
+}
+
+// ==================== 示例数据 ====================
+
+function loadExample(type) {
+  const examples = {
+    // RGB
+    '2x2': 'FF0000 00FF00\n0000FF FFFF00',
+    '3x3': 'FF0000 FF8800 FFFF00\n00FF00 00FFFF 0000FF\n8800FF FF00FF FFFFFF',
+    '4x4': '000000 FFFFFF 000000 FFFFFF\nFFFFFF 000000 FFFFFF 000000\n000000 FFFFFF 000000 FFFFFF\nFFFFFF 000000 FFFFFF 000000',
+    'compact': 'FF000000FF00FFFF0000FF',
+    'spaced': 'FF 00 00 00 FF 00\n00 00 FF FF FF 00',
+    'single': 'FF0000 00FF00 0000FF FFFF00 FF00FF 00FFFF',
+    // 灰度
+    'gray8': '00 40 80 C0 FF\n10 30 50 70 90\n20 40 60 80 A0',
+    'gray4': '00 04 08 0C 0F\n01 03 05 07 09\n02 04 06 08 0A'
+  };
+
+  document.getElementById('hexInput').value = examples[type] || '';
+  document.getElementById('rowInfo').textContent = '';
+  document.getElementById('rowInfo').className = 'row-info';
+
+  // 切换模式
+  if (type === 'gray8') {
+    document.getElementById('pixelMode').value = 'gray8';
+    document.getElementById('imgWidth').value = '';
+  } else if (type === 'gray4') {
+    document.getElementById('pixelMode').value = 'gray4';
+    document.getElementById('imgWidth').value = '';
+  } else {
+    document.getElementById('pixelMode').value = 'rgb';
+    // 单行/紧凑示例自动设置宽度
+    if (type === 'single') {
+      document.getElementById('imgWidth').value = '3';
+    } else if (type === 'compact') {
+      document.getElementById('imgWidth').value = '2';
+    } else {
+      document.getElementById('imgWidth').value = '';
+    }
+  }
+}
+
+// 模式切换时更新提示
+function onModeChange() {
+  document.getElementById('rowInfo').textContent = '';
+  document.getElementById('rowInfo').className = 'row-info';
+}
+
+// ==================== 快捷键 ====================
+
+document.addEventListener('keydown', (e) => {
+  // Ctrl+Enter 生成图片
+  if (e.ctrlKey && e.key === 'Enter') {
+    e.preventDefault();
+    generateImage();
+  }
+});
+
+// ==================== 实时预览（可选：输入时自动更新） ====================
+
+let debounceTimer = null;
+document.getElementById('hexInput').addEventListener('input', () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    const input = document.getElementById('hexInput').value.trim();
+    if (input.length > 0) {
+      const lines = input.split(/\r?\n/).filter(l => l.trim());
+      const infoEl = document.getElementById('rowInfo');
+      const mode = document.getElementById('pixelMode').value;
+      if (lines.length > 0) {
+        const bytesPerLine = lines.map(l => {
+          const m = l.match(/[0-9a-fA-F]{2}/g);
+          return m ? m.length : 0;
+        });
+        const totalBytes = bytesPerLine.reduce((a, b) => a + b, 0);
+        const allSame = bytesPerLine.length > 1 && bytesPerLine.every(b => b === bytesPerLine[0]);
+
+        let msg, ok;
+        if (mode === 'rgb') {
+          ok = totalBytes % 3 === 0;
+          const totalPx = totalBytes / 3;
+          msg = `${lines.length}行, ${totalBytes}字节`;
+          if (ok) {
+            msg += ` → ${totalPx}个RGB像素`;
+            if ((lines.length === 1 || !allSame) && !document.getElementById('imgWidth').value) {
+              msg += ` (请指定宽度)`;
+            }
+            if (allSame && lines.length > 1) {
+              msg += `, ${bytesPerLine[0]/3}×${lines.length}`;
+            }
+          } else {
+            msg += ` (不是3的倍数)`;
+          }
+        } else {
+          // 灰度模式
+          ok = true;
+          msg = `[${mode==='gray8'?'Gray8':'Gray4'}] ${lines.length}行, ${totalBytes}字节 → ${totalBytes}个灰度像素`;
+          if ((lines.length === 1 || !allSame) && !document.getElementById('imgWidth').value) {
+            msg += ` (请指定宽度)`;
+          }
+          if (allSame && lines.length > 1) {
+            msg += `, ${bytesPerLine[0]}×${lines.length}`;
+          }
+          if (mode === 'gray4') {
+            msg += ` | 值范围: 0x00-0x0F, 显示时左移4位`;
+          }
+        }
+        infoEl.textContent = msg;
+        infoEl.className = ok ? 'row-info' : 'row-info error';
+      }
+    }
+  }, 300);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,21 @@
+# 本机编辑器/助手配置
+.vscode/
+.claude/
+
+# Python 缓存和构建临时文件
+__pycache__/
+*.pyc
+*.pyo
+build/
+*.spec
+
+# 临时文件和系统文件
+*.tmp
+*.log
+*.bak
+*.old
+*.orig
+*~
+Thumbs.db
+Desktop.ini
+.DS_Store

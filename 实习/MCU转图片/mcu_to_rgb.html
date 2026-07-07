@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCU → RGB 图像重建</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+    background: #1a1a2e; color: #e0e0e0; min-height: 100vh;
+    padding: 20px;
+}
+.container { max-width: 960px; margin: 0 auto; }
+h1 { text-align: center; font-size: 1.4rem; color: #f0f0f0; margin-bottom: 18px; letter-spacing: .5px; }
+
+/* --- panels --- */
+.panel {
+    background: #16213e; border: 1px solid #0f3460; border-radius: 8px;
+    padding: 16px 20px; margin-bottom: 14px;
+}
+.panel-title {
+    font-size: .85rem; font-weight: 700; color: #e94560;
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+}
+
+/* --- param rows --- */
+.param-row {
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;
+}
+.param-group { display: flex; flex-direction: column; gap: 3px; }
+.param-group label { font-size: .78rem; color: #a0a0b8; }
+.param-group input {
+    width: 80px; padding: 7px 8px; background: #0f3460; border: 1px solid #1a5080;
+    border-radius: 4px; color: #f0f0f0; font-size: .9rem; font-family: monospace;
+    text-align: center;
+}
+.param-group input:focus { outline: none; border-color: #e94560; }
+.param-sep { font-size: 1rem; color: #a0a0b8; align-self: center; padding-bottom: 2px; }
+
+.radio-group { display: flex; gap: 18px; align-items: center; padding-bottom: 4px; }
+.radio-group label { font-size: .85rem; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.radio-group input[type="radio"] { accent-color: #e94560; }
+
+/* --- info bar --- */
+.info-bar {
+    font-size: .82rem; color: #7ec8e3; font-family: monospace;
+    line-height: 1.7; margin-top: 6px;
+}
+.info-bar .warn { color: #f0a060; }
+.info-bar .err { color: #e94560; }
+.info-bar .ok { color: #4ecca3; }
+
+/* --- textarea --- */
+textarea {
+    width: 100%; height: 140px; background: #0a0f1a; border: 1px solid #1a5080;
+    border-radius: 4px; color: #c8d6e5; font-family: "Consolas", "Courier New", monospace;
+    font-size: .8rem; padding: 10px; resize: vertical; line-height: 1.5;
+}
+textarea:focus { outline: none; border-color: #e94560; }
+
+.parsed-info { font-size: .82rem; font-family: monospace; margin-top: 6px; }
+
+/* --- buttons --- */
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.btn {
+    padding: 9px 18px; border: none; border-radius: 5px; font-size: .85rem;
+    cursor: pointer; font-weight: 600; letter-spacing: .4px;
+    transition: background .15s, opacity .15s;
+}
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.btn-primary { background: #e94560; color: #fff; }
+.btn-primary:hover:not(:disabled) { background: #d13650; }
+.btn-green { background: #2e8b57; color: #fff; }
+.btn-green:hover:not(:disabled) { background: #267a4a; }
+.btn-blue { background: #1a5080; color: #fff; }
+.btn-blue:hover:not(:disabled) { background: #164570; }
+
+/* --- canvas area --- */
+.canvas-wrap {
+    text-align: center; overflow-x: auto; max-height: 520px;
+    background: #0a0f1a; border-radius: 4px; padding: 10px;
+    display: none;
+}
+.canvas-wrap.show { display: block; }
+canvas { image-rendering: pixelated; max-width: 100%; }
+.size-note { font-size: .75rem; color: #888; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>MCU → RGB 图像重建</h1>
+
+<!-- ========== 参数 ========== -->
+<div class="panel">
+    <div class="panel-title">图像参数</div>
+    <div class="param-row">
+        <div class="param-group"><label>图像宽度</label><input id="imgW" type="number" value="320" min="1" max="16384"></div>
+        <div class="param-sep">×</div>
+        <div class="param-group"><label>图像高度</label><input id="imgH" type="number" value="240" min="1" max="16384"></div>
+        <div class="param-sep" style="margin-left:12px;">MCU</div>
+        <div class="param-group"><label>MCU 宽</label><input id="mcuW" type="number" value="16" min="8" max="64" step="8"></div>
+        <div class="param-sep">×</div>
+        <div class="param-group"><label>MCU 高</label><input id="mcuH" type="number" value="16" min="8" max="64" step="8"></div>
+        <div class="radio-group" style="margin-left:8px;">
+            <label><input type="radio" name="comp" value="3" checked> YCbCr</label>
+            <label><input type="radio" name="comp" value="1"> 灰度</label>
+        </div>
+    </div>
+    <div id="infoBar" class="info-bar"></div>
+</div>
+
+<!-- ========== HEX 输入 ========== -->
+<div class="panel">
+    <div class="panel-title">MCU 数据 (HEX)</div>
+    <textarea id="hexInput" placeholder="在此粘贴 HEX 数据… 可带空格/换行/0x前缀"></textarea>
+    <div id="parseInfo" class="parsed-info"></div>
+</div>
+
+<!-- ========== 按钮 ========== -->
+<div class="panel">
+    <div class="btn-row">
+        <button id="btnReconstruct" class="btn btn-primary" disabled>重建图像</button>
+        <button id="btnDownloadPNG" class="btn btn-green" disabled>下载 PNG</button>
+        <button id="btnDownloadRGB" class="btn btn-blue" disabled>下载 RGB HEX 文本</button>
+    </div>
+</div>
+
+<!-- ========== 预览 ========== -->
+<div id="canvasWrap" class="canvas-wrap">
+    <canvas id="canvas"></canvas>
+    <div class="size-note" id="sizeNote"></div>
+</div>
+</div>
+
+<script>
+// ===================================================================
+// 工具函数
+// ===================================================================
+
+/** 解析 HEX 字符串 → Uint8Array */
+function parseHex(raw) {
+    let s = raw.replace(/\s+/g, '');                 // 去空白
+    s = s.replace(/0x/gi, '');                       // 去 0x/0X
+    if (s.length % 2 !== 0) return { data: null, err: 'HEX 长度为奇数，无法解析' };
+    const len = s.length / 2;
+    const arr = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        const b = parseInt(s.substring(i * 2, i * 2 + 2), 16);
+        if (isNaN(b)) return { data: null, err: `位置 ${i * 2} 处不是合法的 HEX 字符` };
+        arr[i] = b;
+    }
+    return { data: arr, err: null };
+}
+
+// ===================================================================
+// MCU 结构推导
+// ===================================================================
+
+/**
+ * 根据 MCU 像素尺寸和通道数返回结构描述。
+ * 返回 null 表示不支持。
+ */
+function getMCUStruct(mcuW, mcuH, numComp) {
+    const hMax = mcuW / 8;  // 最大水平采样因子
+    const vMax = mcuH / 8;  // 最大垂直采样因子
+
+    if (numComp === 1) {
+        // 灰度
+        if (hMax !== 1 || vMax !== 1) return null;
+        return {
+            label: '灰度',
+            hMax, vMax,
+            comps: [
+                { name: 'Y',  h: 1, v: 1, count: 1 }
+            ],
+            blockCount: 1,
+            bytesPerMCU: 64
+        };
+    }
+
+    // 3 通道 YCbCr
+    // 标准模式：Y 总是 (hMax, vMax)，Cb/Cr 总是 (1,1)
+    const valid = [
+        [1,1],   // 4:4:4
+        [2,1],   // 4:2:2 水平
+        [1,2],   // 4:2:2 垂直
+        [2,2],   // 4:2:0
+    ];
+    const match = valid.find(([h,v]) => h === hMax && v === vMax);
+    if (!match) return null;
+
+    const subsampNames = {
+        '1,1': '4:4:4',
+        '2,1': '4:2:2 (水平)',
+        '1,2': '4:2:2 (垂直)',
+        '2,2': '4:2:0',
+    };
+    const key = `${hMax},${vMax}`;
+
+    return {
+        label: subsampNames[key],
+        hMax, vMax,
+        comps: [
+            { name: 'Y',  h: hMax, v: vMax, count: hMax * vMax },
+            { name: 'Cb', h: 1,    v: 1,    count: 1 },
+            { name: 'Cr', h: 1,    v: 1,    count: 1 },
+        ],
+        blockCount: hMax * vMax + 2,
+        bytesPerMCU: (hMax * vMax + 2) * 64
+    };
+}
+
+// ===================================================================
+// 全局状态
+// ===================================================================
+let state = {
+    imgW: 0, imgH: 0,
+    mcuW: 0, mcuH: 0,
+    numComp: 3,
+    mcuStruct: null,
+    mcuCols: 0, mcuRows: 0, totalMCUs: 0, expectedBytes: 0,
+    hexData: null,
+    rgba: null,         // Uint8ClampedArray RGBA
+    rgbFlat: null,      // Uint8Array RGBRGB...
+};
+
+// ===================================================================
+// DOM 引用
+// ===================================================================
+const $ = id => document.getElementById(id);
+const elImgW = $('imgW'), elImgH = $('imgH');
+const elMcuW = $('mcuW'), elMcuH = $('mcuH');
+const elInfoBar = $('infoBar');
+const elHexInput = $('hexInput');
+const elParseInfo = $('parseInfo');
+const elBtnReconstruct = $('btnReconstruct');
+const elBtnDownloadPNG = $('btnDownloadPNG');
+const elBtnDownloadRGB = $('btnDownloadRGB');
+const elCanvasWrap = $('canvasWrap');
+const elCanvas = $('canvas');
+const elSizeNote = $('sizeNote');
+
+// ===================================================================
+// 更新参数推导信息
+// ===================================================================
+function updateInfo() {
+    const imgW = parseInt(elImgW.value) || 0;
+    const imgH = parseInt(elImgH.value) || 0;
+    const mcuW = parseInt(elMcuW.value) || 0;
+    const mcuH = parseInt(elMcuH.value) || 0;
+    const numComp = parseInt(document.querySelector('input[name="comp"]:checked').value);
+
+    state.imgW = imgW;
+    state.imgH = imgH;
+    state.mcuW = mcuW;
+    state.mcuH = mcuH;
+    state.numComp = numComp;
+
+    const mcuStruct = getMCUStruct(mcuW, mcuH, numComp);
+    state.mcuStruct = mcuStruct;
+
+    if (!mcuStruct || imgW <= 0 || imgH <= 0 || mcuW <= 0 || mcuH <= 0) {
+        elInfoBar.innerHTML = '<span class="warn">请填入有效的图像和 MCU 尺寸</span>';
+        state.expectedBytes = 0;
+        updateParseInfo();
+        return;
+    }
+
+    const mcuCols = Math.ceil(imgW / mcuW);
+    const mcuRows = Math.ceil(imgH / mcuH);
+    const totalMCUs = mcuCols * mcuRows;
+    const expectedBytes = totalMCUs * mcuStruct.bytesPerMCU;
+
+    state.mcuCols = mcuCols;
+    state.mcuRows = mcuRows;
+    state.totalMCUs = totalMCUs;
+    state.expectedBytes = expectedBytes;
+
+    elInfoBar.innerHTML =
+        `<span class="ok">${mcuStruct.label}</span> | ` +
+        `每 MCU ${mcuStruct.blockCount} blocks, ${mcuStruct.bytesPerMCU} B | ` +
+        `MCU 网格 ${mcuCols}×${mcuRows} = ${totalMCUs} MCUs | ` +
+        `预计 <b>${expectedBytes.toLocaleString()}</b> 字节`;
+
+    updateParseInfo();
+}
+
+// ===================================================================
+// HEX 解析 & 校验
+// ===================================================================
+function updateParseInfo() {
+    const raw = elHexInput.value;
+    if (!raw.trim()) {
+        elParseInfo.innerHTML = '';
+        state.hexData = null;
+        updateButtons();
+        return;
+    }
+
+    const { data, err } = parseHex(raw);
+    if (err) {
+        elParseInfo.innerHTML = `<span class="err">解析错误: ${err}</span>`;
+        state.hexData = null;
+        updateButtons();
+        return;
+    }
+
+    state.hexData = data;
+
+    if (state.expectedBytes > 0) {
+        if (data.length === state.expectedBytes) {
+            elParseInfo.innerHTML = `<span class="ok">已解析: ${data.length.toLocaleString()} / ${state.expectedBytes.toLocaleString()} 字节 ✓</span>`;
+        } else {
+            elParseInfo.innerHTML = `<span class="err">已解析: ${data.length.toLocaleString()} / ${state.expectedBytes.toLocaleString()} 字节 ✗ 不匹配!</span>`;
+        }
+    } else {
+        elParseInfo.innerHTML = `<span class="warn">已解析: ${data.length.toLocaleString()} 字节（请先设置图像参数以校验）</span>`;
+    }
+
+    updateButtons();
+}
+
+function updateButtons() {
+    const ok = state.hexData && state.expectedBytes > 0 && state.hexData.length === state.expectedBytes;
+    elBtnReconstruct.disabled = !ok;
+    elBtnDownloadPNG.disabled = !state.rgba;
+    elBtnDownloadRGB.disabled = !state.rgbFlat;
+}
+
+// ===================================================================
+// ★ 核心：从 MCU 数据构建 RGB 图像
+// ===================================================================
+function reconstruct() {
+    const { imgW, imgH, mcuW, mcuH, mcuStruct, mcuCols, mcuRows, hexData } = state;
+    if (!mcuStruct || !hexData) return;
+
+    const { hMax, vMax, comps } = mcuStruct;
+    const isGray = (comps.length === 1);
+
+    // --- 1. 为每个分量创建平面 ---
+    // plane[compIdx] = Uint8Array(planeH * planeW)
+    const planes = [];
+    for (const comp of comps) {
+        const pw = mcuCols * comp.h * 8;
+        const ph = mcuRows * comp.v * 8;
+        planes.push(new Uint8Array(pw * ph));
+    }
+
+    // --- 2. 读取 MCU 数据，填充平面 ---
+    let offset = 0;  // 在 hexData 中的字节偏移
+
+    for (let mcuR = 0; mcuR < mcuRows; mcuR++) {
+        for (let mcuC = 0; mcuC < mcuCols; mcuC++) {
+            for (let ci = 0; ci < comps.length; ci++) {
+                const comp = comps[ci];
+                const duCount = comp.count;  // 本分量在 MCU 内的 data unit 数
+                const pw = mcuCols * comp.h * 8;  // 该分量平面宽度
+
+                // data unit 在本 MCU 内的光栅顺序 (左→右, 上→下)
+                for (let duIdx = 0; duIdx < duCount; duIdx++) {
+                    const duY = Math.floor(duIdx / comp.h);  // 垂直第几个
+                    const duX = duIdx % comp.h;               // 水平第几个
+
+                    // 平面中的起始坐标
+                    const px0 = mcuC * comp.h * 8 + duX * 8;
+                    const py0 = mcuR * comp.v * 8 + duY * 8;
+
+                    // 复制 8×8 = 64 字节
+                    for (let row = 0; row < 8; row++) {
+                        const srcStart = offset + row * 8;
+                        const dstStart = (py0 + row) * pw + px0;
+                        for (let col = 0; col < 8; col++) {
+                            planes[ci][dstStart + col] = hexData[srcStart + col];
+                        }
+                    }
+                    offset += 64;
+                }
+            }
+        }
+    }
+
+    // --- 3. YCbCr → RGB (带色度上采样) ---
+    const rgbFlat = new Uint8Array(imgW * imgH * 3);
+    const rgba = new Uint8ClampedArray(imgW * imgH * 4);
+
+    if (isGray) {
+        // 灰度: Y == R == G == B
+        const yPlane = planes[0];
+        const yPW = mcuCols * comps[0].h * 8;
+        for (let y = 0; y < imgH; y++) {
+            const rowOff3 = y * imgW * 3;
+            const rowOff4 = y * imgW * 4;
+            for (let x = 0; x < imgW; x++) {
+                const yi = y * yPW + x;
+                const v = yPlane[yi];
+                rgbFlat[rowOff3 + x * 3] = v;
+                rgbFlat[rowOff3 + x * 3 + 1] = v;
+                rgbFlat[rowOff3 + x * 3 + 2] = v;
+                rgba[rowOff4 + x * 4] = v;
+                rgba[rowOff4 + x * 4 + 1] = v;
+                rgba[rowOff4 + x * 4 + 2] = v;
+                rgba[rowOff4 + x * 4 + 3] = 255;
+            }
+        }
+    } else {
+        const yPlane  = planes[0], yPW  = mcuCols * comps[0].h * 8;
+        const cbPlane = planes[1], cbPW = mcuCols * comps[1].h * 8;
+        const crPlane = planes[2], crPW = mcuCols * comps[2].h * 8;
+
+        // 色度缩放因子（从亮度分辨率到色度分辨率）
+        const scaleX = hMax / comps[1].h;  // = hMax (since Cb.h=1)
+        const scaleY = vMax / comps[1].v;  // = vMax (since Cb.v=1)
+
+        for (let y = 0; y < imgH; y++) {
+            const rowOff3 = y * imgW * 3;
+            const rowOff4 = y * imgW * 4;
+            // 最近邻上采样：用整数除法做坐标映射
+            const cbY = Math.floor(y / scaleY);
+            const crY = Math.floor(y / scaleY);
+
+            for (let x = 0; x < imgW; x++) {
+                const cbX = Math.floor(x / scaleX);
+                const crX = Math.floor(x / scaleX);
+
+                const Y  = yPlane[y * yPW + x];
+                const Cb = cbPlane[cbY * cbPW + cbX];
+                const Cr = crPlane[crY * crPW + crX];
+
+                // JFIF YCbCr→RGB 整数运算 (系数 × 1024)
+                let r = Y + ((1436 * (Cr - 128)) >> 10);
+                let g = Y - (( 352 * (Cb - 128) + 731 * (Cr - 128)) >> 10);
+                let b = Y + ((1815 * (Cb - 128)) >> 10);
+
+                // Clamp
+                r = r < 0 ? 0 : r > 255 ? 255 : r;
+                g = g < 0 ? 0 : g > 255 ? 255 : g;
+                b = b < 0 ? 0 : b > 255 ? 255 : b;
+
+                rgbFlat[rowOff3 + x * 3]     = r;
+                rgbFlat[rowOff3 + x * 3 + 1] = g;
+                rgbFlat[rowOff3 + x * 3 + 2] = b;
+
+                rgba[rowOff4 + x * 4]     = r;
+                rgba[rowOff4 + x * 4 + 1] = g;
+                rgba[rowOff4 + x * 4 + 2] = b;
+                rgba[rowOff4 + x * 4 + 3] = 255;
+            }
+        }
+    }
+
+    state.rgbFlat = rgbFlat;
+    state.rgba = rgba;
+    return rgba;
+}
+
+// ===================================================================
+// Canvas 渲染
+// ===================================================================
+function renderCanvas(rgba) {
+    const w = state.imgW, h = state.imgH;
+    elCanvas.width = w;
+    elCanvas.height = h;
+    const ctx = elCanvas.getContext('2d');
+    const imageData = new ImageData(rgba, w, h);
+    ctx.putImageData(imageData, 0, 0);
+    elCanvasWrap.classList.add('show');
+    elSizeNote.textContent = `${w} × ${h} 像素`;
+}
+
+// ===================================================================
+// 下载
+// ===================================================================
+function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function downloadPNG() {
+    if (!state.rgba) return;
+    elCanvas.toBlob(blob => {
+        if (blob) downloadBlob(blob, 'reconstructed.png');
+    }, 'image/png');
+}
+
+function downloadRGBHex() {
+    if (!state.rgbFlat) return;
+    const { imgW, imgH } = state;
+    const lines = [];
+    for (let y = 0; y < imgH; y++) {
+        const row = [];
+        const base = y * imgW * 3;
+        for (let x = 0; x < imgW; x++) {
+            const off = base + x * 3;
+            const r = state.rgbFlat[off].toString(16).toUpperCase().padStart(2, '0');
+            const g = state.rgbFlat[off + 1].toString(16).toUpperCase().padStart(2, '0');
+            const b = state.rgbFlat[off + 2].toString(16).toUpperCase().padStart(2, '0');
+            row.push(r + g + b);
+        }
+        lines.push(row.join(' '));
+    }
+    const text = lines.join('\r\n');
+    const blob = new Blob([text], { type: 'text/plain' });
+    downloadBlob(blob, 'rgb_hex.txt');
+}
+
+// ===================================================================
+// 事件绑定
+// ===================================================================
+elBtnReconstruct.addEventListener('click', () => {
+    const rgba = reconstruct();
+    if (rgba) {
+        renderCanvas(rgba);
+        updateButtons();
+    }
+});
+
+elBtnDownloadPNG.addEventListener('click', downloadPNG);
+elBtnDownloadRGB.addEventListener('click', downloadRGBHex);
+
+// 参数变化 → 重新计算
+[elImgW, elImgH, elMcuW, elMcuH].forEach(el => {
+    el.addEventListener('input', () => {
+        updateInfo();
+        state.rgba = null;
+        state.rgbFlat = null;
+        elCanvasWrap.classList.remove('show');
+        updateButtons();
+    });
+});
+
+// 通道数切换
+document.querySelectorAll('input[name="comp"]').forEach(r => {
+    r.addEventListener('change', () => {
+        // 灰度自动设 MCU 为 8×8
+        if (r.value === '1') {
+            elMcuW.value = 8;
+            elMcuH.value = 8;
+        }
+        updateInfo();
+        state.rgba = null;
+        state.rgbFlat = null;
+        elCanvasWrap.classList.remove('show');
+        updateButtons();
+    });
+});
+
+// HEX 输入变化
+elHexInput.addEventListener('input', () => {
+    updateParseInfo();
+    state.rgba = null;
+    state.rgbFlat = null;
+    elCanvasWrap.classList.remove('show');
+    updateButtons();
+});
+
+// ===================================================================
+// 初始化
+// ===================================================================
+updateInfo();
+</script>
+</body>
+</html>

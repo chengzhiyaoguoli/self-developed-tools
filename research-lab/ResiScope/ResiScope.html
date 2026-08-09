@@ -1,63 +1,1159 @@
-﻿<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ResiScope</title><style>
-:root{--bg:#f6f8fb;--panel:#fff;--ink:#172033;--muted:#657084;--line:#dfe5ef;--accent:#0f766e;--accent2:#2563eb;--danger:#dc2626;--soft:#e9f5f3}*{box-sizing:border-box}body{margin:0;height:100vh;font-family:Segoe UI,Microsoft YaHei,Arial,sans-serif;background:var(--bg);color:var(--ink);overflow:hidden}.app{height:100dvh;display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,390px)}.side{order:2;background:linear-gradient(180deg,#fbfdff 0%,#f4f7fb 100%);border-left:1px solid var(--line);padding:12px;overflow-y:auto;overflow-x:hidden}.main{order:1}.brand{font-size:19px;font-weight:750;margin:0 0 3px}.sub{font-size:11px;color:var(--muted);margin:0 0 6px}.group{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}.label{font-size:12px;font-weight:650;color:#334155;margin:0 0 7px}.row{display:flex;gap:8px;align-items:center}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}input,select,button{font:inherit}input[type=file]{width:100%;font-size:12px}input[type=number],input[type=text],select{width:100%;height:31px;border:1px solid var(--line);border-radius:7px;background:#fff;padding:0 9px;color:var(--ink)}button{height:31px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--ink);padding:0 11px;cursor:pointer}button.primary{background:var(--accent);border-color:var(--accent);color:white}button.blue{background:var(--accent2);border-color:var(--accent2);color:white}button.danger{background:#fff;color:var(--danger);border-color:#fecaca}button:disabled{opacity:.45;cursor:not-allowed}.hint{font-size:11px;color:#68778d;line-height:1.35;margin:6px 0 0}.main{display:grid;grid-template-rows:54px 1fr 34px;min-width:0}.top{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.88);backdrop-filter:blur(8px)}.tools{display:flex;gap:8px;align-items:center}.pill{border:1px solid var(--line);background:#fff;border-radius:999px;height:32px;padding:0 12px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}.pill.active{background:var(--soft);border-color:#99d4cb;color:#0f766e}.stage{position:relative;min-width:0;min-height:0;padding:12px 14px 8px}.plotWrap{height:100%;background:#fff;border:1px solid var(--line);border-radius:8px;position:relative;overflow:hidden}canvas{width:100%;height:100%;display:block}.empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--muted);font-size:14px;line-height:1.8;pointer-events:none}.status{padding:0 16px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:12px;background:#fff}.channels{display:flex;flex-direction:column;gap:3px;max-height:180px;overflow:auto;padding-right:3px}.ch{display:grid;grid-template-columns:18px 14px 1fr auto;align-items:center;gap:6px;font-size:12px;min-height:24px}.sw{width:13px;height:13px;border-radius:4px}.stat{color:var(--muted);font-size:12px}.rangeBox{background:#f8fafc;border:1px solid var(--line);border-radius:7px;padding:8px;font-size:12px;color:#334155;line-height:1.6}.badge{font-size:11px;color:#64748b}.small{height:28px;font-size:12px;padding:0 8px}.kbd{font-family:Consolas,monospace;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:5px;padding:1px 5px}.toast{position:absolute;right:20px;top:20px;background:#0f172a;color:white;border-radius:7px;padding:10px 12px;font-size:13px;opacity:0;transform:translateY(-8px);transition:.18s;pointer-events:none}.toast.show{opacity:1;transform:translateY(0)}@media(max-width:900px){.app{grid-template-columns:1fr}.side{right:0;position:absolute;z-index:5;width:min(360px,92vw);height:100%;box-shadow:-8px 0 28px #0002;transform:translateX(100%);transition:.2s}.side.open{transform:none}.main{height:100vh}.mobileBtn{display:inline-flex!important}}.mobileBtn{display:none}
-.side{background:#fbfcfe}.group{background:rgba(255,255,255,.92);border:1px solid #e3eaf4;border-radius:8px;padding:7px;margin-top:6px}.group:first-of-type{border-top:1px solid #e3eaf4}.brand{letter-spacing:.2px}.top{box-shadow:0 1px 0 rgba(15,23,42,.04)}.plotWrap{box-shadow:0 12px 30px rgba(15,23,42,.06)}button:hover{border-color:#b9c4d3;background:#f8fafc}button.primary:hover{background:#0d655f}.pill.active{box-shadow:inset 0 0 0 1px rgba(15,118,110,.2)}.channels{max-height:150px}.rangeBox{background:#f6faf9}.sampleRow{display:grid;grid-template-columns:1fr auto 58px;gap:7px;align-items:center}.sampleRow span{height:31px;display:flex;align-items:center;color:#64748b;font-size:12px;white-space:nowrap}.sampleRow button{height:31px}button.blue:hover{background:#1d4ed8;border-color:#1d4ed8;color:#fff}.modal{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(15,23,42,.18);z-index:10}.modal.show{display:flex}.modalBox{width:min(560px,calc(100% - 40px));background:#fff;border:1px solid #dbe3ef;border-radius:8px;box-shadow:0 24px 70px rgba(36,48,68,.28);padding:16px;color:#172033}.modalHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.modalHead button{height:30px}.modalBox p{margin:8px 0;color:#475569;line-height:1.55;font-size:13px}.modalBox ul{margin:8px 0 0 18px;padding:0;color:#475569;font-size:13px;line-height:1.55}.modalBox li{margin:4px 0}</style>
-<style id="console-polish">
-:root{--bg:#eef3f8;--panel:#ffffff;--ink:#172033;--muted:#4d5f78;--line:#d5deea;--accent:#0f766e;--accent2:#2563eb;--danger:#dc2626;--soft:#e7f3f1;}
-html{width:100%;height:100%;overflow:hidden}body{background:#eef3f8;color:#172033;width:var(--app-w,100vw);height:var(--app-h,100dvh);max-width:100vw;max-height:100dvh;overflow:hidden}.app{width:var(--app-w,100vw);height:var(--app-h,100dvh);max-width:100vw;max-height:100dvh;min-height:0;overflow:hidden;grid-template-columns:minmax(0,1fr) minmax(300px,370px);background:#eef3f8}.main{height:var(--app-h,100dvh)!important;min-height:0!important;overflow:hidden!important}.side{height:var(--app-h,100dvh)!important;min-height:0!important;background:#f6f9fc!important;color:#172033;border-left:1px solid #d6dfeb!important;padding:10px!important;overflow-y:auto!important;overflow-x:hidden!important;scrollbar-width:thin;scrollbar-color:#b8c5d6 #edf2f7}.side::-webkit-scrollbar{width:8px}.side::-webkit-scrollbar-track{background:#edf2f7}.side::-webkit-scrollbar-thumb{background:#b8c5d6;border-radius:99px}
-.brand{color:#0f172a;font-size:18px!important;margin-bottom:2px!important}.sub{color:#52637a!important;margin-bottom:7px!important}.group{background:#fff!important;border:1px solid #dce4ef!important;border-radius:8px!important;padding:7px!important;margin-top:6px!important;box-shadow:0 6px 18px rgba(15,23,42,.045)}.group:first-of-type{border-top:1px solid #dce4ef!important}.label{color:#1f2a3a!important;margin-bottom:5px!important;font-size:12px!important;font-weight:700!important}
-input[type=file]{color:#243044;font-size:12px!important}input[type=file]::file-selector-button{height:28px;border:1px solid #cbd6e4;border-radius:6px;background:#fff;color:#172033;margin-right:8px;cursor:pointer}input[type=file]::file-selector-button:hover{background:#f0f5fb}
-input[type=number],input[type=text],select{height:29px!important;background:#fff!important;border:1px solid #cbd6e4!important;color:#172033!important;border-radius:6px!important}input[type=number]:focus,input[type=text]:focus,select:focus{outline:none;border-color:#0f766e!important;box-shadow:0 0 0 2px rgba(15,118,110,.14)}
-button{height:29px!important;border-radius:6px!important;background:#fff!important;border:1px solid #cbd6e4!important;color:#1f2a3a!important}button:hover{background:#f3f7fb!important;border-color:#aebdd0!important;color:#0f172a!important}button.primary{background:#0f766e!important;border-color:#0f766e!important;color:#fff!important}button.primary:hover{background:#0b625b!important;border-color:#0b625b!important}button.blue{background:#2563eb!important;border-color:#2563eb!important;color:#fff!important}button.blue:hover{background:#1d4ed8!important;border-color:#1d4ed8!important;color:#fff!important}button.danger{background:#fff!important;color:#c81e1e!important;border-color:#f1b5b5!important}button.danger:hover{background:#fff5f5!important;color:#991b1b!important;border-color:#ef8f8f!important}
-.hint{color:#5f7088!important;font-size:10.5px!important;line-height:1.25!important;margin-top:4px!important}.row{gap:6px!important}.grid2{gap:6px!important}.small{height:27px!important;font-size:11px!important}.sampleRow{grid-template-columns:1fr auto 56px!important;gap:6px!important}.sampleRow span{height:29px!important;color:#52637a!important;font-size:11px!important}.sampleRow button{height:29px!important}
-.channels{max-height:none!important;overflow:visible!important;gap:2px!important;padding-right:0!important}.ch{min-height:22px!important;font-size:12px!important;color:#243044}.stat{color:#52637a!important}.sw{width:12px!important;height:12px!important}.rangeBox{background:#f7fafc!important;border:1px solid #dbe5ef!important;color:#263247!important;padding:6px!important;line-height:1.35!important;font-size:11px!important}
-#sheet{margin-top:7px!important}#applyOp,#applyFilter{margin-top:6px!important}.group .grid2[style*="margin-top:8px"]{margin-top:6px!important}.top{background:rgba(247,250,252,.94)!important;border-bottom-color:#d7e0eb!important}.pill{background:#fff!important;color:#40516a!important;border-color:#d4dfeb!important}.status{background:#f7fafc!important;color:#3f5068!important;border-top-color:#d7e0eb!important}.plotWrap{border-color:#d7e0eb!important;box-shadow:0 10px 26px rgba(15,23,42,.08)!important}.modalBox{background:#fff!important;border-color:#dbe3ef!important;color:#172033!important;max-height:calc(100% - 40px);overflow:auto}.modalBox p,.modalBox ul{color:#475569!important}.modalHead strong{color:#172033}.modeTabs{display:inline-flex;align-items:center;gap:2px;background:#e8eef6;border:1px solid #d3deeb;border-radius:8px;padding:3px}.modeBtn{height:27px!important;border:0!important;background:transparent!important;padding:0 12px!important;color:#40516a!important}.modeBtn.active{background:#fff!important;color:#0f766e!important;box-shadow:0 2px 8px rgba(15,23,42,.08)}.modeBtn:disabled{color:#98a5b5!important;background:transparent!important;box-shadow:none!important}.cursorReadout{height:30px;display:flex;align-items:center;background:rgba(255,255,255,.76);border:1px solid #d7e0eb;border-radius:7px;padding:0 10px;color:#263247;font-size:12px;min-width:230px;box-shadow:0 2px 8px rgba(15,23,42,.04)}.exportGrid{display:grid;grid-template-columns:1fr;gap:6px}.ch{grid-template-columns:18px 12px 58px 44px minmax(68px,1fr) 40px!important}.chHead{color:#66768c;font-size:10.5px;margin:0 0 3px}.chHead .baseTitle{grid-column:5/7;text-align:center}.chHead .ptTitle{text-align:center}.ptCount{color:#52637a;font-size:11px;text-align:center}.baseInput{height:24px!important;border-radius:5px!important;font-size:11px!important;padding:0 5px!important}.baseBtn{height:24px!important;font-size:11px!important;padding:0 6px!important}.selPicker{position:absolute;z-index:4;display:none;gap:4px;align-items:center;flex-wrap:wrap;max-width:calc(100% - 16px);max-height:120px;overflow:auto;background:rgba(255,255,255,.96);border:1px solid #cbd6e4;border-radius:7px;padding:5px;box-shadow:0 10px 28px rgba(15,23,42,.16)}.selPicker button{height:24px!important;font-size:11px!important;padding:0 7px!important}.filePick{display:flex;align-items:center;gap:8px;min-width:0}.filePick #file{position:absolute;inline-size:1px;block-size:1px;opacity:0;pointer-events:none}.filePick #fileBtn{flex:0 0 auto}.pickedName{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#243044;font-size:12px}body.dragging .plotWrap{outline:2px dashed #0f766e;outline-offset:-8px;background:#f4fbf9}body.dragging .empty{color:#0f766e;font-weight:650}
-</style></head><body><div class="app"><aside class="side" id="side"><h1 class="brand">ResiScope</h1><p class="sub">电阻曲线预览、编辑与导出工具</p><div class="group" style="border-top:0;margin-top:0;padding-top:0"><p class="label">数据文件</p><div class="filePick"><button id="fileBtn" type="button">选择文件</button><span id="pickedName" class="pickedName">未选择文件</span><input id="file" type="file" accept=".xlsx,.csv,.tsv"></div><select id="sheet" style="margin-top:10px"></select><p class="hint">支持 .xlsx / .csv / .tsv，可点击选择或直接拖入文件。</p></div><div class="group"><p class="label">采样间隔</p><div class="sampleRow"><input id="dt" type="number" value="0.2" min="0" step="0.001"><span>秒/点</span><button id="applyDt">应用</button></div><p class="hint">无时间列时自动按采样间隔生成横轴。</p></div><div class="group"><p class="label">通道显示</p><div class="row" style="margin-bottom:8px"><button id="allOn" class="small">全选</button><button id="allOff" class="small">全关</button><button id="fit" class="small">全图</button></div><div class="channels" id="channels"></div></div><div class="group"><p class="label">框选区间</p><div class="rangeBox" id="rangeText">尚未框选。拖动图表可框选，单击清除。</div><div class="grid2" style="margin-top:8px"><button id="selectAllData">全选显示数据</button><button id="deleteSel" class="danger">删除选中数据</button></div></div><div class="group"><p class="label">局部数据处理</p><div class="grid2" style="grid-template-columns:92px 1fr"><select id="op"><option value="+">加 +</option><option value="-">减 -</option><option value="*" selected>乘 ×</option><option value="/">除 ÷</option><option value="=">设为 =</option><option value="formula">公式 f(x)</option></select><input id="operand" type="text" value="1.0" placeholder="1.0"></div><button id="applyOp" class="primary" style="width:100%;margin-top:8px">应用到框选区间</button></div><div class="group"><p class="label">滤波</p><div class="grid2"><select id="filterType"><option value="moving">移动平均</option><option value="median">中值滤波</option><option value="gaussian">高斯平滑</option><option value="exp">指数平滑</option><option value="edge">保边三点平滑</option></select><input id="filterWin" type="number" value="5" min="3" step="2"></div><button id="applyFilter" class="blue" style="width:100%;margin-top:8px">应用滤波到框选区间</button></div><div class="group"><p class="label">导出方式</p><div class="exportGrid"><select id="exportDataMode"><option value="resistance">导出电阻</option><option value="response" disabled>导出响应值</option><option value="percent" disabled>导出响应百分比</option></select><select id="exportMode"><option value="new">新 Excel：sheet 保持原名</option><option value="append">原文件副本：添加修改 sheet</option></select></div><div class="grid2" style="margin-top:8px"><button id="undo" class="danger">撤销</button><button id="export" class="primary">导出 Excel</button></div><p class="hint">不会覆盖原文件；添加 sheet 会导出副本。</p></div></aside><main class="main"><div class="top"><div class="tools"><button class="mobileBtn" id="menu">菜单</button><div class="modeTabs"><button id="modeResistance" class="modeBtn active" data-view="resistance">电阻</button><button id="modeResponse" class="modeBtn" data-view="response" disabled>响应值</button><button id="modePercent" class="modeBtn" data-view="percent" disabled>响应百分比</button></div><div class="cursorReadout" id="cursorReadout">时间 -- / 电阻 --</div></div><div class="tools"><span class="pill" id="fileName">未加载文件</span><button id="aboutBtn" class="pill">关于</button></div></div><div class="stage"><div class="plotWrap"><canvas id="plot"></canvas><div class="selPicker" id="selPicker"></div><div class="empty" id="empty">选择或拖入 Excel 文件开始预览<br>表头可为 CH1、CH2、CH3，也可包含 Time/时间列</div><div class="toast" id="toast"></div></div><div class="modal" id="aboutModal"><div class="modalBox"><div class="modalHead"><strong>关于</strong><button id="aboutClose">关闭</button></div><p><b>ResiScope</b></p><p>电阻曲线预览、编辑与导出工具</p><p>开发者：橙汁</p><p><b>免责声明：</b>本工具用于数据预览、清洗和辅助分析。请保留原始数据和必要的处理记录，避免为追求曲线外观而过度处理、选择性删除或改变实验结论；导出结果应结合实验记录和专业判断使用。</p><p>适用性：用于预览和整理 Excel 中按列存放的多通道采样数据，例如 CH0、CH1、CH2 等电阻曲线。适合做曲线巡检、局部校正、异常段删除、滤波平滑、基线响应计算和导出修改结果。</p><p>主要功能：</p><ul><li>读取 .xlsx / .csv / .tsv，多 sheet 可切换。</li><li>滚轮缩放，拖动矩形框选，单击清除选区；拖动选框或按上下键可纵向移动选中数据；鼠标坐标会在顶部显示。</li><li>框选命中多个通道时，可选择处理单个通道或全部命中通道。</li><li>对框选数据执行加、减、乘、除、设为、公式 f(x)、滤波、删除和撤销。</li><li>删除数据按通道单独删除并让后续点前移；未选中的通道不会被改动。</li><li>可按通道设置基线，并派生显示/导出响应值或响应百分比；所有编辑仍作用于原始电阻数据。</li><li>导出为新 Excel，或基于原 xlsx 导出带修改 sheet 的副本。</li></ul><p>Excel 原始数据要求：</p><ul><li>推荐第一行为表头，例如 CH0、CH1、CH2；每列一个通道，每行一个采样点。</li><li>可包含 Time、时间、秒、sec、second、s 等时间列；没有时间列时用采样间隔生成横轴，默认 0.2 秒/点。</li><li>数据单元格应为数字或空白；空白、文字和无法转成数字的内容不会作为有效曲线点。</li><li>支持多 sheet，导入后可在右侧选择 sheet；建议每个 sheet 只放一块连续数据表。</li><li>不建议在数据区中间穿插说明文字、合并单元格、图片、图表或多段表格。</li></ul><p>安全与限制：</p><ul><li>文件在浏览器本地读取和处理，不会主动上传；也不会直接覆盖原始文件。</li><li>只支持新版 .xlsx，不支持旧版 .xls；读取公式单元格时依赖文件中保存的计算结果，不会重新计算 Excel 公式。</li><li>自定义公式只允许 x、数字、括号和 + - * /，例如 (x + 0) * 1 / 1；结果为无穷或非数字时会跳过该点。</li><li>添加 sheet 时会导出原文件副本，并自动命名为“原 sheet 名_修改”或类似名称。</li><li>通道数没有硬限制，但几十个以内体验更好；超大文件会受浏览器内存、绘图和导出速度限制。</li><li>局部删除会导致被删通道的数据长度变短，导出时该通道后续数据前移；不同通道长度可能因此不完全一致。</li></ul></div></div></div><div class="status"><span id="stat">0 个通道，0 个点</span><span>横轴：秒 / 纵轴：欧姆 Ω</span></div></main></div>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ResiScope</title>
+
+
+
+
+<style id="resiscope-ui">
+:root {
+  --shell: #f5fbf9;
+  --shell-blue: #f3f7fd;
+  --panel: rgba(255, 255, 255, 0.92);
+  --panel-solid: #ffffff;
+  --ink: #203349;
+  --ink-soft: #4e625f;
+  --muted: #748680;
+  --line: #cfe0dc;
+  --line-blue: #d4dfed;
+  --teal: #159582;
+  --teal-dark: #0d7568;
+  --blue: #397fd1;
+  --coral: #e06472;
+  --amber: #c7821f;
+  --mint: #e4f7f1;
+  --sky: #eaf2fd;
+  --peach: #fff3ec;
+  --shadow-sm: 0 3px 10px rgba(40, 82, 74, 0.06);
+  --shadow-md: 0 10px 30px rgba(37, 75, 69, 0.09);
+  --header-h: 70px;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  width: var(--app-w, 100vw);
+  height: var(--app-h, 100dvh);
+  max-width: 100vw;
+  max-height: 100dvh;
+  color: var(--ink);
+  font-family: "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", Arial, sans-serif;
+  background: linear-gradient(135deg, var(--shell), var(--shell-blue) 66%, #fff8f4);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background:
+    repeating-linear-gradient(120deg, transparent 0 105px, rgba(32, 151, 132, 0.035) 106px, transparent 107px),
+    repeating-linear-gradient(30deg, transparent 0 155px, rgba(57, 127, 209, 0.025) 156px, transparent 157px);
+}
+
+input,
+select,
+button { font: inherit; }
+
+input[type="number"],
+input[type="text"],
+select {
+  width: 100%;
+  height: 32px;
+  padding: 0 9px;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid #c8d9d5;
+  border-radius: 6px;
+  outline: none;
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus,
+select:focus {
+  border-color: #63b7a8;
+  box-shadow: 0 0 0 3px rgba(21, 149, 130, 0.11);
+}
+
+input:disabled,
+select:disabled {
+  color: #8b9b97;
+  background: #eff4f3;
+}
+
+button {
+  height: 32px;
+  padding: 0 11px;
+  color: #334a48;
+  background: #fff;
+  border: 1px solid #c8d9d5;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(30, 67, 61, 0.03);
+  cursor: pointer;
+  transition: background 0.14s, border-color 0.14s, color 0.14s, box-shadow 0.14s, transform 0.14s;
+}
+
+button:hover:not(:disabled) {
+  color: #173f39;
+  background: #eef8f5;
+  border-color: #8dbfb5;
+  box-shadow: 0 3px 9px rgba(35, 91, 81, 0.08);
+}
+
+button:active:not(:disabled) { transform: translateY(1px); }
+
+button:disabled {
+  color: #94a49f;
+  background: #f3f6f5;
+  border-color: #dbe5e2;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+button.primary,
+button.blue {
+  color: #fff;
+  border-color: transparent;
+}
+
+button.primary { background: linear-gradient(112deg, #108b79, #27a19b); }
+button.blue { background: linear-gradient(112deg, #4b79d4, #7585db); }
+
+button.primary:hover:not(:disabled),
+button.blue:hover:not(:disabled) {
+  color: #fff;
+  border-color: transparent;
+  filter: brightness(0.97);
+}
+
+button.danger {
+  color: #c34c58;
+  background: #fff9f9;
+  border-color: #edbdc2;
+}
+
+button.danger:hover:not(:disabled) {
+  color: #a93240;
+  background: #fff0f2;
+  border-color: #df919a;
+}
+
+.withIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.uiIcon {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+}
+
+/* Shared application header */
+#sharedHeader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  width: var(--app-w, 100vw);
+  height: var(--header-h);
+  display: grid;
+  grid-template-columns: 218px auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 0 20px;
+  background: rgba(252, 255, 254, 0.97);
+  border-bottom: 1px solid #c9ddd7;
+  box-shadow: 0 6px 22px rgba(40, 82, 74, 0.075);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+#sharedHeader::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(100deg, rgba(255, 255, 255, 0.94), rgba(237, 250, 247, 0.82), rgba(239, 246, 255, 0.9));
+}
+
+.sharedBrand {
+  min-width: 0;
+  height: var(--header-h);
+}
+
+.sharedBrand .brandBlock {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 43px minmax(0, 1fr);
+  grid-template-rows: 1fr 1fr;
+  align-items: center;
+  padding: 11px 0;
+}
+
+.sharedBrand .brandMark {
+  grid-row: 1 / 3;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  color: #27a693;
+}
+
+.sharedBrand .brandMark svg { width: 34px; height: 34px; }
+
+.sharedBrand .brand {
+  grid-column: 2;
+  align-self: end;
+  margin: 0;
+  color: #22374c;
+  font-size: 22px;
+  font-weight: 760;
+  line-height: 1;
+}
+
+.sharedBrand .sub {
+  grid-column: 2;
+  align-self: start;
+  margin: 5px 0 0;
+  color: #71847f;
+  font-size: 9.5px;
+  white-space: nowrap;
+}
+
+.sharedToolSwitch,
+.directionSwitch {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px;
+  background: linear-gradient(135deg, #e9f6f2, #eaf1fb);
+  border: 1px solid #c7dcd6;
+  border-radius: 8px;
+}
+
+.sharedToolSwitch button,
+.directionSwitch button {
+  height: 36px;
+  min-width: 100px;
+  padding: 0 15px;
+  color: #526963;
+  font-weight: 680;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.sharedToolSwitch button.active,
+.directionSwitch button.active {
+  color: #fff;
+  background: linear-gradient(112deg, #159582, #3984cf);
+  box-shadow: 0 4px 12px rgba(34, 126, 129, 0.22);
+}
+
+.sharedToolSwitch button.active:hover,
+.directionSwitch button.active:hover {
+  color: #fff;
+  background: linear-gradient(112deg, #108673, #3176bf);
+  border-color: transparent;
+}
+
+.sharedContextHost,
+.sharedActionHost,
+.sharedContext,
+.sharedActions {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.sharedContextHost { overflow: hidden; }
+.sharedEditorContext { display: flex; width: 100%; }
+.sharedConverterContext { display: none; }
+.sharedEditorActions { display: flex; }
+.sharedConverterActions { display: none; }
+
+body.converter-mode .sharedEditorContext,
+body.converter-mode .sharedEditorActions { display: none; }
+
+body.converter-mode .sharedConverterContext,
+body.converter-mode .sharedConverterActions { display: flex; }
+
+.sharedEditorContext .topFileBar {
+  width: 100%;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.topFileBar .filePick { display: flex; align-items: center; flex: 0 0 auto; }
+.topFileBar .pickedName { display: none; }
+.topFileBar #file { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+.topFileBar #fileBtn {
+  height: 36px;
+  color: var(--teal-dark);
+  font-weight: 680;
+  background: linear-gradient(135deg, #f2fcf8, #eff7ff);
+  border-color: #b9d8d0;
+}
+
+.topFileBar #fileName {
+  min-width: 0;
+  max-width: min(245px, 18vw);
+  height: 36px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  color: #50645f;
+  background: #fff;
+  border: 1px solid #d1e0dc;
+  border-radius: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topFileBar #fileName.dirty { border-color: #e5bd6c; background: #fffaf0; }
+.topFieldLabel { color: #758782; font-size: 11px; white-space: nowrap; }
+.topFileBar #sheet { width: min(270px, 21vw); height: 36px; }
+
+.saveState {
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 8px;
+  color: #7c570d;
+  background: #fff4c7;
+  border: 1px solid #e6bf53;
+  border-radius: 5px;
+  font-size: 10.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.topActions {
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.topActions #undo,
+.topActions #redo {
+  color: #536a65;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.topActions #export {
+  min-width: 112px;
+  height: 38px;
+  color: #fff;
+  background: linear-gradient(112deg, #108b79, #3984cf);
+  border-color: transparent;
+  box-shadow: 0 5px 14px rgba(38, 126, 136, 0.2);
+}
+
+#sharedAboutBtn {
+  min-width: 72px;
+  height: 38px;
+  padding: 0 12px;
+  gap: 6px;
+  color: #49625c;
+  background: rgba(255, 255, 255, 0.86);
+  border-color: #c5d8d3;
+}
+
+#sharedAboutBtn .uiIcon { width: 17px; height: 17px; }
+
+.sharedConverterContext .directionSwitch button { min-width: 126px; }
+
+/* Curve editor */
+.app {
+  position: relative;
+  z-index: 1;
+  width: var(--app-w, 100vw);
+  height: var(--app-h, 100dvh);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(356px, 390px);
+  grid-template-rows: minmax(0, 1fr);
+  padding-top: var(--header-h);
+  overflow: hidden;
+}
+
+.app > .top { display: none; }
+
+.main {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) 28px;
+  overflow: hidden;
+}
+
+.stage {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: 40px minmax(0, 1fr);
+  gap: 8px;
+  padding: 10px 12px 8px;
+}
+
+.chartToolbar {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 3px;
+}
+
+.chartToolbarLeft,
+.chartToolbarRight {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.chartToolbarLeft { flex: 1; }
+
+.modeTabs {
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: linear-gradient(135deg, #e4f7f1, #e9f1fc);
+  border: 1px solid #c7dcd6;
+  border-radius: 7px;
+}
+
+.modeBtn {
+  height: 28px;
+  min-width: 72px;
+  padding: 0 12px;
+  color: #536b65;
+  font-weight: 680;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.modeBtn.active {
+  color: #fff;
+  background: linear-gradient(112deg, #159582, #3984cf);
+  box-shadow: 0 3px 9px rgba(37, 125, 129, 0.18);
+}
+
+.modeBtn:disabled { color: #9aa9a5; background: transparent; }
+
+.cursorReadout {
+  min-width: 210px;
+  max-width: min(520px, 42vw);
+  height: 34px;
+  display: flex;
+  align-items: center;
+  padding: 0 5px;
+  color: #334b46;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chartToolbar #fit,
+.zeroToggle {
+  height: 32px;
+  background: rgba(255, 255, 255, 0.82);
+  border-color: #c8dbd6;
+}
+
+.zeroToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 9px;
+  color: #506863;
+  border: 1px solid #c8dbd6;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.zeroToggle input,
+.chOn { accent-color: var(--teal); }
+
+.plotWrap {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  background: #fcfefd;
+  border: 1px solid #bcd4ce;
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+}
+
+canvas { width: 100%; height: 100%; display: block; background: #fcfefd; }
+
+.empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #71847f;
+  font-size: 13px;
+  line-height: 1.75;
+  text-align: center;
+  pointer-events: none;
+}
+
+.status {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  color: #586e68;
+  background: rgba(251, 254, 253, 0.86);
+  border-top: 1px solid #d3e2de;
+  font-size: 10.5px;
+}
+
+.side {
+  grid-column: 2;
+  grid-row: 1;
+  position: relative;
+  min-height: 0;
+  padding: 10px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: linear-gradient(160deg, rgba(248, 254, 252, 0.98), rgba(245, 249, 255, 0.98) 62%, rgba(255, 249, 245, 0.97));
+  border-left: 1px solid #c9dcd7;
+  box-shadow: -10px 0 28px rgba(47, 89, 81, 0.05);
+  scrollbar-width: thin;
+  scrollbar-color: #a9c5be transparent;
+}
+
+.sideIntro {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 2px 3px 8px;
+}
+
+.sideIntro strong { color: #264b43; font-size: 15px; }
+.sideIntro span { color: #788d87; font-size: 10.5px; }
+
+.side .group {
+  margin: 0 0 7px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid #d3e3df;
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+}
+
+.side .label {
+  margin: 0 0 6px;
+  color: #31554d;
+  font-size: 11.5px;
+  font-weight: 730;
+}
+
+.side .hint {
+  margin: 5px 0 0;
+  color: #71857f;
+  font-size: 9.5px;
+  line-height: 1.35;
+}
+
+.row { display: flex; align-items: center; gap: 6px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 6px; }
+.small { height: 28px; padding: 0 8px; font-size: 11px; }
+
+.channelGroup {
+  background: linear-gradient(145deg, rgba(232, 249, 243, 0.95), rgba(238, 246, 255, 0.93));
+  border-color: #c3ddd6;
+}
+
+.channels { display: flex; flex-direction: column; gap: 2px; overflow: visible; }
+
+.ch {
+  min-height: 28px;
+  display: grid;
+  grid-template-columns: 18px 12px 54px 46px minmax(88px, 1fr) 44px;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 4px;
+  color: #344c47;
+  background: rgba(255, 255, 255, 0.65);
+  border-radius: 5px;
+  font-size: 11px;
+}
+
+.ch:nth-child(odd):not(.chHead) { background: rgba(238, 247, 255, 0.76); }
+.ch:nth-child(even):not(.chHead) { background: rgba(239, 251, 247, 0.84); }
+.ch:not(.chHead):hover { background: #fff; box-shadow: 0 3px 9px rgba(45, 91, 82, 0.07); }
+
+.chHead {
+  min-height: 23px;
+  color: #697f79;
+  background: transparent;
+  border-bottom: 1px solid #bed6d0;
+  border-radius: 0;
+  font-size: 10px;
+}
+
+.chHead .baseTitle { grid-column: 5 / 7; text-align: center; }
+.chHead .ptTitle,
+.ptCount { text-align: center; }
+.ptCount { color: #607670; font-variant-numeric: tabular-nums; }
+.sw { width: 12px; height: 12px; border-radius: 3px; }
+.baseInput,
+.baseBtn { height: 24px; font-size: 10.5px; }
+.baseInput { padding: 0 5px; }
+.baseBtn { padding: 0 5px; color: #246e61; }
+
+.selectionGroup { background: linear-gradient(135deg, #eff9ff, #effbf7); }
+.rangeBox {
+  min-height: 36px;
+  padding: 7px;
+  color: #49615b;
+  background: rgba(255, 255, 255, 0.74);
+  border: 1px solid #c5dcd6;
+  border-radius: 6px;
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+.selectionSideActions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 31px 31px auto;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.selectionSideActions button { height: 29px; padding: 0 7px; font-size: 10.5px; }
+.moveButton { padding: 0; font-size: 16px; }
+.operationGroup { background: linear-gradient(135deg, #edf9f5, #fff5ee); }
+.operationGroup .grid2 { grid-template-columns: 86px minmax(0, 1fr); }
+#applyOp,
+#applyFilter { width: 100%; height: 31px; margin-top: 6px; }
+.filterGroup { background: linear-gradient(135deg, #f0f5ff, #f5f2ff); }
+.sampleGroup { background: linear-gradient(135deg, #f1fbf8, #f4faff); }
+.sampleRow { display: grid; grid-template-columns: minmax(0, 1fr) auto 58px; gap: 5px; align-items: center; }
+.sampleRow span { color: #6b807a; font-size: 10px; white-space: nowrap; }
+.exportGroup { background: linear-gradient(135deg, #fff8f2, #f5f8ff); }
+.exportGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.exportGrid select { font-size: 10.5px; }
+
+.selectionDock { display: none; }
+
+.selPicker {
+  position: absolute;
+  z-index: 8;
+  width: 190px;
+  max-width: calc(100% - 16px);
+  max-height: 240px;
+  display: none;
+  overflow: auto;
+  padding: 7px;
+  background: #fbfefd;
+  border: 1px solid #a8cac2;
+  border-radius: 7px;
+  box-shadow: 0 15px 34px rgba(35, 73, 66, 0.2);
+}
+
+.selPickerHead { display: flex; align-items: center; justify-content: space-between; padding: 2px 3px 6px; color: #294b43; font-size: 11.5px; border-bottom: 1px solid #d7e6e2; }
+.selPickerClose { width: 24px; height: 24px; padding: 0; border: 0; background: transparent; font-size: 17px; }
+.selOption { height: 30px; display: flex; align-items: center; gap: 7px; padding: 0 5px; color: #344b45; border-radius: 5px; font-size: 12px; cursor: pointer; }
+.selOption:hover { background: #eaf7f3; }
+.selOptionSwatch { width: 11px; height: 11px; border-radius: 3px; }
+.selAll { margin-top: 4px; color: #176f62; font-weight: 650; border-bottom: 1px solid #e0ece9; }
+
+.toast,
+.cvToast {
+  position: fixed;
+  right: 20px;
+  z-index: 70;
+  max-width: min(420px, calc(100vw - 40px));
+  padding: 10px 13px;
+  color: #fff;
+  background: #244c45;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 7px;
+  box-shadow: 0 12px 32px rgba(24, 62, 55, 0.2);
+  font-size: 12px;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.18s, transform 0.18s;
+}
+
+.toast { top: calc(var(--header-h) + 18px); bottom: auto; }
+.cvToast { bottom: 42px; }
+.toast.show,
+.cvToast.show { opacity: 1; transform: none; }
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(32, 61, 55, 0.25);
+  backdrop-filter: blur(3px);
+}
+
+.modal.show { display: flex; }
+.modalBox {
+  width: min(620px, 100%);
+  max-height: calc(100vh - 40px);
+  padding: 19px;
+  overflow: auto;
+  color: var(--ink);
+  background: linear-gradient(150deg, #fff, #f7fcfa 62%, #f7f9ff);
+  border: 1px solid #bdd6cf;
+  border-radius: 8px;
+  box-shadow: 0 24px 72px rgba(18, 34, 52, 0.27);
+}
+
+.modalHead { display: flex; align-items: center; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid #d5e5e1; }
+.modalBox p,
+.modalBox li { color: #475f59; font-size: 12px; line-height: 1.6; }
+.modalBox ul { padding-left: 20px; }
+kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 23px; height: 21px; padding: 0 6px; color: #304a44; background: #f7faf9; border: 1px solid #bdcec9; border-bottom-width: 2px; border-radius: 5px; font: 11px Consolas, monospace; }
+.mobileBtn { display: none; }
+
+/* Converter */
+.converterApp {
+  position: relative;
+  z-index: 1;
+  width: var(--app-w, 100vw);
+  height: var(--app-h, 100dvh);
+  display: none;
+  grid-template-rows: minmax(0, 1fr) 30px;
+  padding-top: var(--header-h);
+  overflow: hidden;
+}
+
+body.converter-mode .app { display: none; }
+body.converter-mode .converterApp { display: grid; }
+.converterSource { display: none; }
+
+.converterMain {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 390px);
+  overflow: hidden;
+}
+
+.converterWorkspace {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(176px, 21vh) minmax(172px, 21vh) minmax(0, 1fr);
+  gap: 12px;
+  padding: 14px 16px;
+}
+
+.converterSettings {
+  min-width: 0;
+  padding: 20px;
+  overflow-y: auto;
+  background: linear-gradient(160deg, rgba(249, 254, 252, 0.99), rgba(246, 250, 255, 0.99) 62%, rgba(255, 249, 245, 0.98));
+  border-left: 1px solid #c8dbd6;
+  box-shadow: -10px 0 28px rgba(47, 89, 81, 0.05);
+}
+
+.converterSettings h2 { margin: 0 0 4px; color: #264b43; font-size: 19px; }
+.converterSettings > .cvLead { margin: 0 0 18px; color: #748781; font-size: 11px; }
+
+.cvDrop {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #496861;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(241, 253, 249, 0.96), rgba(238, 247, 255, 0.96));
+  border: 1.5px dashed #5db7a7;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cvDrop:hover,
+.cvDrop.over { background: linear-gradient(135deg, #e8faf4, #e8f3ff); border-color: #238c91; box-shadow: inset 0 0 0 3px rgba(35, 140, 145, 0.05); }
+.cvDrop input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.cvDropIcon { width: 44px; height: 44px; margin: 0 auto 7px; color: #27a690; }
+.cvDrop strong { display: block; color: #254c44; font-size: 18px; }
+.cvDrop p { margin: 4px 0 0; color: #718781; font-size: 11.5px; }
+.cvDrop button { min-width: 108px; height: 33px; margin-top: 9px; color: #157465; font-weight: 680; border-color: #82c4b7; }
+
+.cvPanel {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.91);
+  border: 1px solid #c4dcd6;
+  border-radius: 8px;
+  box-shadow: 0 8px 22px rgba(50, 94, 86, 0.055);
+}
+
+.cvPanelHead {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 13px;
+  background: linear-gradient(100deg, rgba(237, 250, 246, 0.94), rgba(242, 247, 255, 0.9));
+  border-bottom: 1px solid #d5e5e1;
+}
+
+.cvPanelHead > div:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cvPanelHead strong { color: #294b43; font-size: 13.5px; }
+.cvPanelHead span { color: #738781; font-size: 10.5px; }
+.cvHeadActions { display: flex; align-items: center; gap: 5px; }
+.cvHeadActions button { height: 28px; padding: 0 9px; font-size: 10.5px; }
+.cvTableWrap { min-width: 0; min-height: 0; flex: 1; overflow: auto; }
+
+.cvTable { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 12px; }
+.cvTable th { position: sticky; top: 0; z-index: 1; height: 35px; padding: 0 9px; color: #607872; text-align: left; background: #f8fbfa; border-bottom: 1px solid #d9e6e3; font-weight: 680; }
+.cvTable td { height: 35px; padding: 0 9px; color: #3d5650; border-bottom: 1px solid #e3ece9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cvTable tbody tr { cursor: pointer; }
+.cvTable tbody tr:hover { background: #eff9f6; }
+.cvTable tbody tr.current { background: linear-gradient(90deg, #e4f7f1, #e9f2fd); }
+.cvTable th:first-child,
+.cvTable td:first-child { width: 48px; padding: 0; text-align: center; }
+.cvTable th:nth-last-child(-n + 3),
+.cvTable td:nth-last-child(-n + 3) { text-align: center; }
+.cvTable input { accent-color: var(--teal); }
+.cvFileTable th:nth-child(2) { width: 42%; text-align: left; }
+.cvFileTable th:nth-child(3) { width: 12%; }
+.cvFileTable th:nth-child(4) { width: 13%; }
+.cvFileTable th:nth-child(5) { width: 10%; }
+.cvFileTable th:nth-child(6) { width: 15%; }
+.cvFileTable td:nth-child(2) { text-align: left; }
+.cvFileName { color: #2c4942; font-weight: 650; }
+.cvSubName { color: #7b8d88; font-size: 10px; }
+.cvGood { color: #168555; font-weight: 680; }
+.cvWarn { color: #ac6b0e; font-weight: 680; }
+.cvBad { color: #c94755; font-weight: 680; }
+
+.cvPreviewEmpty { height: 100%; display: flex; align-items: center; justify-content: center; color: #7a8d88; font-size: 12px; line-height: 1.7; text-align: center; }
+.cvPreviewInfo { min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 6px; flex-wrap: wrap; }
+.cvTag { height: 24px; display: inline-flex; align-items: center; padding: 0 7px; color: #5c746d; background: #fff; border: 1px solid #cbded9; border-radius: 5px; font-size: 10px; white-space: nowrap; }
+.cvTag.warning { color: #93600c; background: #fff9ec; border-color: #edd1a1; }
+.cvPreviewRange { color: #748984; font-size: 10.5px; }
+.cvPager { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.cvPager button { height: 27px; padding: 0 8px; color: #3f625a; font-size: 10.5px; }
+.cvPager span { color: #5e756f; font-size: 10.5px; font-variant-numeric: tabular-nums; }
+.cvPager select { width: auto; height: 27px; padding: 0 22px 0 7px; font-size: 10.5px; }
+.cvIssues { max-height: 72px; padding: 6px 10px; overflow: auto; color: #8a5f19; background: #fffaf3; border-top: 1px solid #e7ded0; font-size: 10.5px; line-height: 1.45; }
+
+.cvSettingGroup { padding: 14px 0; border-top: 1px solid #d3e2de; }
+.cvSettingGroup:first-of-type { padding-top: 0; border-top: 0; }
+.cvSettingTitle { display: block; margin-bottom: 8px; color: #31564d; font-size: 12px; font-weight: 730; }
+.cvOutputChoice { display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; background: #fff; border: 1px solid #bcd7d0; border-radius: 7px; }
+.cvOutputChoice button { height: 44px; color: #566b66; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
+.cvOutputChoice button + button { border-left: 1px solid #d4e4e0; }
+.cvOutputChoice button.active { color: #fff; font-weight: 700; background: linear-gradient(112deg, #159582, #3984cf); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2); }
+.cvOutputChoice button.active:hover { color: #fff; background: linear-gradient(112deg, #108673, #3176bf); border-color: transparent; }
+.cvOutputInfo { margin: 8px 0 0; color: #72857f; font-size: 10.5px; line-height: 1.45; }
+.cvReverseRule { padding: 11px; color: #4e6861; background: linear-gradient(135deg, #edf9f5, #eef4fd); border: 1px solid #c8ddd7; border-radius: 7px; font-size: 11px; line-height: 1.55; }
+.cvSummary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.cvMetric { padding: 12px 5px; text-align: center; background: rgba(255, 255, 255, 0.82); border: 1px solid #d0e1dc; border-radius: 7px; }
+.cvMetric b { display: block; color: #214e44; font-size: 20px; font-variant-numeric: tabular-nums; }
+.cvMetric span { display: block; margin-top: 2px; color: #78908a; font-size: 9.5px; }
+.cvPrimary,
+.cvSecondary { width: 100%; height: 47px; font-weight: 730; }
+.cvPrimary { color: #fff; background: linear-gradient(112deg, #16a085, #278fb0 58%, #3d7fdb); border-color: transparent; box-shadow: 0 8px 20px rgba(37, 135, 143, 0.2); }
+.cvPrimary:hover:not(:disabled) { color: #fff; background: linear-gradient(112deg, #128f77, #247fa1 58%, #3370c9); border-color: transparent; }
+.cvSecondary { margin-top: 9px; color: #20786c; background: rgba(255, 255, 255, 0.82); border-color: #82bdb2; }
+.cvPrivacy { display: flex; gap: 7px; margin-top: 11px; padding: 10px; color: #6e837d; background: #f2f9f6; border-radius: 7px; font-size: 10px; line-height: 1.45; }
+.cvPrivacy svg { width: 15px; height: 15px; flex: 0 0 auto; color: #2b9381; }
+.converterStatus { height: 30px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; color: #576c66; background: rgba(250, 253, 252, 0.9); border-top: 1px solid #d2e2de; font-size: 10.5px; }
+
+body.dragging .plotWrap { outline: 2px dashed var(--teal); outline-offset: -8px; background: #f4fbf9; }
+
+@media (max-width: 1280px) {
+  #sharedHeader { grid-template-columns: 185px auto minmax(0, 1fr) auto auto; gap: 9px; padding: 0 11px; }
+  .sharedBrand .brand { font-size: 19px; }
+  .sharedBrand .sub { font-size: 8.5px; }
+  .sharedToolSwitch button { min-width: 82px; padding: 0 9px; }
+  .topFileBar #fileName { display: none; }
+  .topFileBar #sheet { width: min(235px, 20vw); }
+}
+
+@media (max-width: 1180px) {
+  .app { grid-template-columns: 1fr; }
+  .side {
+    position: absolute;
+    top: var(--header-h);
+    right: 0;
+    bottom: 0;
+    z-index: 50;
+    width: min(390px, 94vw);
+    transform: translateX(100%);
+    transition: transform 0.2s;
+  }
+  .side.open { transform: none; }
+  .mobileBtn { display: inline-flex; }
+}
+
+@media (max-width: 900px) {
+  :root { --header-h: 60px; }
+  #sharedHeader { grid-template-columns: 145px auto minmax(0, 1fr) auto auto; gap: 6px; padding: 0 7px; }
+  .sharedBrand .brandBlock { grid-template-columns: 34px minmax(0, 1fr); padding: 8px 0; }
+  .sharedBrand .brandMark,
+  .sharedBrand .brandMark svg { width: 28px; height: 28px; }
+  .sharedBrand .brand { font-size: 17px; }
+  .sharedBrand .sub { display: none; }
+  .sharedToolSwitch button { min-width: 70px; height: 32px; padding: 0 7px; font-size: 11px; }
+  .topFileBar #sheet,
+  .topFieldLabel { display: none; }
+  .topActions #undo,
+  .topActions #redo { display: none; }
+  .directionSwitch button { min-width: 96px; height: 32px; padding: 0 8px; font-size: 11px; }
+  .converterApp { overflow: auto; grid-template-rows: auto 30px; }
+  .converterMain { grid-template-columns: 1fr; overflow: visible; }
+  .converterWorkspace { grid-template-rows: 155px 195px 370px; }
+  .converterSettings { border-top: 1px solid #c8dbd6; border-left: 0; }
+}
+
+@media (max-width: 620px) {
+  #sharedHeader { grid-template-columns: 108px auto minmax(0, 1fr) auto auto; gap: 4px; padding: 0 5px; }
+  .sharedBrand .brandBlock { grid-template-columns: 26px minmax(0, 1fr); }
+  .sharedBrand .brandMark,
+  .sharedBrand .brandMark svg { width: 23px; height: 23px; }
+  .sharedBrand .brand { font-size: 15px; }
+  .sharedToolSwitch button { min-width: auto; padding: 0 6px; font-size: 10px; }
+  .topFileBar #fileBtn { width: 35px; padding: 0; overflow: hidden; }
+  .topFileBar #fileBtn span { display: none; }
+  .topActions #export { width: 38px; min-width: 38px; padding: 0; }
+  .topActions #export span { display: none; }
+  #sharedAboutBtn { min-width: 34px; width: 34px; height: 34px; padding: 0; }
+  #sharedAboutBtn span { display: none; }
+  .directionSwitch button { min-width: auto; padding: 0 6px; font-size: 10px; }
+  .cursorReadout { display: none; }
+  .modeBtn { min-width: auto; padding: 0 7px; }
+  .chartToolbarRight .zeroToggle { display: none; }
+  .cvPanelHead { min-height: 58px; align-items: flex-start; flex-direction: column; gap: 5px; padding: 7px 9px; }
+  .cvPreviewInfo { width: 100%; justify-content: flex-start; }
+  .cvTag { display: none; }
+  .cvFileTable th:nth-child(3),
+  .cvFileTable td:nth-child(3) { display: none; }
+  .converterWorkspace { padding: 8px; }
+  .converterSettings { padding: 14px; }
+  .converterStatus span:last-child,
+  .status span:last-child { display: none; }
+}
+</style>
+</head><body><div class="app"><aside class="side" id="side"><h1 class="brand">ResiScope</h1><p class="sub">电阻曲线预览、编辑与导出工具</p><div class="group" style="border-top:0;margin-top:0;padding-top:0"><p class="label">数据文件</p><div class="filePick"><button id="fileBtn" type="button">选择文件</button><span id="pickedName" class="pickedName">未选择文件</span><input id="file" type="file" accept=".xlsx,.csv,.tsv"></div><select id="sheet" style="margin-top:10px"></select><p class="hint">支持 .xlsx / .csv / .tsv，可点击选择或直接拖入文件。</p></div><div class="group"><p class="label">采样间隔</p><div class="sampleRow"><input id="dt" type="number" value="0.2" min="0.001" step="0.001"><span>秒/点</span><button id="applyDt">应用</button></div><p class="hint" id="dtHint">无时间列时自动按采样间隔生成横轴。</p></div><div class="group"><p class="label">通道显示</p><div class="row" style="margin-bottom:8px"><button id="allOn" class="small">全选</button><button id="allOff" class="small">全关</button><button id="fit" class="small">全图</button><label class="zeroToggle" id="zeroRefWrap" title="控制电阻视图是否包含并显示 0 Ω 基准线"><input id="zeroRef" type="checkbox" checked><span>0 Ω</span></label></div><div class="channels" id="channels"></div></div><div class="group"><p class="label">框选区间</p><div class="rangeBox" id="rangeText">尚未框选。拖动图表可框选，单击清除。</div><div class="grid2" style="margin-top:8px"><button id="selectAllData">全选显示数据</button><button id="deleteSel" class="danger">删除选中数据</button></div></div><div class="group"><p class="label">局部数据处理</p><div class="grid2" style="grid-template-columns:92px 1fr"><select id="op"><option value="+">加 +</option><option value="-">减 -</option><option value="*" selected>乘 ×</option><option value="/">除 ÷</option><option value="=">设为 =</option><option value="formula">公式 f(x)</option></select><input id="operand" type="text" value="1.0" placeholder="1.0"></div><button id="applyOp" class="primary" style="width:100%;margin-top:8px">应用到框选区间</button></div><div class="group"><p class="label">滤波</p><div class="grid2"><select id="filterType"><option value="moving">移动平均</option><option value="median">中值滤波</option><option value="gaussian">高斯平滑</option><option value="exp">指数平滑</option><option value="edge">保边三点平滑</option></select><input id="filterWin" type="number" value="5" min="3" max="1001" step="2"></div><button id="applyFilter" class="blue" style="width:100%;margin-top:8px">应用滤波到框选区间</button></div><div class="group"><p class="label">导出方式</p><div class="exportGrid"><select id="exportDataMode"><option value="resistance">导出电阻</option><option value="response" disabled>导出响应值</option><option value="percent" disabled>导出响应百分比</option></select><select id="exportMode"><option value="new">新 Excel：sheet 保持原名</option><option value="append">原文件副本：添加修改 sheet</option></select></div><div class="grid3" style="margin-top:8px"><button id="undo" class="danger" title="撤销上一次数据操作 (Ctrl+Z)">撤销</button><button id="redo" title="重新执行刚撤销的操作 (Ctrl+Y)">重做</button><button id="export" class="primary" title="导出当前修改结果 (Ctrl+S)">导出 Excel</button></div><p class="hint">不会覆盖原文件；添加 sheet 会导出副本。</p></div></aside><main class="main"><div class="top"><div class="tools"><button class="mobileBtn" id="menu">菜单</button><div class="modeTabs"><button id="modeResistance" class="modeBtn active" data-view="resistance">电阻</button><button id="modeResponse" class="modeBtn" data-view="response" disabled>响应值</button><button id="modePercent" class="modeBtn" data-view="percent" disabled>响应百分比</button></div><div class="cursorReadout" id="cursorReadout">时间 -- / 电阻 --</div></div><div class="tools"><span class="pill" id="fileName">未加载文件</span><span class="saveState" id="saveState" hidden>未导出</span><button id="aboutBtn" class="pill">关于</button></div></div><div class="stage"><div class="plotWrap"><canvas id="plot"></canvas><div class="selPicker" id="selPicker"></div><div class="empty" id="empty">选择或拖入 Excel 文件开始预览<br>表头可为 CH1、CH2、CH3，也可包含 Time/时间列</div><div class="toast" id="toast"></div></div><div class="modal" id="aboutModal"><div class="modalBox"><div class="modalHead"><strong>关于</strong><button id="aboutClose">关闭</button></div><p><b>ResiScope</b></p><p>电阻曲线预览、编辑与导出工具</p><p>开发者：橙汁</p><p><b>免责声明：</b>本工具用于数据预览、清洗和辅助分析。请保留原始数据和必要的处理记录，避免为追求曲线外观而过度处理、选择性删除或改变实验结论；导出结果应结合实验记录和专业判断使用。</p><p>适用性：用于预览和整理 Excel 中按列存放的多通道采样数据，例如 CH0、CH1、CH2 等电阻曲线。适合做曲线巡检、局部校正、异常段删除、滤波平滑、基线响应计算和导出修改结果。</p><p>主要功能：</p><ul><li>读取 .xlsx / .csv / .tsv，多 sheet 可切换。</li><li>滚轮缩放，拖动矩形框选，单击清除选区；拖动选框或按上下键可纵向移动选中数据；顶部会吸附显示最近通道的实际数据点。</li><li>支持撤销与重做；文件名旁出现“未导出”表示当前结果已有修改但尚未导出，切换文件或 sheet 前会提示。</li><li>电阻视图可通过通道显示区的 0 Ω 开关决定是否将零基准纳入纵轴范围。</li><li>框选命中多个通道时会显示复选菜单，可同时选择一个、多个或全部命中通道；单通道框选会直接选中。</li><li>对框选数据执行加、减、乘、除、设为、公式 f(x)、滤波、删除和撤销。</li><li>删除数据按通道单独删除并让后续点前移；未选中的通道不会被改动。</li><li>可按通道设置基线，并派生显示/导出响应值或响应百分比；所有编辑仍作用于原始电阻数据。</li><li>导出为新 Excel，或基于原 xlsx 导出带修改 sheet 的副本。</li></ul><p><b>快捷键：</b></p><ul class="shortcutList"><li><kbd>Delete</kbd> / <kbd>Backspace</kbd> 删除框选数据</li><li><kbd>Ctrl</kbd> + <kbd>Z</kbd> 撤销；<kbd>Ctrl</kbd> + <kbd>Y</kbd> 或 <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd> 重做</li><li><kbd>Ctrl</kbd> + <kbd>A</kbd> 全选当前显示通道的数据</li><li><kbd>Ctrl</kbd> + <kbd>S</kbd> 导出当前结果；<kbd>Ctrl</kbd> + <kbd>O</kbd> 选择文件</li><li><kbd>↑</kbd> / <kbd>↓</kbd> 移动选中数据；按住 <kbd>Shift</kbd> 可增大步长</li><li><kbd>Home</kbd> 恢复全图；<kbd>Esc</kbd> 清除选区或关闭弹窗；<kbd>F1</kbd> 打开关于</li></ul><p>Excel 原始数据要求：</p><ul><li>推荐第一行为表头，例如 CH0、CH1、CH2；每列一个通道，每行一个采样点。</li><li>可包含 Time、时间、秒、sec、second、s 等时间列；时间值必须完整且严格递增。有时间列时不会被采样间隔覆盖；没有时间列时默认按 0.2 秒/点生成横轴。</li><li>数据单元格应为数字或空白；空白、文字和无法转成数字的内容不会作为有效曲线点。</li><li>支持多 sheet，导入后可在右侧选择 sheet；建议每个 sheet 只放一块连续数据表。</li><li>不建议在数据区中间穿插说明文字、合并单元格、图片、图表或多段表格；纯文字列和全空列不会作为通道读取。</li><li>重复通道名会按原 Excel 列位置在界面中区分，避免显示、基线或框选状态相互影响。</li></ul><p>安全与限制：</p><ul><li>文件在浏览器本地读取和处理，不会主动上传；也不会直接覆盖原始文件。</li><li>只支持新版 .xlsx，不支持旧版 .xls；读取公式单元格时依赖文件中保存的计算结果，不会重新计算 Excel 公式。</li><li>自定义公式只允许 x、数字、括号和 + - * /，例如 (x + 0) * 1 / 1；结果为无穷或非数字时会跳过该点。</li><li>添加 sheet 时会导出原文件副本，并自动命名为“原 sheet 名_修改”或类似名称。</li><li>通道数没有硬限制，但几十个以内体验更好；超大文件会受浏览器内存、绘图和导出速度限制。</li><li>局部删除会导致被删通道的数据长度变短，导出时该通道后续数据前移；不同通道长度可能因此不完全一致。</li></ul></div></div></div><div class="status"><span id="stat">0 个通道，0 个点</span><span>横轴：秒 / 纵轴：欧姆 Ω</span></div></main></div>
 <script>
-const $=id=>document.getElementById(id),C=$('plot'),ctx=C.getContext('2d'),colors=['#2563eb','#dc2626','#16a34a','#9333ea','#ea580c','#0891b2','#be123c','#4f46e5','#65a30d','#ca8a04'];
-let wb=null,state={name:'',sheet:'',sheetIndex:0,rows:[],headers:[],channels:[],visible:{},baselines:{},view:'resistance',x:[],dt:.2,hasTime:false,x0:0,x1:1,yr:null,fullYr:null,sel:null,hover:null,undo:[]},drag=null;
+const $=id=>document.getElementById(id),C=$('plot'),ctx=C.getContext('2d'),colors=['#3972d5','#ef5b5b','#31a66a','#8d63d2','#f19a37','#23a7b1','#e55283','#6475db','#78ad38','#d6a82f'];
+let wb=null,state={name:'',sheet:'',sheetIndex:0,rows:[],headers:[],channels:[],visible:{},baselines:{},view:'resistance',x:[],dt:.2,hasTime:false,x0:0,x1:1,yr:null,fullYr:null,sel:null,hover:null,undo:[],redo:[],dirty:false,includeZero:true},drag=null;
 function toast(s){const t=$('toast');t.textContent=s;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[m]))}
+function channelLabel(c){return c?.label||c?.name||'通道'}function updateHistoryButtons(){$('undo').disabled=!state.undo.length;$('redo').disabled=!state.redo.length}function markDirty(){if(!state.channels.length)return;state.dirty=true;$('fileName').classList.add('dirty');$('fileName').title='有尚未导出的修改';let s=$('saveState');if(s)s.hidden=false}function clearDirty(){state.dirty=false;$('fileName').classList.remove('dirty');$('fileName').title='';let s=$('saveState');if(s)s.hidden=true}function confirmDiscard(){return !state.dirty||confirm('当前修改尚未导出，继续操作将丢失这些修改。是否继续？')}
 let lastViewportKey='',resizeTimer=0;function viewportBox(){const vv=window.visualViewport,sc=window.screen||{};let w=Math.floor(vv?.width||innerWidth||document.documentElement.clientWidth||320),h=Math.floor(vv?.height||innerHeight||document.documentElement.clientHeight||360),sw=Math.floor(sc.availWidth||0),sh=Math.floor(sc.availHeight||0);if(sw&&w>sw-20)w=sw;if(sh&&h>sh-20)h=Math.max(360,sh-96);return {w:Math.max(320,w),h:Math.max(360,h),d:window.devicePixelRatio||1,sw,sh}}function syncViewportVars(){const v=viewportBox(),key=v.w+'x'+v.h+'@'+v.d;document.documentElement.style.setProperty('--app-w',v.w+'px');document.documentElement.style.setProperty('--app-h',v.h+'px');return key}function resize(){lastViewportKey=syncViewportVars();const r=C.parentElement.getBoundingClientRect(),d=window.devicePixelRatio||1,cssW=Math.max(300,Math.floor(r.width)),cssH=Math.max(220,Math.floor(r.height));C.style.width=cssW+'px';C.style.height=cssH+'px';let bw=Math.max(1,Math.round(cssW*d)),bh=Math.max(1,Math.round(cssH*d));if(C.width!==bw)C.width=bw;if(C.height!==bh)C.height=bh;ctx.imageSmoothingEnabled=false;draw()}function scheduleResize(){cancelAnimationFrame(resizeTimer);resizeTimer=requestAnimationFrame(resize)}addEventListener('resize',scheduleResize);addEventListener('focus',scheduleResize);addEventListener('orientationchange',scheduleResize);if(window.visualViewport){visualViewport.addEventListener('resize',scheduleResize);visualViewport.addEventListener('scroll',scheduleResize)}if(window.ResizeObserver)new ResizeObserver(scheduleResize).observe(C.parentElement);document.addEventListener('visibilitychange',()=>{if(!document.hidden)scheduleResize()});setInterval(()=>{let key=syncViewportVars();if(key!==lastViewportKey)scheduleResize()},800);scheduleResize();
 function isNum(v){return v!==''&&v!=null&&isFinite(Number(v))}function colName(n){let s='';for(n++;n>0;n=Math.floor((n-1)/26))s=String.fromCharCode(65+(n-1)%26)+s;return s}
-function parseCSV(txt){const sep=txt.includes('\t')?'\t':',';let rows=[],row=[],q=false,cell='';for(let i=0;i<txt.length;i++){let ch=txt[i],nx=txt[i+1];if(ch=='"'){if(q&&nx=='"'){cell+='"';i++}else q=!q}else if(!q&&ch==sep){row.push(cell);cell=''}else if(!q&&(ch=='\n'||ch=='\r')){if(ch=='\r'&&nx=='\n')i++;row.push(cell);if(row.some(x=>x!==''))rows.push(row);row=[];cell=''}else cell+=ch}row.push(cell);if(row.some(x=>x!==''))rows.push(row);return rows}
+function parseCSV(txt){txt=txt.replace(/^\uFEFF/,'');let first=txt.split(/\r?\n/,1)[0]||'',sep=first.includes('\t')?'\t':((first.match(/;/g)||[]).length>(first.match(/,/g)||[]).length?';':',');let rows=[],row=[],q=false,cell='';for(let i=0;i<txt.length;i++){let ch=txt[i],nx=txt[i+1];if(ch=='"'){if(q&&nx=='"'){cell+='"';i++}else q=!q}else if(!q&&ch==sep){row.push(cell);cell=''}else if(!q&&(ch=='\n'||ch=='\r')){if(ch=='\r'&&nx=='\n')i++;row.push(cell);if(row.some(x=>x!==''))rows.push(row);row=[];cell=''}else cell+=ch}row.push(cell);if(row.some(x=>x!==''))rows.push(row);return rows}
 function cellText(c,ss){let t=c.getAttribute('t'),v=c.getElementsByTagName('v')[0]?.textContent??'';if(t==='s')return ss[Number(v)]??'';if(t==='inlineStr')return [...c.getElementsByTagName('t')].map(x=>x.textContent).join('');return v}
 async function inflateRaw(u8){if(typeof DecompressionStream==='undefined')throw Error('当前浏览器不支持 xlsx 解压，请用新版 Edge/Chrome，或先另存为 CSV。');const ds=new DecompressionStream('deflate-raw');return new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(ds)).arrayBuffer())}
-async function unzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=-1;for(let i=u8.length-22;i>=Math.max(0,u8.length-66000);i--)if(dv.getUint32(i,true)===0x06054b50){e=i;break}if(e<0)throw Error('不是有效的 xlsx 文件');let n=dv.getUint16(e+10,true),off=dv.getUint32(e+16,true),files={};for(let k=0;k<n;k++){if(dv.getUint32(off,true)!==0x02014b50)break;let flag=dv.getUint16(off+8,true),m=dv.getUint16(off+10,true),cs=dv.getUint32(off+20,true),fn=dv.getUint16(off+28,true),ex=dv.getUint16(off+30,true),cm=dv.getUint16(off+32,true),lo=dv.getUint32(off+42,true);let name=new TextDecoder(flag&2048?'utf-8':'utf-8').decode(u8.slice(off+46,off+46+fn));let lfn=dv.getUint16(lo+26,true),lex=dv.getUint16(lo+28,true),st=lo+30+lfn+lex,dat=u8.slice(st,st+cs);files[name]=m===0?dat:await inflateRaw(dat);off+=46+fn+ex+cm}return files}
+async function unzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=-1;for(let i=u8.length-22;i>=Math.max(0,u8.length-66000);i--)if(dv.getUint32(i,true)===0x06054b50){e=i;break}if(e<0)throw Error('不是有效的 xlsx 文件');let n=dv.getUint16(e+10,true),off=dv.getUint32(e+16,true),files={},total=0;for(let k=0;k<n;k++){if(dv.getUint32(off,true)!==0x02014b50)break;let flag=dv.getUint16(off+8,true),m=dv.getUint16(off+10,true),cs=dv.getUint32(off+20,true),us=dv.getUint32(off+24,true),fn=dv.getUint16(off+28,true),ex=dv.getUint16(off+30,true),cm=dv.getUint16(off+32,true),lo=dv.getUint32(off+42,true);total+=us;if(total>512*1024*1024)throw Error('xlsx 解压后数据过大，已停止读取');let name=new TextDecoder(flag&2048?'utf-8':'utf-8').decode(u8.slice(off+46,off+46+fn));let lfn=dv.getUint16(lo+26,true),lex=dv.getUint16(lo+28,true),st=lo+30+lfn+lex,dat=u8.slice(st,st+cs);files[name]=m===0?dat:await inflateRaw(dat);off+=46+fn+ex+cm}return files}
 async function readXlsx(file){const files=await unzip(await file.arrayBuffer()),dec=new TextDecoder(),xml=s=>new DOMParser().parseFromString(dec.decode(files[s]),'text/xml'),tags=(doc,n)=>[...doc.getElementsByTagName(n)];let ss=[];if(files['xl/sharedStrings.xml']){tags(xml('xl/sharedStrings.xml'),'si').forEach(si=>ss.push([...si.getElementsByTagName('t')].map(t=>t.textContent).join('')))}let book=xml('xl/workbook.xml'),rels=xml('xl/_rels/workbook.xml.rels'),rid={};tags(rels,'Relationship').forEach(r=>rid[r.getAttribute('Id')]=r.getAttribute('Target'));let sheets=[];tags(book,'sheet').forEach(s=>{let id=s.getAttribute('r:id')||s.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships','id'),p=rid[id];if(p){if(p.startsWith('/'))p=p.slice(1);else if(!p.startsWith('xl/'))p='xl/'+p}sheets.push({name:s.getAttribute('name')||('Sheet'+(sheets.length+1)),path:p})});return {sheets,files,ss}}
 function sheetRows(w,i){let sh=w.sheets[i];if(!sh||!sh.path||!w.files[sh.path])return [];let txt=new TextDecoder().decode(w.files[sh.path]),doc=new DOMParser().parseFromString(txt,'text/xml'),rows=[];[...doc.getElementsByTagName('row')].forEach(r=>{let arr=[];[...r.getElementsByTagName('c')].forEach(c=>{let ref=c.getAttribute('r')||'',m=ref.match(/[A-Z]+/),ci=arr.length;if(m){ci=[...m[0]].reduce((a,ch)=>a*26+ch.charCodeAt(0)-64,0)-1}arr[ci]=cellText(c,w.ss)});if(arr.some(v=>v!==undefined&&v!==''))rows.push(arr)});return rows}
-function useRows(rows,name,sheetName,sheetIndex=0){if(!rows.length)throw Error('没有读到数据');let hi=0;for(let i=0;i<Math.min(20,rows.length);i++){let non=rows[i].filter(v=>v!==undefined&&v!=='');if(non.length>1&&non.some(v=>!isNum(v))){hi=i;break}}let headers=rows[hi].map((h,i)=>String(h||colName(i)).trim()||colName(i)),data=rows.slice(hi+1);if(data.length<1&&rows.every(r=>r.every(isNum))){headers=rows[0].map((_,i)=>'CH'+(i+1));data=rows}let timeIdx=headers.findIndex(h=>/^(time|时间|秒|sec|second|s)$/i.test(h.trim()));let chans=[];headers.forEach((h,i)=>{if(i!==timeIdx)chans.push({name:h||colName(i),idx:i,values:[]})});data.forEach(r=>chans.forEach(ch=>ch.values.push(isNum(r[ch.idx])?Number(r[ch.idx]):NaN)));let len=Math.max(...chans.map(c=>c.values.length),0),x=[],dtv=Number($('dt').value)||state.dt||.2;if(timeIdx>=0){for(let i=0;i<len;i++)x.push(isNum(data[i]?.[timeIdx])?Number(data[i][timeIdx]):i*dtv)}else for(let i=0;i<len;i++)x.push(i*dtv);state={...state,name,sheet:sheetName||name,sheetIndex,rows:data,headers,channels:chans.map((c,i)=>({...c,color:colors[i%colors.length]})),visible:{},baselines:{},view:'resistance',x,dt:dtv,hasTime:timeIdx>=0,x0:x[0]||0,x1:x.at(-1)||1,yr:null,fullYr:null,sel:null,hover:null,undo:[]};state.channels.forEach(c=>state.visible[c.name]=true);refreshYRange();$('fileName').textContent=name+(sheetName?' / '+sheetName:'');buildChannels();fitAll();toast('数据已加载')}
-function buildChannels(){let box=$('channels');box.innerHTML='<div class="ch chHead"><span></span><span></span><span>通道</span><span class="ptTitle">点数</span><span class="baseTitle">基线设置</span></div>';state.channels.forEach((c,i)=>{let base=channelBaseline(c);let d=document.createElement('div');d.className='ch';d.innerHTML=`<input class="chOn" type="checkbox" ${state.visible[c.name]?'checked':''}><span class="sw" style="background:${c.color}"></span><span>${esc(c.name)}</span><span class="ptCount">${c.values.length}</span><input class="baseInput" type="number" step="1" placeholder="基线" value="${isFinite(base)?Math.round(base):''}"><button class="baseBtn">均值</button>`;d.querySelector('.chOn').onchange=e=>{state.visible[c.name]=e.target.checked;refreshYRange();draw();updateStat()};let inp=d.querySelector('.baseInput');inp.onchange=()=>{let v=Number(inp.value);if(isFinite(v)&&v>0)setBaselineValue(c,Math.round(v));else{delete state.baselines[c.name];afterBaselineChange(`${c.name} 基线已清除`)}};d.querySelector('.baseBtn').onclick=()=>baselineFromChannel(c);box.appendChild(d)});updateBaselineUI();updateModeButtons();updateStat();$('empty').style.display=state.channels.length?'none':'flex'}function updateStat(){let on=state.channels.filter(c=>state.visible[c.name]).length,n=state.x.length;$('stat').textContent=`${on}/${state.channels.length} 个通道，${n} 个点`;let s=state.sel,label=viewLabel(),unit=viewUnit();$('rangeText').textContent=s?`已选时间 ${s.a.toFixed(1)} s ~ ${s.b.toFixed(1)} s；${label} ${fmtDisplay(s.y0)} ~ ${fmtDisplay(s.y1)} ${unit}；${selectedCount()} 个点`:'尚未框选。拖动图表可框选，单击清除。'}
+function isTimeHeader(h){let s=String(h||'').trim().toLowerCase().replace(/\s+/g,'');return /^(time|时间|秒|sec|second|s)$/.test(s)||/^(time|时间)[(（](s|sec|second|秒)[)）]$/.test(s)||/^(time|时间)[\/_-](s|sec|second|秒)$/.test(s)}function useRows(rows,name,sheetName,sheetIndex=0){if(!rows.length)throw Error('没有读到数据');let hi=-1;for(let i=0;i<Math.min(20,rows.length);i++){let non=rows[i].filter(v=>v!==undefined&&v!==''),header=non.length>1&&non.some(v=>!isNum(v));if(!header&&non.length===1&&!isNum(non[0])){let next=rows.slice(i+1).find(r=>r.some(v=>v!==undefined&&v!==''));header=!!next&&next.some(isNum)}if(header){hi=i;break}}let headers,data;if(hi>=0){headers=rows[hi].map((h,i)=>String(h||colName(i)).trim()||colName(i));data=rows.slice(hi+1)}else{let width=Math.max(...rows.map(r=>r.length),0);headers=Array.from({length:width},(_,i)=>'CH'+(i+1));data=rows}let timeColumns=new Set(headers.map((h,i)=>isTimeHeader(h)?i:-1).filter(i=>i>=0)),timeIdx=timeColumns.size?[...timeColumns][0]:-1,chans=[];headers.forEach((h,i)=>{if(!timeColumns.has(i))chans.push({name:h||colName(i),idx:i,values:[]})});data.forEach(r=>chans.forEach(ch=>ch.values.push(isNum(r[ch.idx])?Number(r[ch.idx]):NaN)));chans=chans.filter(c=>c.values.some(isFinite));if(!chans.length)throw Error('没有找到可用的数值通道');let totals={};chans.forEach(c=>totals[c.name]=(totals[c.name]||0)+1);chans.forEach(c=>{c.key='c'+c.idx;c.label=totals[c.name]>1?`${c.name} [${colName(c.idx)}列]`:c.name});let len=Math.max(...chans.map(c=>c.values.length),0),x=[],dtv=Number($('dt').value);if(!isFinite(dtv)||dtv<=0)dtv=state.dt>0?state.dt:.2;if(timeIdx>=0){for(let i=0;i<len;i++){let raw=data[i]?.[timeIdx],rowNo=(hi>=0?hi+2:1)+i;if(!isNum(raw))throw Error(`时间列第 ${rowNo} 行为空或不是数字`);let v=Number(raw);if(i&&v<=x[i-1])throw Error(`时间列必须严格递增，第 ${rowNo} 行不符合要求`);x.push(v)}}else for(let i=0;i<len;i++)x.push(i*dtv);state={...state,name,sheet:sheetName||name,sheetIndex,rows:data,headers,channels:chans.map((c,i)=>({...c,color:colors[i%colors.length]})),visible:{},baselines:{},view:'resistance',x,dt:dtv,hasTime:timeIdx>=0,timeHeader:timeIdx>=0?headers[timeIdx]:'Time(s)',x0:x[0]??0,x1:x.at(-1)??1,yr:null,fullYr:null,sel:null,hover:null,undo:[],redo:[],dirty:false};state.channels.forEach(c=>state.visible[c.key]=true);$('dt').disabled=state.hasTime;$('applyDt').disabled=state.hasTime;$('dtHint').textContent=state.hasTime?'当前 sheet 已包含有效时间列，采样间隔不会覆盖原时间。':'无时间列时自动按采样间隔生成横轴。';refreshYRange();$('fileName').textContent=name;clearDirty();buildChannels();fitAll();updateHistoryButtons();toast('数据已加载')}
+function buildChannels(){let box=$('channels');box.innerHTML='<div class="ch chHead"><span></span><span></span><span>通道</span><span class="ptTitle">点数</span><span class="baseTitle">基线设置</span></div>';state.channels.forEach((c,i)=>{let base=channelBaseline(c);let d=document.createElement('div');d.className='ch';d.innerHTML=`<input class="chOn" type="checkbox" ${state.visible[c.key]?'checked':''}><span class="sw" style="background:${c.color}"></span><span title="${esc(c.name)}">${esc(channelLabel(c))}</span><span class="ptCount">${c.values.length}</span><input class="baseInput" type="number" step="1" placeholder="基线" value="${isFinite(base)?Math.round(base):''}"><button class="baseBtn">均值</button>`;d.querySelector('.chOn').onchange=e=>{state.visible[c.key]=e.target.checked;refreshYRange();draw();updateStat()};let inp=d.querySelector('.baseInput');inp.onchange=()=>{let v=Number(inp.value);if(isFinite(v)&&v>0)setBaselineValue(c,Math.round(v));else{delete state.baselines[c.key];markDirty();afterBaselineChange(`${channelLabel(c)} 基线已清除`)}};let baseBtn=d.querySelector('.baseBtn');baseBtn.title='使用框选区间均值作为该通道基线';baseBtn.setAttribute('aria-label','使用框选区间均值作为该通道基线');baseBtn.onclick=()=>baselineFromChannel(c);box.appendChild(d)});updateBaselineUI();updateModeButtons();updateStat();$('empty').style.display=state.channels.length?'none':'flex'}function updateStat(){let on=state.channels.filter(c=>state.visible[c.key]).length,n=state.x.length,timeInfo=state.hasTime?'使用原时间列':`采样间隔 ${state.dt} s`;$('stat').textContent=`${on}/${state.channels.length} 个通道 · ${n} 个点 · ${timeInfo}`;let s=state.sel,label=viewLabel(),unit=viewUnit();$('rangeText').textContent=s?`已选 ${selectionChannelKeys().length} 个通道 · ${selectedCount()} 个点 · ${s.a.toFixed(1)}–${s.b.toFixed(1)} s · ${label} ${fmtDisplay(s.y0)}–${fmtDisplay(s.y1)} ${unit}`:'拖动曲线框选数据，单击图表清除选区。';document.body.classList.toggle('hasSelection',!!s);['applyOp','applyFilter','deleteSel','moveSelUp','moveSelDown'].forEach(id=>{let el=$(id);if(el)el.disabled=!s});let all=$('selectAllData');if(all)all.disabled=!state.channels.length}
 function idx0(x){let a=0,b=state.x.length-1;while(a<b){let m=(a+b)>>1;if(state.x[m]<x)a=m+1;else b=m}return a}function idx1(x){let a=0,b=state.x.length-1;while(a<b){let m=(a+b+1)>>1;if(state.x[m]<=x)a=m;else b=m-1}return a}
-function plotBox(){let w=C.width,h=C.height,d=window.devicePixelRatio||1;return {l:96*d,t:20*d,r:w-20*d,b:h-48*d,w:w-116*d,h:h-68*d,d}}function sx(x,p){return p.l+(x-state.x0)/(state.x1-state.x0)*p.w}function ix(px,p){return state.x0+(px-p.l)/p.w*(state.x1-state.x0)}function sy(y,p,yr){return p.b-(y-yr[0])/(yr[1]-yr[0])*p.h}function crisp(v){return Math.round(v)+0.5}function px(d,n=1){return Math.max(1,Math.round(d*n))}
-function fmtOhm(v){return new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(v)}function fmtY(v){return fmtDisplay(v)}function viewLabel(){return state.view==='response'?'响应值':state.view==='percent'?'响应百分比':'电阻'}function viewUnit(){return state.view==='response'?'':state.view==='percent'?'%':'Ω'}function axisLabel(){return state.view==='response'?'响应值 = 基线电阻 / 当前电阻':state.view==='percent'?'响应百分比 (%)':'电阻 (Ω)'}function fmtDisplay(v){if(!isFinite(v))return '--';if(state.view==='response')return Number(v).toFixed(2);if(state.view==='percent')return String(Math.round(v));return fmtOhm(v)}function channelBaseline(c){let b=Number(state.baselines&&state.baselines[c.name]);return isFinite(b)&&b>0?b:NaN}function hasAnyBaseline(){return state.channels.some(c=>isFinite(channelBaseline(c)))}function displayValue(c,i){let v=c.values[i];if(!isFinite(v))return NaN;if(state.view==='resistance')return v;if(v===0)return NaN;let b=channelBaseline(c);if(!isFinite(b))return NaN;let r=b/v;return state.view==='response'?r:(r-1)*100}function exportValue(c,i,mode){let old=state.view;state.view=mode;let v=displayValue(c,i);state.view=old;if(!isFinite(v))return NaN;if(mode==='response')return Number(v.toFixed(2));if(mode==='percent')return Math.round(v);return v}function updateModeButtons(){let ok=hasAnyBaseline();[['modeResistance','resistance'],['modeResponse','response'],['modePercent','percent']].forEach(([id,v])=>{let b=$(id);if(!b)return;b.disabled=v!=='resistance'&&!ok;b.classList.toggle('active',state.view===v)});let ex=$('exportDataMode');if(ex){[...ex.options].forEach(o=>o.disabled=o.value!=='resistance'&&!ok);if(!ok&&ex.value!=='resistance')ex.value='resistance'}if(!ok&&state.view!=='resistance')state.view='resistance'}function setView(v){if(v!=='resistance'&&!hasAnyBaseline())return toast('请先设置至少一个通道基线');state.view=v;state.sel=null;refreshYRange();updateModeButtons();draw();updateStat()}function updateFullYRange(){let old=state.yr?state.yr.slice():null;refreshYRange();if(old)state.yr=old;limitYView()}function refreshYRange(){let y0=Infinity,y1=-Infinity;state.channels.forEach(c=>{if(!state.visible[c.name])return;for(let i=0;i<c.values.length;i++){let v=displayValue(c,i);if(isFinite(v)){if(v<y0)y0=v;if(v>y1)y1=v}}});if(!isFinite(y0)){state.fullYr=[0,1];state.yr=[0,1];return}if(y0===y1){y0-=1;y1+=1}let pad=Math.max((y1-y0)*.08,state.view==='response'?.02:state.view==='percent'?1:0);state.fullYr=[state.view==='resistance'?Math.min(0,y0-pad):y0-pad,state.view==='resistance'?Math.max(0,y1+pad):y1+pad];state.yr=state.fullYr.slice()}function yRange(){if(!state.yr)refreshYRange();return state.yr||[0,1]}function iy(py,p,yr){return yr[1]-(py-p.t)/p.h*(yr[1]-yr[0])}function limitYView(){if(!state.fullYr)refreshYRange();let full=state.fullYr||[0,1],yr=state.yr||full.slice(),fullSpan=Math.max(full[1]-full[0],1e-9),minSpan=Math.max(fullSpan/100000,1e-9),maxSpan=fullSpan*1.05,span=yr[1]-yr[0],mid=(yr[0]+yr[1])/2;if(span<minSpan){yr=[mid-minSpan/2,mid+minSpan/2];span=minSpan}if(span>maxSpan){yr=[full[0],full[1]];span=yr[1]-yr[0]}if(yr[0]<full[0]){yr[1]+=full[0]-yr[0];yr[0]=full[0]}if(yr[1]>full[1]){yr[0]-=yr[1]-full[1];yr[1]=full[1]}if(yr[0]<full[0]||yr[1]>full[1]||yr[0]>=yr[1])yr=full.slice();state.yr=yr}
-function draw(){resizePending=false;ctx.imageSmoothingEnabled=false;let p=plotBox(),d=p.d;ctx.clearRect(0,0,C.width,C.height);ctx.fillStyle='#fff';ctx.fillRect(0,0,C.width,C.height);if(!state.channels.length)return;let yr=yRange();ctx.strokeStyle='#d1d9e4';ctx.lineWidth=px(d);ctx.font=`${12*d}px Segoe UI`;ctx.fillStyle='#2f4058';ctx.textAlign='right';ctx.textBaseline='middle';for(let i=0;i<=5;i++){let y=crisp(p.t+p.h*i/5),v=yr[1]-(yr[1]-yr[0])*i/5;ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(p.r,y);ctx.stroke();ctx.fillText(fmtDisplay(v),p.l-8*d,y)}ctx.textAlign='center';ctx.textBaseline='top';for(let i=0;i<=8;i++){let x=crisp(p.l+p.w*i/8),v=state.x0+(state.x1-state.x0)*i/8;ctx.beginPath();ctx.moveTo(x,p.t);ctx.lineTo(x,p.b);ctx.stroke();ctx.fillText(v.toFixed(1),x,p.b+8*d)}let ref=state.view==='response'?1:0;if(yr[0]<ref&&yr[1]>ref){let zy=sy(ref,p,yr);ctx.save();ctx.setLineDash([4*d,5*d]);ctx.strokeStyle='rgba(15,23,42,.22)';ctx.lineWidth=px(d);ctx.beginPath();ctx.moveTo(p.l,zy);ctx.lineTo(p.r,zy);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='rgba(36,48,68,.55)';ctx.textAlign='left';ctx.textBaseline='bottom';ctx.fillText(state.view==='response'?'1.00':(state.view==='percent'?'0%':'0 Ω'),p.l+6*d,zy-4*d);ctx.restore()}ctx.save();ctx.beginPath();ctx.rect(p.l,p.t,p.w,p.h);ctx.clip();let a=idx0(state.x0),b=idx1(state.x1),maxPts=Math.max(1000,Math.floor(p.w/d*2));state.channels.forEach(c=>{if(!state.visible[c.name])return;ctx.strokeStyle=c.color;ctx.lineWidth=px(d);ctx.lineCap='butt';ctx.lineJoin='miter';ctx.beginPath();let n=b-a+1,step=Math.max(1,Math.ceil(n/maxPts)),first=true;for(let i=a;i<=b;i+=step){let v=displayValue(c,i);if(!isFinite(v)){first=true;continue}let x=sx(state.x[i],p),y=sy(v,p,yr);if(first){ctx.moveTo(x,y);first=false}else ctx.lineTo(x,y)}ctx.stroke()});if(state.sel){ctx.fillStyle='rgba(37,99,235,.10)';ctx.strokeStyle='rgba(37,99,235,.7)';let x1=sx(state.sel.a,p),x2=sx(state.sel.b,p),yTop=sy(state.sel.y1,p,yr),yBot=sy(state.sel.y0,p,yr);ctx.fillRect(x1,yTop,x2-x1,yBot-yTop);ctx.strokeRect(x1,yTop,x2-x1,yBot-yTop);if(selectedCount()===1){ctx.save();ctx.lineWidth=px(d);ctx.strokeStyle='rgba(37,99,235,.95)';state.channels.forEach(c=>{let set=state.sel.members&&state.sel.members[c.name];if(!set)return;set.forEach(i=>{let v=displayValue(c,i);if(!isFinite(v))return;ctx.beginPath();ctx.arc(sx(state.x[i],p),sy(v,p,yr),5*d,0,Math.PI*2);ctx.stroke()})});ctx.restore()}}if(drag&&drag.kind==='select'){ctx.fillStyle='rgba(15,118,110,.12)';ctx.strokeStyle='rgba(15,118,110,.8)';let x=Math.min(drag.x,drag.cx),y=Math.min(drag.y,drag.cy),w=Math.abs(drag.cx-drag.x),h=Math.abs(drag.cy-drag.y);ctx.fillRect(x,y,w,h);ctx.strokeRect(x,y,w,h)}ctx.restore();ctx.strokeStyle='#9aa8ba';ctx.lineWidth=px(d);ctx.strokeRect(crisp(p.l),crisp(p.t),Math.round(p.w),Math.round(p.h));ctx.fillStyle='#243044';ctx.textAlign='center';ctx.fillText('时间 (s)',p.l+p.w/2,C.height-20*d);ctx.save();ctx.translate(18*d,p.t+p.h/2);ctx.rotate(-Math.PI/2);ctx.fillText(axisLabel(),0,0);ctx.restore()}let resizePending=false;function reqDraw(){if(!resizePending){resizePending=true;requestAnimationFrame(draw)}}
-function updateCursor(e){let box=$('cursorReadout');if(!box)return;box.style.display='flex';if(!state.channels.length){box.textContent='时间 -- / 电阻 --';return}let p=plotBox(),x=e.offsetX*p.d,y=e.offsetY*p.d;if(x<p.l||x>p.r||y<p.t||y>p.b){box.textContent='时间 -- / '+viewLabel()+' --';return}let xv=ix(x,p),yv=iy(y,p,yRange()),unit=viewUnit();box.textContent=`时间 ${xv.toFixed(1)} s / ${viewLabel()} ${fmtDisplay(yv)}${unit?(' '+unit):''}`}
+function plotBox(){let w=C.width,h=C.height,d=window.devicePixelRatio||1,cssW=w/d,left=Math.min(122,Math.max(112,cssW*.115)),right=18,top=18,bottom=48;return {l:left*d,t:top*d,r:w-right*d,b:h-bottom*d,w:w-(left+right)*d,h:h-(top+bottom)*d,d}}function sx(x,p){return p.l+(x-state.x0)/(state.x1-state.x0)*p.w}function ix(px,p){return state.x0+(px-p.l)/p.w*(state.x1-state.x0)}function sy(y,p,yr){return p.b-(y-yr[0])/(yr[1]-yr[0])*p.h}function crisp(v){return Math.round(v)+0.5}function px(d,n=1){return Math.max(1,Math.round(d*n))}
+function fmtOhm(v){return new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(v)}function fmtY(v){return fmtDisplay(v)}function viewLabel(){return state.view==='response'?'响应值':state.view==='percent'?'响应百分比':'电阻'}function viewUnit(){return state.view==='response'?'':state.view==='percent'?'%':'Ω'}function axisLabel(){return state.view==='response'?'响应值':state.view==='percent'?'响应百分比 (%)':'电阻 (Ω)'}function fmtDisplay(v){if(!isFinite(v))return '--';if(state.view==='response')return Number(v).toFixed(2);if(state.view==='percent')return String(Math.round(v));return fmtOhm(v)}function channelBaseline(c){let b=Number(state.baselines&&state.baselines[c.key]);return isFinite(b)&&b>0?b:NaN}function hasAnyBaseline(){return state.channels.some(c=>isFinite(channelBaseline(c)))}function displayValue(c,i){let v=c.values[i];if(!isFinite(v))return NaN;if(state.view==='resistance')return v;if(v===0)return NaN;let b=channelBaseline(c);if(!isFinite(b))return NaN;let r=b/v;return state.view==='response'?r:(r-1)*100}function exportValue(c,i,mode){let old=state.view;state.view=mode;let v=displayValue(c,i);state.view=old;if(!isFinite(v))return NaN;if(mode==='response')return Number(v.toFixed(2));if(mode==='percent')return Math.round(v);return v}function updateModeButtons(){let ok=hasAnyBaseline();[['modeResistance','resistance'],['modeResponse','response'],['modePercent','percent']].forEach(([id,v])=>{let b=$(id);if(!b)return;b.disabled=v!=='resistance'&&!ok;b.classList.toggle('active',state.view===v)});let ex=$('exportDataMode');if(ex){[...ex.options].forEach(o=>o.disabled=o.value!=='resistance'&&!ok);if(!ok&&ex.value!=='resistance')ex.value='resistance'}if(!ok&&state.view!=='resistance')state.view='resistance';let zero=$('zeroRef'),wrap=$('zeroRefWrap');if(zero){zero.checked=state.includeZero;zero.disabled=state.view!=='resistance'}if(wrap)wrap.classList.toggle('disabled',state.view!=='resistance')}function setView(v){if(v!=='resistance'&&!hasAnyBaseline())return toast('请先设置至少一个通道基线');state.view=v;state.sel=null;refreshYRange();updateModeButtons();draw();updateStat()}function updateFullYRange(){let old=state.yr?state.yr.slice():null;refreshYRange();if(old)state.yr=old;limitYView()}function refreshYRange(){let y0=Infinity,y1=-Infinity;state.channels.forEach(c=>{if(!state.visible[c.key])return;for(let i=0;i<c.values.length;i++){let v=displayValue(c,i);if(isFinite(v)){if(v<y0)y0=v;if(v>y1)y1=v}}});if(!isFinite(y0)){state.fullYr=[0,1];state.yr=[0,1];return}if(y0===y1){y0-=1;y1+=1}let pad=Math.max((y1-y0)*.08,state.view==='response'?.02:state.view==='percent'?1:0),includeZero=state.view==='resistance'&&state.includeZero;state.fullYr=[includeZero?Math.min(0,y0-pad):y0-pad,includeZero?Math.max(0,y1+pad):y1+pad];state.yr=state.fullYr.slice()}function yRange(){if(!state.yr)refreshYRange();return state.yr||[0,1]}function iy(py,p,yr){return yr[1]-(py-p.t)/p.h*(yr[1]-yr[0])}function limitYView(){if(!state.fullYr)refreshYRange();let full=state.fullYr||[0,1],yr=state.yr||full.slice(),fullSpan=Math.max(full[1]-full[0],1e-9),minSpan=Math.max(fullSpan/100000,1e-9),maxSpan=fullSpan*1.05,span=yr[1]-yr[0],mid=(yr[0]+yr[1])/2;if(span<minSpan){yr=[mid-minSpan/2,mid+minSpan/2];span=minSpan}if(span>maxSpan){yr=[full[0],full[1]];span=yr[1]-yr[0]}if(yr[0]<full[0]){yr[1]+=full[0]-yr[0];yr[0]=full[0]}if(yr[1]>full[1]){yr[0]-=yr[1]-full[1];yr[1]=full[1]}if(yr[0]<full[0]||yr[1]>full[1]||yr[0]>=yr[1])yr=full.slice();state.yr=yr}
+function drawChannel(c,a,b,p,yr,maxPts){ctx.beginPath();let n=b-a+1,first=true,emit=i=>{let v=displayValue(c,i);if(!isFinite(v)){first=true;return}let x=sx(state.x[i],p),y=sy(v,p,yr);if(first){ctx.moveTo(x,y);first=false}else ctx.lineTo(x,y)};if(n<=maxPts){for(let i=a;i<=b;i++)emit(i)}else{let buckets=Math.max(1,Math.floor(maxPts/2)),size=Math.ceil(n/buckets);for(let s=a;s<=b;s+=size){let e=Math.min(b,s+size-1),minI=-1,maxI=-1,minV=Infinity,maxV=-Infinity;for(let i=s;i<=e;i++){let v=displayValue(c,i);if(!isFinite(v))continue;if(v<minV){minV=v;minI=i}if(v>maxV){maxV=v;maxI=i}}if(minI<0){first=true;continue}if(minI===maxI)emit(minI);else if(minI<maxI){emit(minI);emit(maxI)}else{emit(maxI);emit(minI)}}}ctx.stroke()}
+function niceTicks(lo,hi,target=7,whole=false){if(!isFinite(lo)||!isFinite(hi)||hi<=lo)return[lo];let span=hi-lo,raw=span/Math.max(2,target-1),mag=Math.pow(10,Math.floor(Math.log10(raw))),multipliers=[1,1.25,2,2.5,5,10],best=null;for(let scale of [mag/10,mag,mag*10])for(let m of multipliers){let step=m*scale;if(whole&&step<1)step=1;let first=Math.ceil((lo-step*1e-9)/step)*step,last=Math.floor((hi+step*1e-9)/step)*step,count=Math.max(0,Math.floor((last-first)/step+1.000001)),penalty=Math.abs(count-target)+(count<5||count>8?8:0)+(m===1.25?.08:0);if(!best||penalty<best.penalty||(penalty===best.penalty&&step>best.step))best={step,first,last,count,penalty}}let out=[];if(!best||!best.count)return[lo,hi];for(let i=0;i<best.count;i++){let value=best.first+i*best.step;if(Math.abs(value)<best.step*1e-10)value=0;out.push(whole?Math.round(value):value)}while(out.length>7){let lowGap=out[0]-lo,highGap=hi-out[out.length-1];if(lowGap<=highGap)out.shift();else out.pop()}return out}function draw(){resizePending=false;ctx.imageSmoothingEnabled=false;let p=plotBox(),d=p.d;ctx.clearRect(0,0,C.width,C.height);ctx.fillStyle='#fcfefd';ctx.fillRect(0,0,C.width,C.height);if(!state.channels.length)return;let yr=yRange();ctx.strokeStyle='#d6e1de';ctx.lineWidth=px(d);ctx.font=`${12*d}px Segoe UI`;ctx.fillStyle='#263c38';ctx.textAlign='right';ctx.textBaseline='middle';let yTicks=niceTicks(yr[0],yr[1],7,state.view!=='response');for(let v of yTicks){let y=crisp(sy(v,p,yr));ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(p.r,y);ctx.stroke();ctx.fillText(fmtDisplay(v),p.l-9*d,y)}ctx.textAlign='center';ctx.textBaseline='top';let xTicks=niceTicks(state.x0,state.x1,7,false);for(let v of xTicks){let x=crisp(sx(v,p));ctx.beginPath();ctx.moveTo(x,p.t);ctx.lineTo(x,p.b);ctx.stroke();ctx.fillText(v.toFixed(1),x,p.b+8*d)}let ref=state.view==='response'?1:0;if((state.view!=='resistance'||state.includeZero)&&yr[0]<ref&&yr[1]>ref){let zy=sy(ref,p,yr);ctx.save();ctx.setLineDash([4*d,5*d]);ctx.strokeStyle='rgba(15,23,42,.22)';ctx.lineWidth=px(d);ctx.beginPath();ctx.moveTo(p.l,zy);ctx.lineTo(p.r,zy);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='rgba(36,48,68,.55)';ctx.textAlign='left';ctx.textBaseline='bottom';ctx.fillText(state.view==='response'?'1.00':(state.view==='percent'?'0%':'0 Ω'),p.l+6*d,zy-4*d);ctx.restore()}ctx.save();ctx.beginPath();ctx.rect(p.l,p.t,p.w,p.h);ctx.clip();let a=idx0(state.x0),b=idx1(state.x1),maxPts=Math.max(1000,Math.floor(p.w/d*2));state.channels.forEach(c=>{if(!state.visible[c.key])return;ctx.strokeStyle=c.color;ctx.lineWidth=px(d);ctx.lineCap='butt';ctx.lineJoin='miter';drawChannel(c,a,b,p,yr,maxPts)});if(state.sel){ctx.fillStyle='rgba(37,99,235,.10)';ctx.strokeStyle='rgba(37,99,235,.7)';let x1=sx(state.sel.a,p),x2=sx(state.sel.b,p),yTop=sy(state.sel.y1,p,yr),yBot=sy(state.sel.y0,p,yr);ctx.fillRect(x1,yTop,x2-x1,yBot-yTop);ctx.strokeRect(x1,yTop,x2-x1,yBot-yTop);if(selectedCount()===1){ctx.save();ctx.lineWidth=px(d);ctx.strokeStyle='rgba(37,99,235,.95)';state.channels.forEach(c=>{let set=state.sel.members&&state.sel.members[c.key];if(!set)return;set.forEach(i=>{let v=displayValue(c,i);if(!isFinite(v))return;ctx.beginPath();ctx.arc(sx(state.x[i],p),sy(v,p,yr),5*d,0,Math.PI*2);ctx.stroke()})});ctx.restore()}}if(drag&&drag.kind==='select'){ctx.fillStyle='rgba(15,118,110,.12)';ctx.strokeStyle='rgba(15,118,110,.8)';let x=Math.min(drag.x,drag.cx),y=Math.min(drag.y,drag.cy),w=Math.abs(drag.cx-drag.x),h=Math.abs(drag.cy-drag.y);ctx.fillRect(x,y,w,h);ctx.strokeRect(x,y,w,h)}ctx.restore();ctx.strokeStyle='#8aa29d';ctx.lineWidth=px(d);ctx.strokeRect(crisp(p.l),crisp(p.t),Math.round(p.w),Math.round(p.h));ctx.fillStyle='#243044';ctx.textAlign='center';ctx.fillText('时间 (s)',p.l+p.w/2,C.height-20*d);ctx.save();ctx.translate(20*d,p.t+p.h/2);ctx.rotate(-Math.PI/2);ctx.fillText(axisLabel(),0,0);ctx.restore()}let resizePending=false;function reqDraw(){if(!resizePending){resizePending=true;requestAnimationFrame(draw)}}
+function updateCursor(e){let box=$('cursorReadout');if(!box)return;box.style.display='flex';if(!state.channels.length){box.textContent='时间 -- / 电阻 --';return}let p=plotBox(),x=e.offsetX*p.d,y=e.offsetY*p.d;if(x<p.l||x>p.r||y<p.t||y>p.b){box.textContent='时间 -- / '+viewLabel()+' --';return}let xv=ix(x,p),i=idx0(xv);if(i>0&&Math.abs(state.x[i-1]-xv)<Math.abs(state.x[i]-xv))i--;let best=null,dist=Infinity,yr=yRange();state.channels.forEach(c=>{if(!state.visible[c.key])return;let v=displayValue(c,i);if(!isFinite(v))return;let d=Math.abs(sy(v,p,yr)-y);if(d<dist){dist=d;best={c,v}}});if(best){let unit=viewUnit();box.textContent=`${channelLabel(best.c)}  ${fmtDisplay(best.v)}${unit?(' '+unit):''} / 时间 ${state.x[i].toFixed(1)} s / 第 ${i+1} 点`}else{let yv=iy(y,p,yr),unit=viewUnit();box.textContent=`时间 ${xv.toFixed(1)} s / ${viewLabel()} ${fmtDisplay(yv)}${unit?(' '+unit):''}`}}
 function selectionHit(x,y,p){if(!state.sel)return false;let yr=yRange(),x1=Math.min(sx(state.sel.a,p),sx(state.sel.b,p)),x2=Math.max(sx(state.sel.a,p),sx(state.sel.b,p)),y1=sy(state.sel.y1,p,yr),y2=sy(state.sel.y0,p,yr),pad=4*p.d;return x>=x1-pad&&x<=x2+pad&&y>=Math.min(y1,y2)-pad&&y<=Math.max(y1,y2)+pad}
-function selectionItems(){let items=[];if(!state.sel)return items;state.channels.forEach(c=>{let set=state.sel.members&&state.sel.members[c.name];if(!set)return;set.forEach(i=>{let old=c.values[i];if(isFinite(old))items.push([c,i,old])})});return items}
+function selectionItems(){let items=[];if(!state.sel)return items;state.channels.forEach(c=>{let set=state.sel.members&&state.sel.members[c.key];if(!set)return;set.forEach(i=>{let old=c.values[i];if(isFinite(old))items.push([c,i,old])})});return items}
 function shiftedRawValue(c,old,delta){if(!isFinite(old))return NaN;if(state.view==='resistance')return old+delta;let b=channelBaseline(c);if(!isFinite(b)||old===0)return NaN;let cur=state.view==='response'?b/old:(b/old-1)*100,next=cur+delta,den=state.view==='response'?next:(1+next/100);return den>0?b/den:NaN}
 function previewSelectionShift(items,delta){items.forEach(([c,i,old])=>{let nv=shiftedRawValue(c,old,delta);c.values[i]=isFinite(nv)?nv:old});updateSelectionBounds();draw();updateStat()}
 function finishSelectionShift(items,delta){previewSelectionShift(items,delta);let changed=[];items.forEach(([c,i,old])=>{let nv=c.values[i];if(isFinite(nv)&&nv!==old)changed.push([c,i,old,nv])});if(changed.length){pushChange(changed);updateFullYRange();draw();updateStat()}return changed.length}
 function nudgeSelection(dir,fast=false){try{if(!state.sel)throw Error('请先框选数据');let items=selectionItems();if(!items.length)throw Error('框选区间没有可移动数据');let yr=yRange(),step=(yr[1]-yr[0])/(fast?25:120),n=finishSelectionShift(items,dir*step);if(n)toast(`已移动 ${n} 个数据点`)}catch(e){toast(e.message)}}
-function hideCursor(){let box=$('cursorReadout');if(box){box.style.display='flex';box.textContent='时间 -- / '+viewLabel()+' --'}}C.addEventListener('mousedown',e=>{if(!state.channels.length)return;let p=plotBox(),x=e.offsetX*p.d,y=e.offsetY*p.d;if(x<p.l||x>p.r||y<p.t||y>p.b)return;if(selectionHit(x,y,p)){let items=selectionItems();if(items.length){drag={kind:'moveSel',x,y,cx:x,cy:y,moved:false,yr:yRange(),items,delta:0};hideSelPicker();return}}drag={kind:'select',x,y,cx:x,cy:y,moved:false,yr:yRange()}});C.addEventListener('mousemove',e=>{updateCursor(e);let p=plotBox(),x=Math.max(p.l,Math.min(p.r,e.offsetX*p.d)),y=Math.max(p.t,Math.min(p.b,e.offsetY*p.d));if(!drag){C.style.cursor=selectionHit(x,y,p)?'ns-resize':'crosshair';return}if(Math.abs(x-drag.x)+Math.abs(y-drag.y)>0)drag.moved=true;drag.cx=x;drag.cy=y;if(drag.kind==='moveSel'){let delta=iy(y,p,drag.yr)-iy(drag.y,p,drag.yr);drag.delta=delta;previewSelectionShift(drag.items,delta)}else reqDraw()});C.addEventListener('mouseleave',()=>{C.style.cursor='default';hideCursor()});addEventListener('mouseup',()=>{if(!drag)return;let p=plotBox();if(drag.kind==='moveSel'){let n=0;if(drag.moved)n=finishSelectionShift(drag.items,drag.delta||0);if(n)toast(`已移动 ${n} 个数据点`);drag=null;draw();return}let dx=Math.abs(drag.cx-drag.x),dy=Math.abs(drag.cy-drag.y);if(drag.moved||dx>0||dy>0){let xA=Math.min(drag.x,drag.cx),xB=Math.max(drag.x,drag.cx),yA=Math.min(drag.y,drag.cy),yB=Math.max(drag.y,drag.cy),pad=10*p.d;if(dx<pad){xA-=pad;xB+=pad}if(dy<pad){yA-=pad;yB+=pad}xA=Math.max(p.l,Math.min(p.r,xA));xB=Math.max(p.l,Math.min(p.r,xB));yA=Math.max(p.t,Math.min(p.b,yA));yB=Math.max(p.t,Math.min(p.b,yB));let a=ix(xA,p),b=ix(xB,p),ya=iy(yB,p,drag.yr),yb=iy(yA,p,drag.yr);setSelection(Math.max(state.x[0],a),Math.min(state.x.at(-1),b),Math.min(ya,yb),Math.max(ya,yb));if(!selectedCount()){state.sel=null;hideSelPicker();toast('框选区间没有命中数据')}else showSelPicker(drag.cx,drag.cy,p);updateStat()}else{state.sel=null;hideSelPicker();updateStat()}drag=null;draw()});document.addEventListener('keydown',e=>{let tag=(e.target&&e.target.tagName||'').toLowerCase();if(tag==='input'||tag==='select'||tag==='textarea'||tag==='button'||e.ctrlKey||e.metaKey||e.altKey)return;if(e.key==='ArrowUp'||e.key==='ArrowDown'){if(!state.sel)return;e.preventDefault();hideSelPicker();nudgeSelection(e.key==='ArrowUp'?1:-1,e.shiftKey)}});C.addEventListener('wheel',e=>{if(!state.channels.length)return;e.preventDefault();let p=plotBox(),mx=e.offsetX*p.d,my=e.offsetY*p.d;if(mx<p.l||mx>p.r||my<p.t||my>p.b)return;let c=ix(mx,p),yr=yRange(),cy=iy(my,p,yr),f=e.deltaY<0?.82:1.22;state.x0=c-(c-state.x0)*f;state.x1=c+(state.x1-c)*f;state.yr=[cy-(cy-yr[0])*f,cy+(yr[1]-cy)*f];limitView();limitYView();draw()},{passive:false});
+function hideCursor(){let box=$('cursorReadout');if(box){box.style.display='flex';box.textContent='时间 -- / '+viewLabel()+' --'}}C.addEventListener('mousedown',e=>{if(!state.channels.length)return;let p=plotBox(),x=e.offsetX*p.d,y=e.offsetY*p.d;if(x<p.l||x>p.r||y<p.t||y>p.b)return;if(selectionHit(x,y,p)){let items=selectionItems();if(items.length){drag={kind:'moveSel',x,y,cx:x,cy:y,moved:false,yr:yRange(),items,delta:0};hideSelPicker();return}}drag={kind:'select',x,y,cx:x,cy:y,moved:false,yr:yRange()}});C.addEventListener('mousemove',e=>{updateCursor(e);let p=plotBox(),x=Math.max(p.l,Math.min(p.r,e.offsetX*p.d)),y=Math.max(p.t,Math.min(p.b,e.offsetY*p.d));if(!drag){C.style.cursor=selectionHit(x,y,p)?'ns-resize':'crosshair';return}if(Math.abs(x-drag.x)+Math.abs(y-drag.y)>0)drag.moved=true;drag.cx=x;drag.cy=y;if(drag.kind==='moveSel'){let delta=iy(y,p,drag.yr)-iy(drag.y,p,drag.yr);drag.delta=delta;previewSelectionShift(drag.items,delta)}else reqDraw()});C.addEventListener('mouseleave',()=>{C.style.cursor='default';hideCursor()});addEventListener('mouseup',()=>{if(!drag)return;let p=plotBox();if(drag.kind==='moveSel'){let n=0;if(drag.moved)n=finishSelectionShift(drag.items,drag.delta||0);if(n)toast(`已移动 ${n} 个数据点`);drag=null;draw();return}let dx=Math.abs(drag.cx-drag.x),dy=Math.abs(drag.cy-drag.y);if(drag.moved||dx>0||dy>0){let xA=Math.min(drag.x,drag.cx),xB=Math.max(drag.x,drag.cx),yA=Math.min(drag.y,drag.cy),yB=Math.max(drag.y,drag.cy),pad=10*p.d;if(dx<pad){xA-=pad;xB+=pad}if(dy<pad){yA-=pad;yB+=pad}xA=Math.max(p.l,Math.min(p.r,xA));xB=Math.max(p.l,Math.min(p.r,xB));yA=Math.max(p.t,Math.min(p.b,yA));yB=Math.max(p.t,Math.min(p.b,yB));let a=ix(xA,p),b=ix(xB,p),ya=iy(yB,p,drag.yr),yb=iy(yA,p,drag.yr);setSelection(Math.max(state.x[0],a),Math.min(state.x.at(-1),b),Math.min(ya,yb),Math.max(ya,yb));if(!selectedCount()){state.sel=null;hideSelPicker();toast('框选区间没有命中数据')}else showSelPicker(drag.cx,drag.cy,p);updateStat()}else{state.sel=null;hideSelPicker();updateStat()}drag=null;draw()});document.addEventListener('keydown',e=>{let tag=(e.target&&e.target.tagName||'').toLowerCase(),typing=tag==='input'||tag==='select'||tag==='textarea',key=e.key.toLowerCase(),cmd=e.ctrlKey||e.metaKey;if(!typing&&!e.altKey&&cmd){if(key==='z'){e.preventDefault();e.shiftKey?redo():undo();return}if(key==='y'){e.preventDefault();redo();return}if(key==='a'&&state.channels.length){e.preventDefault();selectAllVisibleData();return}if(key==='s'){e.preventDefault();exportXlsx();return}if(key==='o'){e.preventDefault();$('file').click();return}}if(typing||tag==='button'||cmd||e.altKey)return;if(e.key==='Delete'||e.key==='Backspace'){if(!state.sel)return;e.preventDefault();deleteSelected();return}if(e.key==='Escape'){let handled=false;if($('aboutModal').classList.contains('show')){$('aboutModal').classList.remove('show');handled=true}if($('side').classList.contains('open')){$('side').classList.remove('open');handled=true}if(state.sel){state.sel=null;hideSelPicker();draw();updateStat();handled=true}if(handled)e.preventDefault();return}if(e.key==='Home'){if(!state.channels.length)return;e.preventDefault();fitAll();return}if(e.key==='F1'){e.preventDefault();$('aboutModal').classList.add('show');return}if(e.key==='ArrowUp'||e.key==='ArrowDown'){if(!state.sel)return;e.preventDefault();hideSelPicker();nudgeSelection(e.key==='ArrowUp'?1:-1,e.shiftKey)}});C.addEventListener('wheel',e=>{if(!state.channels.length)return;e.preventDefault();let p=plotBox(),mx=e.offsetX*p.d,my=e.offsetY*p.d;if(mx<p.l||mx>p.r||my<p.t||my>p.b)return;let c=ix(mx,p),yr=yRange(),cy=iy(my,p,yr),f=e.deltaY<0?.82:1.22;state.x0=c-(c-state.x0)*f;state.x1=c+(state.x1-c)*f;state.yr=[cy-(cy-yr[0])*f,cy+(yr[1]-cy)*f];limitView();limitYView();draw()},{passive:false});
 function limitView(){let min=state.x[0]||0,max=state.x.at(-1)||1,span=state.x1-state.x0,full=Math.max(max-min,1e-9),minSpan=Math.max(full/100000,1e-9),mid=(state.x0+state.x1)/2;if(span<minSpan){state.x0=mid-minSpan/2;state.x1=mid+minSpan/2;span=minSpan}if(span>full){state.x0=min;state.x1=max}else{if(state.x0<min){state.x1+=min-state.x0;state.x0=min}if(state.x1>max){state.x0-=state.x1-max;state.x1=max}}}
 function fitAll(){if(!state.x.length)return;state.x0=state.x[0];state.x1=state.x.at(-1);if(state.x0===state.x1)state.x1=state.x0+1;refreshYRange();draw();updateStat()}
-function targetChannels(){return state.channels.filter(c=>state.visible[c.name])}function rangeIdx(){if(!state.sel)throw Error('请先框选一段曲线');let a=idx0(state.sel.a),b=idx1(state.sel.b);if(b<a)throw Error('框选区间没有数据点');return [a,b]}function setSelection(a,b,y0,y1){let members={},count=0;targetChannels().forEach(c=>{let set=new Set();for(let i=idx0(a);i<=idx1(b);i++){let v=displayValue(c,i);if(isFinite(v)&&v>=y0&&v<=y1){set.add(i);count++}}if(set.size)members[c.name]=set});state.sel={a,b,y0,y1,members,count};updateSelectionBounds()}function selectAllVisibleData(){try{if(!state.channels.length)throw Error('请先加载数据');let members={},count=0;targetChannels().forEach(c=>{let set=new Set();c.values.forEach((v,i)=>{if(isFinite(displayValue(c,i))){set.add(i);count++}});if(set.size)members[c.name]=set});if(!count)throw Error('当前显示通道没有可选数据');state.sel={a:state.x[0]||0,b:state.x.at(-1)||0,y0:0,y1:1,members,count};updateSelectionBounds();hideSelPicker();draw();updateStat();toast(`已全选 ${count} 个数据点`)}catch(e){toast(e.message)}}function updateSelectionBounds(){if(!state.sel)return;let y0=Infinity,y1=-Infinity,a=Infinity,b=-Infinity,count=0;state.channels.forEach(c=>{let set=state.sel.members&&state.sel.members[c.name];if(!set)return;set.forEach(i=>{let v=displayValue(c,i);if(isFinite(v)){if(v<y0)y0=v;if(v>y1)y1=v;if(state.x[i]<a)a=state.x[i];if(state.x[i]>b)b=state.x[i];count++}})});state.sel.count=count;if(isFinite(a)){state.sel.a=a;state.sel.b=b}if(isFinite(y0)){if(y0===y1){y0-=1;y1+=1}let pad=Math.max((y1-y0)*.04,state.view==='percent'?1:0);state.sel.y0=y0-pad;state.sel.y1=y1+pad}}function inSel(c,i){let set=state.sel&&state.sel.members&&state.sel.members[c.name];return !!(set&&set.has(i))}function selectedCount(){return state.sel?state.sel.count||0:0}function hideSelPicker(){let p=$('selPicker');if(p)p.style.display='none'}function selectionChannelNames(){return Object.keys(state.sel?.members||{}).filter(n=>state.sel.members[n]&&state.sel.members[n].size)}function pickSelectionChannel(name){if(!state.sel)return;if(name!=='__all__'){let set=state.sel.members[name];state.sel.members=set?{[name]:set}:{}}updateSelectionBounds();hideSelPicker();draw();updateStat()}function showSelPicker(devX,devY,p){let box=$('selPicker');if(!box||!state.sel)return;let names=selectionChannelNames();if(names.length<2){hideSelPicker();return}box.innerHTML=`<button data-ch="__all__">全选</button>`+names.map(n=>`<button data-ch="${esc(n)}">${esc(n)}</button>`).join('');[...box.querySelectorAll('button')].forEach(b=>b.onclick=()=>pickSelectionChannel(b.dataset.ch));box.style.display='flex';box.style.visibility='hidden';box.style.left='0px';box.style.top='0px';let w=Math.min(box.offsetWidth||120,Math.max(80,C.clientWidth-16)),h=Math.min(box.offsetHeight||32,Math.max(32,C.clientHeight-16)),baseX=devX/p.d,baseY=devY/p.d,x=baseX+10,y=baseY+10;if(x+w>C.clientWidth-8)x=baseX-w-10;if(y+h>C.clientHeight-8)y=baseY-h-10;x=Math.max(8,Math.min(Math.max(8,C.clientWidth-w-8),x));y=Math.max(8,Math.min(Math.max(8,C.clientHeight-h-8),y));box.style.left=x+'px';box.style.top=y+'px';box.style.visibility='visible'}function updateBaselineUI(){let n=state.channels.filter(c=>isFinite(channelBaseline(c))).length;let ok=hasAnyBaseline();let ex=$('exportDataMode');if(ex){[...ex.options].forEach(o=>o.disabled=o.value!=='resistance'&&!ok);if(!ok&&ex.value!=='resistance')ex.value='resistance'}}function afterBaselineChange(msg){let oldYr=state.yr?state.yr.slice():null,oldX0=state.x0,oldX1=state.x1;if(state.view==='resistance'){updateModeButtons();buildChannels();state.x0=oldX0;state.x1=oldX1;if(oldYr)state.yr=oldYr}else{updateModeButtons();updateFullYRange();buildChannels()}draw();updateStat();if(msg)toast(msg)}function setBaselineValue(ch,val){if(!ch)throw Error('请先加载数据');val=Math.round(Number(val));if(!isFinite(val)||val<=0)throw Error('请输入大于 0 的基线电阻');state.baselines[ch.name]=val;afterBaselineChange(`${ch.name} 基线已设置为 ${fmtOhm(val)} Ω`)}function baselineFromChannel(ch){try{if(!ch)throw Error('请先加载数据');if(!state.sel)throw Error('请先框选一段基线区间');let set=state.sel.members&&state.sel.members[ch.name];if(!set||!set.size)throw Error(`${ch.name} 未命中框选区间`);let vals=[...set].map(i=>ch.values[i]).filter(isFinite);if(!vals.length)throw Error('框选区间没有有效电阻值');setBaselineValue(ch,vals.reduce((a,b)=>a+b,0)/vals.length)}catch(e){toast(e.message)}}function pushChange(items){if(items.length){state.undo.push(items);$('undo').disabled=false}}
-function compileFormula(expr){expr=String(expr||'').trim().replace(/X/g,'x');if(!expr)throw Error('请输入公式');if(!/^[0-9x+\-*/().\s]+$/.test(expr))throw Error('公式仅支持 x、数字、括号和 + - * /');let fn;try{fn=new Function('x','"use strict";return ('+expr+')')}catch(e){throw Error('公式格式不正确')}let test=fn(1);if(!isFinite(test))throw Error('公式计算结果无效');return x=>fn(x)}function updateOpInput(force=false){let op=$("op")?.value,inp=$("operand");if(!inp)return;if(op==="formula"){if(force||!inp.value||inp.value==="1.0")inp.value="(x + 0) * 1 / 1";inp.placeholder="(x + 0) * 1 / 1"}else{if(force||!inp.value||/[xX]/.test(inp.value))inp.value="1.0";inp.placeholder="1.0"}}function applyOp(){try{updateOpInput(false);let [a,b]=rangeIdx(),op=$('op').value,val=Number($('operand').value),fn=null;if(op==='formula')fn=compileFormula($('operand').value);else if(!isFinite(val))throw Error('请输入有效数值');let items=[];targetChannels().forEach(c=>{for(let i=a;i<=b;i++){let old=c.values[i];if(!inSel(c,i))continue;let nv=op==='formula'?fn(old):op==='+'?old+val:op==='-'?old-val:op==='*'?old*val:op==='/'?old/val:val;if(!isFinite(nv))continue;items.push([c,i,old,c.values[i]=nv])}});pushChange(items);updateSelectionBounds();updateFullYRange();draw();updateStat();toast(`已修改 ${items.length} 个数据`) }catch(e){toast(e.message)}}
+function targetChannels(){return state.channels.filter(c=>state.visible[c.key])}function rangeIdx(){if(!state.sel)throw Error('请先框选一段曲线');let a=idx0(state.sel.a),b=idx1(state.sel.b);if(b<a)throw Error('框选区间没有数据点');return [a,b]}function setSelection(a,b,y0,y1){let members={},count=0;targetChannels().forEach(c=>{let set=new Set();for(let i=idx0(a);i<=idx1(b);i++){let v=displayValue(c,i);if(isFinite(v)&&v>=y0&&v<=y1){set.add(i);count++}}if(set.size)members[c.key]=set});state.sel={a,b,y0,y1,members,count};updateSelectionBounds()}function selectAllVisibleData(){try{if(!state.channels.length)throw Error('请先加载数据');let members={},count=0;targetChannels().forEach(c=>{let set=new Set();c.values.forEach((v,i)=>{if(isFinite(displayValue(c,i))){set.add(i);count++}});if(set.size)members[c.key]=set});if(!count)throw Error('当前显示通道没有可选数据');state.sel={a:state.x[0]||0,b:state.x.at(-1)||0,y0:0,y1:1,members,count};updateSelectionBounds();hideSelPicker();draw();updateStat();toast(`已全选 ${count} 个数据点`)}catch(e){toast(e.message)}}function updateSelectionBounds(){if(!state.sel)return;let y0=Infinity,y1=-Infinity,a=Infinity,b=-Infinity,count=0;state.channels.forEach(c=>{let set=state.sel.members&&state.sel.members[c.key];if(!set)return;set.forEach(i=>{let v=displayValue(c,i);if(isFinite(v)){if(v<y0)y0=v;if(v>y1)y1=v;if(state.x[i]<a)a=state.x[i];if(state.x[i]>b)b=state.x[i];count++}})});state.sel.count=count;if(isFinite(a)){state.sel.a=a;state.sel.b=b}if(isFinite(y0)){if(y0===y1){y0-=1;y1+=1}let pad=Math.max((y1-y0)*.04,state.view==='percent'?1:0);state.sel.y0=y0-pad;state.sel.y1=y1+pad}}function inSel(c,i){let set=state.sel&&state.sel.members&&state.sel.members[c.key];return !!(set&&set.has(i))}function selectedCount(){return state.sel?state.sel.count||0:0}function hideSelPicker(){let p=$('selPicker');if(p)p.style.display='none'}function selectionChannelKeys(){return Object.keys(state.sel?.members||{}).filter(k=>state.sel.members[k]&&state.sel.members[k].size)}function showSelPicker(devX,devY,p){let box=$('selPicker');if(!box||!state.sel)return;let keys=selectionChannelKeys();if(keys.length<2){hideSelPicker();return}let candidates={};keys.forEach(k=>candidates[k]=state.sel.members[k]);box.innerHTML='<div class="selPickerHead"><strong>应用到通道</strong><button type="button" class="selPickerClose" aria-label="关闭">×</button></div><label class="selOption selAll"><input type="checkbox" data-all checked><span>全选命中通道</span></label>'+keys.map(k=>{let c=state.channels.find(x=>x.key===k);return '<label class="selOption"><input type="checkbox" data-ch="'+esc(k)+'" checked><span class="selOptionSwatch" style="background:'+c.color+'"></span><span>'+esc(channelLabel(c))+'</span></label>'}).join('');let all=box.querySelector('[data-all]'),items=[...box.querySelectorAll('[data-ch]')],applyChecked=changed=>{let checked=items.filter(x=>x.checked);if(!checked.length){changed.checked=true;checked=[changed];toast('至少保留一个通道')}state.sel.members={};checked.forEach(input=>state.sel.members[input.dataset.ch]=candidates[input.dataset.ch]);all.checked=checked.length===items.length;all.indeterminate=checked.length>0&&checked.length<items.length;updateSelectionBounds();draw();updateStat()};items.forEach(input=>input.onchange=()=>applyChecked(input));all.onchange=()=>{items.forEach(input=>input.checked=all.checked);if(!all.checked&&items.length)items[0].checked=true;applyChecked(items.find(input=>input.checked)||items[0])};box.querySelector('.selPickerClose').onclick=hideSelPicker;box.onmousedown=e=>e.stopPropagation();box.style.display='block';box.style.visibility='hidden';box.style.left='0px';box.style.top='0px';let w=Math.min(box.offsetWidth||190,Math.max(150,C.clientWidth-16)),h=Math.min(box.offsetHeight||190,Math.max(80,C.clientHeight-16)),baseX=devX/p.d,baseY=devY/p.d,x=baseX+12,y=baseY+12;if(x+w>C.clientWidth-8)x=baseX-w-12;if(y+h>C.clientHeight-8)y=baseY-h-12;x=Math.max(8,Math.min(Math.max(8,C.clientWidth-w-8),x));y=Math.max(8,Math.min(Math.max(8,C.clientHeight-h-8),y));box.style.left=x+'px';box.style.top=y+'px';box.style.visibility='visible'}document.addEventListener('mousedown',e=>{let box=$('selPicker');if(box&&box.style.display!=='none'&&!box.contains(e.target)&&e.target!==C)hideSelPicker()});function updateBaselineUI(){let n=state.channels.filter(c=>isFinite(channelBaseline(c))).length;let ok=hasAnyBaseline();let ex=$('exportDataMode');if(ex){[...ex.options].forEach(o=>o.disabled=o.value!=='resistance'&&!ok);if(!ok&&ex.value!=='resistance')ex.value='resistance'}}function afterBaselineChange(msg){let oldYr=state.yr?state.yr.slice():null,oldX0=state.x0,oldX1=state.x1;if(state.view==='resistance'){updateModeButtons();buildChannels();state.x0=oldX0;state.x1=oldX1;if(oldYr)state.yr=oldYr}else{updateModeButtons();updateFullYRange();buildChannels()}draw();updateStat();if(msg)toast(msg)}function setBaselineValue(ch,val){if(!ch)throw Error('请先加载数据');val=Math.round(Number(val));if(!isFinite(val)||val<=0)throw Error('请输入大于 0 的基线电阻');state.baselines[ch.key]=val;markDirty();afterBaselineChange(`${channelLabel(ch)} 基线已设置为 ${fmtOhm(val)} Ω`)}function baselineFromChannel(ch){try{if(!ch)throw Error('请先加载数据');if(!state.sel)throw Error('请先框选一段基线区间');let set=state.sel.members&&state.sel.members[ch.key];if(!set||!set.size)throw Error(`${channelLabel(ch)} 未命中框选区间`);let vals=[...set].map(i=>ch.values[i]).filter(isFinite);if(!vals.length)throw Error('框选区间没有有效电阻值');setBaselineValue(ch,vals.reduce((a,b)=>a+b,0)/vals.length)}catch(e){toast(e.message)}}function pushChange(items){if(items.length){state.undo.push(items);state.redo=[];updateHistoryButtons();markDirty()}}
+function compileFormula(expr){expr=String(expr||'').trim().replace(/X/g,'x');if(!expr)throw Error('请输入公式');if(!/^[0-9x+\-*/().\s]+$/.test(expr))throw Error('公式仅支持 x、数字、括号和 + - * /');let fn;try{fn=new Function('x','"use strict";return ('+expr+')')}catch(e){throw Error('公式格式不正确')}let test=fn(1);if(!isFinite(test))throw Error('公式计算结果无效');return x=>fn(x)}function updateOpInput(force=false){let op=$("op")?.value,inp=$("operand");if(!inp)return;if(op==="formula"){if(force||!inp.value||inp.value==="1.0")inp.value="(x + 0) * 1 / 1";inp.placeholder="(x + 0) * 1 / 1"}else{if(force||!inp.value||/[xX]/.test(inp.value))inp.value="1.0";inp.placeholder="1.0"}}function applyOp(){try{updateOpInput(false);let [a,b]=rangeIdx(),op=$('op').value,val=Number($('operand').value),fn=null;if(op==='formula')fn=compileFormula($('operand').value);else if(!isFinite(val))throw Error('请输入有效数值');if(op==='/'&&val===0)throw Error('除数不能为 0');let items=[];targetChannels().forEach(c=>{for(let i=a;i<=b;i++){let old=c.values[i];if(!inSel(c,i))continue;let nv=op==='formula'?fn(old):op==='+'?old+val:op==='-'?old-val:op==='*'?old*val:op==='/'?old/val:val;if(!isFinite(nv)||nv===old)continue;items.push([c,i,old,c.values[i]=nv])}});pushChange(items);updateSelectionBounds();updateFullYRange();draw();updateStat();toast(`已修改 ${items.length} 个数据`) }catch(e){toast(e.message)}}
 function median(arr){let a=arr.filter(isFinite).sort((x,y)=>x-y);return a.length?a[a.length>>1]:NaN}function avg(arr){let a=arr.filter(isFinite);return a.length?a.reduce((m,v)=>m+v,0)/a.length:NaN}function gauss(seg){let n=seg.length,mid=(n-1)/2,sigma=Math.max(n/5,1),sum=0,ws=0;for(let i=0;i<n;i++){let v=seg[i];if(!isFinite(v))continue;let w=Math.exp(-0.5*Math.pow((i-mid)/sigma,2));sum+=v*w;ws+=w}return ws?sum/ws:NaN}function edgeSmooth(seg,center){let v=seg[center];if(!isFinite(v))return NaN;let l=seg[Math.max(0,center-1)],r=seg[Math.min(seg.length-1,center+1)],vals=[v];if(isFinite(l)&&Math.abs(l-v)<Math.abs(v)*.08+1)vals.push(l);if(isFinite(r)&&Math.abs(r-v)<Math.abs(v)*.08+1)vals.push(r);return avg(vals)}
-function applyFilter(){try{let [a,b]=rangeIdx(),w=Math.max(3,Number($('filterWin').value)||5);if(w%2===0)w++;let half=(w-1)>>1,type=$('filterType').value,items=[];targetChannels().forEach(c=>{let old=c.values.slice(a,b+1),nv=[],last=NaN,alpha=2/(w+1);for(let k=0;k<old.length;k++){let s=Math.max(0,k-half),e=Math.min(old.length-1,k+half),seg=old.slice(s,e+1),center=k-s;if(type==='median')nv[k]=median(seg);else if(type==='gaussian')nv[k]=gauss(seg);else if(type==='exp'){let v=old[k];nv[k]=!isFinite(v)?NaN:(!isFinite(last)?v:alpha*v+(1-alpha)*last);last=nv[k]}else if(type==='edge')nv[k]=edgeSmooth(seg,center);else nv[k]=avg(seg)}for(let k=0;k<nv.length;k++){if(isFinite(nv[k])&&inSel(c,a+k))items.push([c,a+k,c.values[a+k],c.values[a+k]=nv[k]])}});pushChange(items);updateSelectionBounds();updateFullYRange();draw();updateStat();toast(`滤波完成：${items.length} 个数据`) }catch(e){toast(e.message)}}
-function deleteSelected(){try{if(!state.sel)throw Error('请先框选要删除的数据');let groups=[];state.channels.forEach(c=>{let set=state.sel.members&&state.sel.members[c.name];if(!set||!set.size)return;let idx=[...set].filter(i=>isFinite(c.values[i])).sort((a,b)=>b-a);if(!idx.length)return;let vals=idx.map(i=>[i,c.values[i]]);idx.forEach(i=>c.values.splice(i,1));groups.push({c,vals})});let count=groups.reduce((n,g)=>n+g.vals.length,0);if(!count)throw Error('框选区间没有命中数据');state.undo.push({kind:'deletePoints',groups,sel:state.sel,count});$('undo').disabled=false;state.sel=null;hideSelPicker();updateFullYRange();buildChannels();draw();updateStat();toast(`已删除 ${count} 个数据点`)}catch(e){toast(e.message)}}
-function undo(){let items=state.undo.pop();if(!items)return;if(items.kind==='deletePoints'){items.groups.forEach(g=>{g.vals.slice().sort((a,b)=>a[0]-b[0]).forEach(([i,v])=>g.c.values.splice(i,0,v))});state.sel=items.sel;updateSelectionBounds();updateFullYRange();buildChannels();draw();updateStat();toast(`已撤销删除 ${items.count} 个数据点`)}else if(items.kind==='delete'){state.x=items.x;state.channels.forEach((c,i)=>c.values=items.values[i].slice());state.sel=items.sel;refreshYRange();fitAll();toast(`已撤销删除 ${items.count} 行`)}else{items.forEach(([c,i,old])=>c.values[i]=old);updateSelectionBounds();updateFullYRange();draw();updateStat();toast(`已撤销 ${items.length} 个数据`)}$('undo').disabled=!state.undo.length}
+function applyFilter(){try{let [a,b]=rangeIdx(),w=Math.min(1001,Math.max(3,Number($('filterWin').value)||5));if(w%2===0)w++;$('filterWin').value=w;let half=(w-1)>>1,type=$('filterType').value,items=[];targetChannels().forEach(c=>{let old=c.values.slice(a,b+1),nv=[],last=NaN,alpha=2/(w+1);for(let k=0;k<old.length;k++){let s=Math.max(0,k-half),e=Math.min(old.length-1,k+half),seg=old.slice(s,e+1),center=k-s;if(type==='median')nv[k]=median(seg);else if(type==='gaussian')nv[k]=gauss(seg);else if(type==='exp'){let v=old[k];nv[k]=!isFinite(v)?NaN:(!isFinite(last)?v:alpha*v+(1-alpha)*last);last=nv[k]}else if(type==='edge')nv[k]=edgeSmooth(seg,center);else nv[k]=avg(seg)}for(let k=0;k<nv.length;k++){if(isFinite(nv[k])&&inSel(c,a+k)&&nv[k]!==c.values[a+k])items.push([c,a+k,c.values[a+k],c.values[a+k]=nv[k]])}});pushChange(items);updateSelectionBounds();updateFullYRange();draw();updateStat();toast(`滤波完成：${items.length} 个数据`) }catch(e){toast(e.message)}}
+function deleteSelected(){try{if(!state.sel)throw Error('请先框选要删除的数据');let groups=[];state.channels.forEach(c=>{let set=state.sel.members&&state.sel.members[c.key];if(!set||!set.size)return;let idx=[...set].filter(i=>isFinite(c.values[i])).sort((a,b)=>b-a);if(!idx.length)return;let vals=idx.map(i=>[i,c.values[i]]);idx.forEach(i=>c.values.splice(i,1));groups.push({c,vals})});let count=groups.reduce((n,g)=>n+g.vals.length,0);if(!count)throw Error('框选区间没有命中数据');state.undo.push({kind:'deletePoints',groups,sel:state.sel,count});state.redo=[];updateHistoryButtons();markDirty();state.sel=null;hideSelPicker();updateFullYRange();buildChannels();draw();updateStat();toast(`已删除 ${count} 个数据点`)}catch(e){toast(e.message)}}
+function undo(){let items=state.undo.pop();if(!items)return;if(items.kind==='deletePoints'){items.groups.forEach(g=>{g.vals.slice().sort((a,b)=>a[0]-b[0]).forEach(([i,v])=>g.c.values.splice(i,0,v))});state.sel=items.sel;updateSelectionBounds();updateFullYRange();buildChannels();draw();updateStat();toast(`已撤销删除 ${items.count} 个数据点`)}else{items.forEach(([c,i,old])=>c.values[i]=old);updateSelectionBounds();updateFullYRange();draw();updateStat();toast(`已撤销 ${items.length} 个数据`)}state.redo.push(items);updateHistoryButtons();markDirty()}
+function redo(){let items=state.redo.pop();if(!items)return;if(items.kind==='deletePoints'){items.groups.forEach(g=>g.vals.slice().sort((a,b)=>b[0]-a[0]).forEach(([i])=>g.c.values.splice(i,1)));state.sel=null;hideSelPicker();updateFullYRange();buildChannels();draw();updateStat();toast(`已重做删除 ${items.count} 个数据点`)}else{items.forEach(([c,i,old,nv])=>c.values[i]=nv);updateSelectionBounds();updateFullYRange();draw();updateStat();toast(`已重做 ${items.length} 个数据`)}state.undo.push(items);updateHistoryButtons();markDirty()}
 function crcTable(){let t=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xedb88320^(c>>>1):c>>>1;t[n]=c>>>0}return t}const CT=crcTable();function crc32(u){let c=0xffffffff;for(let b of u)c=CT[(c^b)&255]^(c>>>8);return(c^0xffffffff)>>>0}
 function u16(a,o,v){a[o]=v&255;a[o+1]=v>>>8&255}function u32(a,o,v){a[o]=v&255;a[o+1]=v>>>8&255;a[o+2]=v>>>16&255;a[o+3]=v>>>24&255}
-function zip(entries){let enc=new TextEncoder(),parts=[],central=[],off=0;for(let e of entries){let name=enc.encode(e.name),data=typeof e.data==='string'?enc.encode(e.data):e.data,crc=crc32(data),lh=new Uint8Array(30+name.length);u32(lh,0,0x04034b50);u16(lh,4,20);u16(lh,6,2048);u16(lh,8,0);u32(lh,14,crc);u32(lh,18,data.length);u32(lh,22,data.length);u16(lh,26,name.length);lh.set(name,30);parts.push(lh,data);let ch=new Uint8Array(46+name.length);u32(ch,0,0x02014b50);u16(ch,4,20);u16(ch,6,20);u16(ch,8,2048);u16(ch,10,0);u32(ch,16,crc);u32(ch,20,data.length);u32(ch,24,data.length);u16(ch,28,name.length);u32(ch,42,off);ch.set(name,46);central.push(ch);off+=lh.length+data.length}let csize=central.reduce((s,x)=>s+x.length,0),eoc=new Uint8Array(22);u32(eoc,0,0x06054b50);u16(eoc,8,entries.length);u16(eoc,10,entries.length);u32(eoc,12,csize);u32(eoc,16,off);return new Blob([...parts,...central,eoc],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})}
-function safeSheetName(n){return String(n||'Sheet1').replace(/[\\\\/\\*\\?:\\[\\]]/g,'_').slice(0,31)||'Sheet1'}function uniqueSheetName(base,names){let b=safeSheetName(base),set=new Set(names.map(x=>x.toLowerCase()));if(!set.has(b.toLowerCase()))return b;for(let i=1;i<1000;i++){let suf='_'+i,c=b.slice(0,31-suf.length)+suf;if(!set.has(c.toLowerCase()))return c}return b.slice(0,27)+'_new'}function safeFileName(n){return safeSheetName(n).replace(/[\/:*?"<>|]/g,'_')}function exportHeader(c,mode){return mode==='response'?`${c.name}_响应值`:mode==='percent'?`${c.name}_响应百分比(%)`:c.name}function sheetXml(mode){mode=mode||$('exportDataMode')?.value||'resistance';let rows=[],heads=['Time(s)',...state.channels.map(c=>exportHeader(c,mode))];rows.push(`<row r="1">`+heads.map((h,i)=>`<c r="${colName(i)}1" t="inlineStr"><is><t>${esc(h)}</t></is></c>`).join('')+`</row>`);for(let r=0;r<state.x.length;r++){let cs=[`<c r="A${r+2}"><v>${state.x[r]}</v></c>`];state.channels.forEach((c,i)=>{let v=exportValue(c,r,mode);if(isFinite(v))cs.push(`<c r="${colName(i+1)}${r+2}"><v>${v}</v></c>`)});rows.push(`<row r="${r+2}">${cs.join('')}</row>`)}return `<?xml version="1.0" encoding="UTF-8"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${rows.join('')}</sheetData></worksheet>`}function downloadBlob(blob,name){let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}function exportNewWorkbook(){let sh=safeSheetName(state.sheet||'ModifiedData'),entries=[{name:'[Content_Types].xml',data:'<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>'},{name:'_rels/.rels',data:'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'},{name:'xl/workbook.xml',data:`<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="${esc(sh)}" sheetId="1" r:id="rId1"/></sheets></workbook>`},{name:'xl/_rels/workbook.xml.rels',data:'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>'},{name:'xl/worksheets/sheet1.xml',data:sheetXml()}];downloadBlob(zip(entries),safeFileName(sh)+'.xlsx');toast('已导出新 Excel')}function exportAppendWorkbook(){if(!wb||!wb.files||!wb.files['xl/workbook.xml'])return exportNewWorkbook();let enc=new TextEncoder(),dec=new TextDecoder(),files={...wb.files};let names=wb.sheets.map(s=>s.name),newName=uniqueSheetName((state.sheet||'Sheet')+'_修改',names),idx=1;while(files[`xl/worksheets/sheet${idx}.xml`])idx++;let sheetPath=`xl/worksheets/sheet${idx}.xml`,target=`worksheets/sheet${idx}.xml`;files[sheetPath]=enc.encode(sheetXml());let wbXml=dec.decode(files['xl/workbook.xml']),relsPath='xl/_rels/workbook.xml.rels',relsXml=files[relsPath]?dec.decode(files[relsPath]):'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>';let ids=[...wbXml.matchAll(/sheetId="(\d+)"/g)].map(m=>+m[1]),sheetId=(ids.length?Math.max(...ids):0)+1,rn=1;while(relsXml.includes(`Id="rId${rn}"`))rn++;let rid=`rId${rn}`;wbXml=wbXml.replace('</sheets>',`<sheet name="${esc(newName)}" sheetId="${sheetId}" r:id="${rid}"/></sheets>`);relsXml=relsXml.replace('</Relationships>',`<Relationship Id="${rid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="${target}"/></Relationships>`);files['xl/workbook.xml']=enc.encode(wbXml);files[relsPath]=enc.encode(relsXml);let ct='[Content_Types].xml';if(files[ct]){let c=dec.decode(files[ct]);if(!c.includes(`/xl/worksheets/sheet${idx}.xml`))c=c.replace('</Types>',`<Override PartName="/xl/worksheets/sheet${idx}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>`);files[ct]=enc.encode(c)}let entries=Object.keys(files).map(name=>({name,data:files[name]}));let base=(state.name||'workbook.xlsx').replace(/\.[^.]+$/,'').replace(/[\\/:*?"<>|]/g,'_');downloadBlob(zip(entries),base+'_modified.xlsx');toast(`已导出副本，并添加 ${newName}`)}function exportXlsx(){if(!state.channels.length)return toast('请先加载数据');let dataMode=$('exportDataMode')?.value||'resistance';if(dataMode!=='resistance'&&!hasAnyBaseline())return toast('请先设置基线');let mode=$('exportMode')?.value||'new';if(mode==='append')exportAppendWorkbook();else exportNewWorkbook()}
-async function loadFile(f){if(!f)return;let picked=$('pickedName'),oldPicked=picked?picked.textContent:'';try{$('fileName').textContent='读取中...';if(!/\.(xlsx|csv|tsv)$/i.test(f.name))throw Error('仅支持 .xlsx / .csv / .tsv 文件');if(picked)picked.textContent=f.name;if(/\.csv$|\.tsv$/i.test(f.name)){wb=null;let sh=f.name.replace(/\.[^.]+$/,'');useRows(parseCSV(await f.text()),f.name,sh,0);$('sheet').innerHTML='<option>CSV</option>'}else{wb=await readXlsx(f);$('sheet').innerHTML=wb.sheets.map((s,i)=>`<option value="${i}">${esc(s.name)}</option>`).join('');useRows(sheetRows(wb,0),f.name,wb.sheets[0]?.name||'Sheet1',0)}}catch(err){console.error(err);toast(err.message);if(picked)picked.textContent=oldPicked||'未选择文件';$('fileName').textContent='读取失败'}}
+async function deflateRaw(data){if(typeof CompressionStream==='undefined')return null;try{let stream=new Blob([data]).stream().pipeThrough(new CompressionStream('deflate-raw'));return new Uint8Array(await new Response(stream).arrayBuffer())}catch(e){return null}}async function zip(entries){let enc=new TextEncoder(),parts=[],central=[],off=0;for(let e of entries){let name=enc.encode(e.name),raw=typeof e.data==='string'?enc.encode(e.data):e.data,compressed=await deflateRaw(raw),useDeflate=!!(compressed&&compressed.length<raw.length),method=useDeflate?8:0,data=useDeflate?compressed:raw,crc=crc32(raw),lh=new Uint8Array(30+name.length);u32(lh,0,0x04034b50);u16(lh,4,20);u16(lh,6,2048);u16(lh,8,method);u32(lh,14,crc);u32(lh,18,data.length);u32(lh,22,raw.length);u16(lh,26,name.length);lh.set(name,30);parts.push(lh,data);let ch=new Uint8Array(46+name.length);u32(ch,0,0x02014b50);u16(ch,4,20);u16(ch,6,20);u16(ch,8,2048);u16(ch,10,method);u32(ch,16,crc);u32(ch,20,data.length);u32(ch,24,raw.length);u16(ch,28,name.length);u32(ch,42,off);ch.set(name,46);central.push(ch);off+=lh.length+data.length}let csize=central.reduce((s,x)=>s+x.length,0),eoc=new Uint8Array(22);u32(eoc,0,0x06054b50);u16(eoc,8,entries.length);u16(eoc,10,entries.length);u32(eoc,12,csize);u32(eoc,16,off);return new Blob([...parts,...central,eoc],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})}
+function safeSheetName(n){return String(n||'Sheet1').replace(/[\\\\/\\*\\?:\\[\\]]/g,'_').slice(0,31)||'Sheet1'}function uniqueSheetName(base,names){let b=safeSheetName(base),set=new Set(names.map(x=>x.toLowerCase()));if(!set.has(b.toLowerCase()))return b;for(let i=1;i<1000;i++){let suf='_'+i,c=b.slice(0,31-suf.length)+suf;if(!set.has(c.toLowerCase()))return c}return b.slice(0,27)+'_new'}function safeFileName(n){return safeSheetName(n).replace(/[\/:*?"<>|]/g,'_')}function exportHeader(c,mode){return mode==='response'?`${c.name}_响应值`:mode==='percent'?`${c.name}_响应百分比(%)`:c.name}function sheetXml(mode,includeTime=true){mode=mode||$('exportDataMode')?.value||'resistance';let rows=[],offset=includeTime?1:0,heads=[...(includeTime?[state.timeHeader||'Time(s)']:[]),...state.channels.map(c=>exportHeader(c,mode))];rows.push('<row r="1">'+heads.map((h,i)=>'<c r="'+colName(i)+'1" t="inlineStr"><is><t>'+esc(h)+'</t></is></c>').join('')+'</row>');for(let r=0;r<state.x.length;r++){let cs=includeTime?['<c r="A'+(r+2)+'"><v>'+state.x[r]+'</v></c>']:[];state.channels.forEach((c,i)=>{let v=exportValue(c,r,mode);if(isFinite(v))cs.push('<c r="'+colName(i+offset)+(r+2)+'"><v>'+v+'</v></c>')});rows.push('<row r="'+(r+2)+'">'+cs.join('')+'</row>')}return '<?xml version="1.0" encoding="UTF-8"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>'+rows.join('')+'</sheetData></worksheet>'}function downloadBlob(blob,name){let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}async function exportNewWorkbook(){let sh=safeSheetName(state.sheet||'ModifiedData'),entries=[{name:'[Content_Types].xml',data:'<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>'},{name:'_rels/.rels',data:'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'},{name:'xl/workbook.xml',data:`<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="${esc(sh)}" sheetId="1" r:id="rId1"/></sheets></workbook>`},{name:'xl/_rels/workbook.xml.rels',data:'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>'},{name:'xl/worksheets/sheet1.xml',data:sheetXml()}];downloadBlob(await zip(entries),safeFileName(sh)+'.xlsx');toast('已导出新 Excel')}async function exportAppendWorkbook(){if(!wb||!wb.files||!wb.files['xl/workbook.xml'])return await exportNewWorkbook();let enc=new TextEncoder(),dec=new TextDecoder(),files={...wb.files};let names=wb.sheets.map(s=>s.name),newName=uniqueSheetName((state.sheet||'Sheet')+'_修改',names),idx=1;while(files[`xl/worksheets/sheet${idx}.xml`])idx++;let sheetPath=`xl/worksheets/sheet${idx}.xml`,target=`worksheets/sheet${idx}.xml`;files[sheetPath]=enc.encode(sheetXml(undefined,state.hasTime));let wbXml=dec.decode(files['xl/workbook.xml']),relsPath='xl/_rels/workbook.xml.rels',relsXml=files[relsPath]?dec.decode(files[relsPath]):'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>';let ids=[...wbXml.matchAll(/sheetId="(\d+)"/g)].map(m=>+m[1]),sheetId=(ids.length?Math.max(...ids):0)+1,rn=1;while(relsXml.includes(`Id="rId${rn}"`))rn++;let rid=`rId${rn}`;wbXml=wbXml.replace('</sheets>',`<sheet name="${esc(newName)}" sheetId="${sheetId}" r:id="${rid}"/></sheets>`);relsXml=relsXml.replace('</Relationships>',`<Relationship Id="${rid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="${target}"/></Relationships>`);files['xl/workbook.xml']=enc.encode(wbXml);files[relsPath]=enc.encode(relsXml);let ct='[Content_Types].xml';if(files[ct]){let c=dec.decode(files[ct]);if(!c.includes(`/xl/worksheets/sheet${idx}.xml`))c=c.replace('</Types>',`<Override PartName="/xl/worksheets/sheet${idx}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>`);files[ct]=enc.encode(c)}let entries=Object.keys(files).map(name=>({name,data:files[name]}));let base=(state.name||'workbook.xlsx').replace(/\.[^.]+$/,'').replace(/[\\/:*?"<>|]/g,'_');downloadBlob(await zip(entries),base+'_modified.xlsx');toast(`已导出副本，并添加 ${newName}`)}async function exportXlsx(){try{if(!state.channels.length)return toast('请先加载数据');let dataMode=$('exportDataMode')?.value||'resistance';if(dataMode!=='resistance'){let missing=state.channels.filter(c=>!isFinite(channelBaseline(c)));if(missing.length){let names=missing.slice(0,4).map(channelLabel).join('、'),more=missing.length>4?` 等 ${missing.length} 个通道`:'';return toast(`请先设置基线：${names}${more}`)}}let mode=$('exportMode')?.value||'new';if(mode==='append')await exportAppendWorkbook();else await exportNewWorkbook();clearDirty()}catch(e){console.error(e);toast('导出失败：'+(e.message||e))}}
+async function loadFile(f){if(!f||!confirmDiscard())return;let picked=$('pickedName'),oldPicked=picked?picked.textContent:'',oldLabel=$('fileName').textContent;try{$('fileName').textContent='读取中...';if(!/\.(xlsx|csv|tsv)$/i.test(f.name))throw Error('仅支持 .xlsx / .csv / .tsv 文件');if(f.size>200*1024*1024)throw Error('文件超过 200 MB，请先精简数据或另存为 CSV');if(picked)picked.textContent=f.name;if(/\.csv$|\.tsv$/i.test(f.name)){let sh=f.name.replace(/\.[^.]+$/,'');useRows(parseCSV(await f.text()),f.name,sh,0);wb=null;$('sheet').innerHTML='<option>CSV</option>'}else{let nextWb=await readXlsx(f),rows=sheetRows(nextWb,0);useRows(rows,f.name,nextWb.sheets[0]?.name||'Sheet1',0);wb=nextWb;$('sheet').innerHTML=wb.sheets.map((s,i)=>`<option value="${i}">${esc(s.name)}</option>`).join('')}}catch(err){console.error(err);toast(err.message);if(picked)picked.textContent=oldPicked||'未选择文件';$('fileName').textContent=oldLabel}}
+
+function initWorkbenchLayout(){
+  let app=document.querySelector('.app'),side=$('side'),main=document.querySelector('.main'),top=document.querySelector('.top'),stage=document.querySelector('.stage'),plotWrap=document.querySelector('.plotWrap');
+  let groups=[...side.children].filter(el=>el.classList&&el.classList.contains('group'));
+  if(groups.length<7)return;
+  let [fileGroup,sampleGroup,channelGroup,selectionGroup,operationGroup,filterGroup,exportGroup]=groups;
+  let brand=side.querySelector('.brand'),sub=side.querySelector('.sub'),modeTabs=document.querySelector('.modeTabs'),cursor=$('cursorReadout'),fileName=$('fileName'),saveState=$('saveState'),about=$('aboutBtn'),menu=$('menu'),filePick=fileGroup.querySelector('.filePick'),sheet=$('sheet'),fit=$('fit'),zero=$('zeroRefWrap'),undo=$('undo'),redo=$('redo'),exportBtn=$('export');
+  [brand,sub,modeTabs,cursor,fileName,saveState,about,menu,filePick,sheet,fit,zero,undo,redo,exportBtn].forEach(el=>el&&el.remove());
+  let brandBlock=document.createElement('div');brandBlock.className='brandBlock';let brandMark=document.createElement('span');brandMark.className='brandMark';brandMark.setAttribute('aria-hidden','true');brandMark.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>';brandBlock.append(brandMark,brand,sub);
+  let fileBar=document.createElement('div');fileBar.className='topFileBar';let fileBtn=filePick.querySelector('#fileBtn');fileBtn.textContent='打开文件';fileBtn.title='点击选择文件，也可以将文件直接拖入窗口';fileBar.append(filePick,fileName);let sheetLabel=document.createElement('span');sheetLabel.className='topFieldLabel';sheetLabel.textContent='工作表';sheet.style.marginTop='0';fileBar.append(sheetLabel,sheet,saveState);
+  let topActions=document.createElement('div');topActions.className='topActions';topActions.append(menu,undo,redo,exportBtn,about);
+  top.replaceChildren(brandBlock,fileBar,topActions);app.insertBefore(top,app.firstChild);
+  fileGroup.remove();let oldHistory=exportGroup.querySelector('.grid3');if(oldHistory)oldHistory.remove();
+  let chartToolbar=document.createElement('div');chartToolbar.className='chartToolbar';let chartLeft=document.createElement('div');chartLeft.className='chartToolbarLeft';chartLeft.append(modeTabs,cursor);let chartRight=document.createElement('div');chartRight.className='chartToolbarRight';chartRight.append(fit,zero);chartToolbar.append(chartLeft,chartRight);stage.insertBefore(chartToolbar,plotWrap);
+  let rangeActions=selectionGroup.querySelector('.grid2'),selectAll=$('selectAllData'),del=$('deleteSel');rangeActions.className='selectionSideActions';let up=document.createElement('button');up.id='moveSelUp';up.className='moveButton';up.title='向上移动选中数据（Shift + ↑ 可增大步长）';up.textContent='↑';let down=document.createElement('button');down.id='moveSelDown';down.className='moveButton';down.title='向下移动选中数据（Shift + ↓ 可增大步长）';down.textContent='↓';rangeActions.replaceChildren(selectAll,up,down,del);
+  channelGroup.classList.add('channelGroup');selectionGroup.classList.add('selectionGroup');sampleGroup.classList.add('sampleGroup');operationGroup.classList.add('operationGroup');filterGroup.classList.add('filterGroup');exportGroup.classList.add('exportGroup');
+  let sideIntro=document.createElement('div');sideIntro.className='sideIntro';sideIntro.innerHTML='<strong>数据工具</strong><span>通道、处理与导出</span>';side.prepend(sideIntro);side.append(channelGroup,selectionGroup,operationGroup,filterGroup,sampleGroup,exportGroup);
+  up.onclick=()=>{if(state.sel)nudgeSelection(1,false)};down.onclick=()=>{if(state.sel)nudgeSelection(-1,false)};
+}
+function uiIcon(paths){return '<svg class="uiIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+paths+'</svg>'}
+function setButtonIcon(id,paths,label){let button=$(id);if(!button)return;button.classList.add('withIcon');button.innerHTML=uiIcon(paths)+'<span>'+label+'</span>'}
+function decorateUiIcons(){
+  setButtonIcon('fileBtn','<path d="M3 7V5a2 2 0 0 1 2-2h4l2 3h8a2 2 0 0 1 2 2v2"></path><path d="M3 18l2-6h16l-2 7a2 2 0 0 1-2 1H5a2 2 0 0 1-2-2Z"></path>','打开文件');
+  setButtonIcon('undo','<path d="M9 14 4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"></path>','撤销');
+  setButtonIcon('redo','<path d="m15 14 5-5-5-5"></path><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"></path>','重做');
+  setButtonIcon('export','<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"></path><path d="M14 2v6h6"></path><path d="M8 13h2M8 17h2M14 13h2M14 17h2"></path>','导出 Excel');
+  setButtonIcon('aboutBtn','<circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path>','关于');
+  setButtonIcon('fit','<path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"></path>','全图');
+  setButtonIcon('applyOp','<path d="m5 12 4 4L19 6"></path>','应用到框选区间');
+  setButtonIcon('applyFilter','<path d="M22 3H2l8 9.5V19l4 2v-8.5Z"></path>','应用滤波到框选区间');
+  setButtonIcon('deleteSel','<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5"></path>','删除选中数据');
+}
+initWorkbenchLayout();decorateUiIcons();
 $('fileBtn').onclick=()=>$('file').click();$('file').onchange=e=>{loadFile(e.target.files[0]);e.target.value=''};
 ['dragenter','dragover'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();document.body.classList.add('dragging')}));['dragleave','drop'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();if(ev==='drop'){let f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];loadFile(f)}document.body.classList.remove('dragging')}));
 
-$('sheet').onchange=e=>{if(wb)try{let i=Number(e.target.value);useRows(sheetRows(wb,i),state.name,wb.sheets[i]?.name||('Sheet'+(i+1)),i)}catch(err){toast(err.message)}};$('applyDt').onclick=()=>{state.dt=Number($('dt').value)||state.dt;if(!state.channels.length)return;state.x=state.x.map((_,i)=>i*state.dt);fitAll();toast('采样间隔已应用')};$('allOn').onclick=()=>{state.channels.forEach(c=>state.visible[c.name]=true);refreshYRange();buildChannels();draw()};$('allOff').onclick=()=>{state.channels.forEach(c=>state.visible[c.name]=false);refreshYRange();buildChannels();draw()};$('fit').onclick=fitAll;$('op').onchange=()=>updateOpInput(true);setTimeout(()=>updateOpInput(true),0);$('modeResistance').onclick=()=>setView('resistance');$('modeResponse').onclick=()=>setView('response');$('modePercent').onclick=()=>setView('percent');$('applyOp').onclick=applyOp;$('applyFilter').onclick=applyFilter;$('selectAllData').onclick=selectAllVisibleData;$('deleteSel').onclick=deleteSelected;$('undo').onclick=undo;$('export').onclick=exportXlsx;$('undo').disabled=true;$('menu').onclick=()=>$('side').classList.toggle('open');$('aboutBtn').onclick=()=>$('aboutModal').classList.add('show');$('aboutClose').onclick=()=>$('aboutModal').classList.remove('show');$('aboutModal').onclick=e=>{if(e.target===$('aboutModal'))$('aboutModal').classList.remove('show')};
-updateModeButtons();updateBaselineUI();hideCursor();updateStat();
-</script></body></html>
+$('sheet').onchange=e=>{if(!wb)return;if(!confirmDiscard()){e.target.value=String(state.sheetIndex);return}try{let i=Number(e.target.value);useRows(sheetRows(wb,i),state.name,wb.sheets[i]?.name||('Sheet'+(i+1)),i)}catch(err){e.target.value=String(state.sheetIndex);toast(err.message)}};$('applyDt').onclick=()=>{let dt=Number($('dt').value);if(!isFinite(dt)||dt<=0)return toast('采样间隔必须大于 0');state.dt=dt;if(!state.channels.length)return toast('采样间隔已设置');if(state.hasTime)return toast('当前 sheet 已有时间列，不会覆盖原时间');state.x=state.x.map((_,i)=>i*state.dt);fitAll();markDirty();toast('采样间隔已应用')};$('allOn').onclick=()=>{state.channels.forEach(c=>state.visible[c.key]=true);refreshYRange();buildChannels();draw()};$('allOff').onclick=()=>{state.channels.forEach(c=>state.visible[c.key]=false);refreshYRange();buildChannels();draw()};$('fit').onclick=fitAll;$('op').onchange=()=>updateOpInput(true);setTimeout(()=>updateOpInput(true),0);$('modeResistance').onclick=()=>setView('resistance');$('modeResponse').onclick=()=>setView('response');$('modePercent').onclick=()=>setView('percent');$('zeroRef').onchange=e=>{state.includeZero=e.target.checked;refreshYRange();draw();updateStat()};$('applyOp').onclick=applyOp;$('applyFilter').onclick=applyFilter;$('selectAllData').onclick=selectAllVisibleData;$('deleteSel').onclick=deleteSelected;$('undo').onclick=undo;$('redo').onclick=redo;$('export').onclick=exportXlsx;updateHistoryButtons();$('menu').onclick=()=>$('side').classList.toggle('open');$('aboutBtn').onclick=()=>$('aboutModal').classList.add('show');$('aboutClose').onclick=()=>$('aboutModal').classList.remove('show');$('aboutModal').onclick=e=>{if(e.target===$('aboutModal'))$('aboutModal').classList.remove('show')};
+addEventListener('beforeunload',e=>{if(!state.dirty)return;e.preventDefault();e.returnValue=''});updateModeButtons();updateBaselineUI();hideCursor();updateStat();
+</script>
+
+
+<section class="converterApp" id="converterApp" aria-label="ResiScope 数据转换">
+  <div class="converterSource" hidden><div class="directionSwitch" role="group" aria-label="转换方向"><button type="button" class="active" data-direction="txt-xlsx" aria-pressed="true">TXT → Excel</button><button type="button" data-direction="xlsx-txt" aria-pressed="false">Excel → TXT</button></div></div>
+  <main class="converterMain">
+    <section class="converterWorkspace">
+      <div class="cvDrop" id="cvDrop" tabindex="0"><input id="cvFileInput" type="file" accept=".txt" multiple><div><svg class="cvDropIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M20 15v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4"></path></svg><strong id="cvDropTitle">拖入 TXT 文件</strong><p id="cvDropHint">支持一次添加多个文件，也可以点击选择</p><button id="cvChoose" type="button">选择文件</button></div></div>
+      <section class="cvPanel"><div class="cvPanelHead"><div><strong id="cvListTitle">文件列表</strong> <span id="cvListMeta">尚未添加文件</span></div><div class="cvHeadActions"><button id="cvSelectAll" type="button">全选</button><button id="cvRemove" type="button">移除选中</button><button id="cvClear" type="button">清空</button></div></div><div class="cvTableWrap" id="cvListWrap"><div class="cvPreviewEmpty">拖入文件后将在这里显示解析结果</div></div></section>
+      <section class="cvPanel"><div class="cvPanelHead"><div><strong>数据预览</strong> <span id="cvPreviewName">选择列表中的文件或工作表</span></div><div class="cvPreviewInfo" id="cvPreviewInfo"></div></div><div class="cvTableWrap" id="cvPreview"><div class="cvPreviewEmpty">解析后的数据可在这里滚动和翻页查看</div></div><div class="cvIssues" id="cvIssues" hidden></div></section>
+    </section>
+    <aside class="converterSettings"><h2>转换设置</h2><p class="cvLead">检查数据后即可生成目标文件</p><div class="cvSettingGroup" id="cvOutputGroup"><span class="cvSettingTitle">输出方式</span><div class="cvOutputChoice"><button id="cvMerge" class="active" type="button" data-output="merged" aria-pressed="true">合并为一个 Excel</button><button id="cvIndividual" type="button" data-output="individual" aria-pressed="false">分别导出</button></div><p class="cvOutputInfo" id="cvOutputHint">每个 TXT 对应一个工作表；文件名自动作为 Sheet 名称。</p></div><div class="cvSettingGroup" id="cvReverseGroup" hidden><span class="cvSettingTitle">输出规则</span><div class="cvReverseRule">一个 Sheet 对应一个 TXT；多个结果自动打包为 ZIP。时间列和其他非 CH 通道列会被忽略，所有数值按整数输出。</div></div><div class="cvSettingGroup"><span class="cvSettingTitle">转换摘要</span><div class="cvSummary"><div class="cvMetric"><b id="cvMetricFiles">0</b><span id="cvMetricFilesLabel">文件</span></div><div class="cvMetric"><b id="cvMetricRows">0</b><span>数据行</span></div><div class="cvMetric"><b id="cvMetricIssues">0</b><span>异常行</span></div></div></div><div class="cvSettingGroup"><button class="cvPrimary" id="cvConvert" type="button" disabled>转换并下载</button><button class="cvSecondary" id="cvLoadEditor" type="button" disabled>载入曲线编辑器</button><div class="cvPrivacy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path><path d="m9 12 2 2 4-4"></path></svg><span>文件只在当前浏览器中本地处理，不会上传，也不会覆盖原文件。</span></div></div></aside>
+  </main>
+  <footer class="converterStatus"><span id="cvStatus">支持 CHx = 数值 格式 · 自动识别通道 · 异常行会单独提示</span><span>所有原始电阻按整数保存</span></footer>
+</section>
+<div class="cvToast" id="cvToast"></div>
+<script>
+(()=>{
+  const cv=id=>document.getElementById(id);
+  const cvState={direction:'txt-xlsx',output:'merged',txtItems:[],excelItems:[],currentId:null,busy:false,previewPage:0,previewSize:100};
+  const integerize=()=>{if(typeof state==='undefined'||!state.channels)return;state.channels.forEach(c=>c.values=c.values.map(v=>isFinite(v)?Math.round(v):v))};
+  const originalUseRows=useRows;
+  window.useRows=function(...args){let out=originalUseRows(...args);integerize();refreshYRange();draw();updateStat();return out};
+  const originalPushChange=pushChange;
+  window.pushChange=function(items){if(Array.isArray(items))items.forEach(item=>{if(Array.isArray(item)&&item.length>=4&&isFinite(item[3])){item[3]=Math.round(item[3]);item[0].values[item[1]]=item[3]}});return originalPushChange(items)};
+  function cvToast(message){let el=cv('cvToast');el.textContent=message;el.classList.add('show');clearTimeout(cvToast.timer);cvToast.timer=setTimeout(()=>el.classList.remove('show'),2200)}
+  function baseName(name){return String(name||'data').replace(/\.[^.]+$/,'')||'data'}
+  function formatNumber(n){return new Intl.NumberFormat('en-US').format(Number(n)||0)}
+  function formatBytes(n){if(n<1024)return n+' B';if(n<1024*1024)return (n/1024).toFixed(1)+' KB';return (n/1024/1024).toFixed(1)+' MB'}
+  function makeId(file,suffix=''){return [file.name,file.size,file.lastModified,suffix].join('|')}
+  function correctedChannelNumber(raw){return raw.length===2&&raw[0]===raw[1]?raw[0]:raw}
+  function parseTxt(file,text){
+    text=String(text||'').replace(/^\uFEFF/,'');let rawLines=text?text.split(/\r\n|\n|\r/):[];if(rawLines.length&&rawLines.at(-1)==='')rawLines.pop();
+    let channelSet=new Set(),rowMaps=[],issues=[],corrections=0,issueRows=new Set();
+    rawLines.forEach((raw,index)=>{let lineNo=index+1,clean=raw.replace(/\0/g,' ').trim();if(!clean)return;clean=clean.replace(/^\d+\t/,'');let pairs=[...clean.matchAll(/CH(\d+)\s*=\s*(-?\d+(?:\.\d+)?)/gi)];if(!pairs.length){issues.push(`第 ${lineNo} 行：未找到有效的通道-值对`);issueRows.add(lineNo);return}let row={};pairs.forEach(m=>{let rawNo=m[1],no=correctedChannelNumber(rawNo),ch='CH'+Number(no),value=Math.round(Number(m[2]));if(no!==rawNo)corrections++;if(Object.prototype.hasOwnProperty.call(row,ch)){issues.push(`第 ${lineNo} 行：${ch} 重复，采用最后一个值`);issueRows.add(lineNo)}row[ch]=value;channelSet.add(ch)});rowMaps.push({lineNo,values:row})});
+    let channels=[...channelSet].sort((a,b)=>Number(a.slice(2))-Number(b.slice(2)));rowMaps.forEach(r=>{let missing=channels.filter(ch=>!Object.prototype.hasOwnProperty.call(r.values,ch));if(missing.length){issueRows.add(r.lineNo);if(issues.length<200)issues.push(`第 ${r.lineNo} 行：缺少 ${missing.join('、')}`)}});
+    return {id:makeId(file),kind:'txt',file,name:file.name,size:file.size,lineCount:rawLines.length,channels,rowMaps,rows:rowMaps.map(r=>channels.map(ch=>r.values[ch])),dataCount:rowMaps.length,issues,issueCount:issueRows.size,corrections,selected:channels.length>0&&rowMaps.length>0,valid:channels.length>0&&rowMaps.length>0};
+  }
+  function channelHeader(value){let m=String(value??'').trim().match(/^CH(\d+)$/i);return m?{name:'CH'+Number(m[1]),number:Number(m[1])}:null}
+  function parseExcelSheet(book,file,sheetIndex){
+    let sheet=book.sheets[sheetIndex],source=sheetRows(book,sheetIndex),headerIndex=-1,defs=[];
+    for(let i=0;i<Math.min(30,source.length);i++){let found=[];source[i].forEach((v,col)=>{let ch=channelHeader(v);if(ch)found.push({...ch,col})});if(found.length){headerIndex=i;defs=found;break}}
+    let issues=[],issueRows=new Set(),ignored=[];
+    if(headerIndex<0)return {id:makeId(file,String(sheetIndex)),kind:'sheet',file,book,sheetIndex,name:sheet?.name||('Sheet'+(sheetIndex+1)),channels:[],rows:[],dataCount:0,issues:['没有找到 CH0、CH1 等格式的通道表头'],issueCount:1,selected:false,valid:false,ignored:[]};
+    let seen=new Set();defs=defs.sort((a,b)=>a.number-b.number).filter(d=>{if(seen.has(d.name)){issues.push(`表头重复：${d.name}，仅采用第一列`);return false}seen.add(d.name);return true});
+    source[headerIndex].forEach((v,col)=>{let text=String(v??'').trim();if(text&&!channelHeader(text)&&!isTimeHeader(text))ignored.push(text||colName(col))});
+    let rows=[];for(let r=headerIndex+1;r<source.length;r++){let sourceRow=source[r]||[];if(!sourceRow.some(v=>v!==undefined&&v!==''))continue;let out=[],hasValue=false,bad=[];defs.forEach(d=>{let value=sourceRow[d.col];if(isNum(value)){out.push(Math.round(Number(value)));hasValue=true}else{out.push(undefined);bad.push(d.name)}});if(bad.length){issueRows.add(r+1);if(issues.length<200)issues.push(`第 ${r+1} 行：${bad.join('、')} 为空或不是数字`)}if(hasValue)rows.push(out)}
+    return {id:makeId(file,String(sheetIndex)),kind:'sheet',file,book,sheetIndex,name:sheet?.name||('Sheet'+(sheetIndex+1)),channels:defs.map(d=>d.name),rows,dataCount:rows.length,issues,issueCount:issueRows.size+(issues.some(x=>x.startsWith('表头重复'))?1:0),selected:defs.length>0&&rows.length>0,valid:defs.length>0&&rows.length>0,ignored,headerIndex};
+  }
+  function currentItems(){return cvState.direction==='txt-xlsx'?cvState.txtItems:cvState.excelItems}
+  function selectedItems(){return currentItems().filter(item=>item.selected&&item.valid)}
+  async function addFiles(files){
+    if(cvState.busy)return;let list=[...files],wantTxt=cvState.direction==='txt-xlsx',validFiles=list.filter(f=>wantTxt?/\.txt$/i.test(f.name):/\.xlsx$/i.test(f.name));if(!validFiles.length)return cvToast(wantTxt?'请选择 TXT 文件':'请选择 .xlsx 文件');cvState.previewPage=0;cvState.busy=true;cv('cvStatus').textContent='正在读取并检查文件...';
+    try{if(wantTxt){for(let file of validFiles){let id=makeId(file);if(cvState.txtItems.some(x=>x.id===id))continue;let item=parseTxt(file,await file.text());cvState.txtItems.push(item);cvState.currentId=item.id}}else{for(let file of validFiles){if(file.size>200*1024*1024){cvToast(`${file.name} 超过 200 MB，已跳过`);continue}let book=await readXlsx(file);book.sheets.forEach((_,i)=>{let item=parseExcelSheet(book,file,i);if(!cvState.excelItems.some(x=>x.id===item.id))cvState.excelItems.push(item);cvState.currentId=item.id})}}}catch(error){console.error(error);cvToast('读取失败：'+(error.message||error))}finally{cvState.busy=false;renderConverter();cv('cvStatus').textContent='文件检查完成；请确认异常提示后开始转换。'}}
+  function statusFor(item){if(!item.valid)return '<span class="cvBad">不可转换</span>';if(item.issueCount)return `<span class="cvWarn">${item.issueCount} 行异常</span>`;return '<span class="cvGood">可转换</span>'}
+  function renderList(){let items=currentItems(),wrap=cv('cvListWrap');cv('cvListMeta').textContent=items.length?`共 ${items.length} ${cvState.direction==='txt-xlsx'?'个文件':'个工作表'}`:'尚未添加文件';if(!items.length){wrap.innerHTML='<div class="cvPreviewEmpty">拖入文件后将在这里显示解析结果</div>';return}let isTxt=cvState.direction==='txt-xlsx';wrap.innerHTML=`<table class="cvTable cvFileTable"><thead><tr><th></th><th>${isTxt?'文件名':'文件 / 工作表'}</th><th>大小</th><th>数据行</th><th>通道</th><th>状态</th></tr></thead><tbody>${items.map(item=>`<tr data-id="${esc(item.id)}" class="${item.id===cvState.currentId?'current':''}"><td><input type="checkbox" data-check="${esc(item.id)}" ${item.selected?'checked':''} ${item.valid?'':'disabled'}></td><td><span class="cvFileName">${esc(item.name)}</span>${isTxt?'':`<br><span class="cvSubName">${esc(item.file.name)}</span>`}</td><td>${formatBytes(item.size||item.file.size)}</td><td>${formatNumber(item.dataCount)}</td><td>${item.channels.length}</td><td>${statusFor(item)}</td></tr>`).join('')}</tbody></table>`;wrap.querySelectorAll('tr[data-id]').forEach(row=>row.onclick=e=>{let id=row.dataset.id;if(e.target.matches('input')){let item=items.find(x=>x.id===id);item.selected=e.target.checked}else if(cvState.currentId!==id){cvState.currentId=id;cvState.previewPage=0}renderConverter()})}
+  function renderPreview(){let item=currentItems().find(x=>x.id===cvState.currentId),box=cv('cvPreview'),info=cv('cvPreviewInfo'),issues=cv('cvIssues');if(!item){cv('cvPreviewName').textContent='选择列表中的文件或工作表';info.innerHTML='';box.innerHTML='<div class="cvPreviewEmpty">解析后的数据可在这里滚动和翻页查看</div>';issues.hidden=true;return}cv('cvPreviewName').textContent=item.kind==='sheet'?`${item.file.name} / ${item.name}`:item.name;let totalPages=Math.max(1,Math.ceil(item.rows.length/cvState.previewSize));cvState.previewPage=Math.max(0,Math.min(totalPages-1,cvState.previewPage));let start=cvState.previewPage*cvState.previewSize,end=Math.min(item.rows.length,start+cvState.previewSize),pageRows=item.rows.slice(start,end);info.innerHTML=`<span class="cvTag">${item.channels.length} 通道</span><span class="cvTag">${formatNumber(item.dataCount)} 行</span>${item.corrections?`<span class="cvTag">纠正 ${item.corrections} 处</span>`:''}${item.issueCount?`<span class="cvTag warning">${item.issueCount} 行异常</span>`:''}${item.valid?`<span class="cvPreviewRange">${formatNumber(start+1)}–${formatNumber(end)} 行</span><span class="cvPager"><button id="cvPrevPage" type="button" ${cvState.previewPage===0?'disabled':''}>上一页</button><span>${cvState.previewPage+1} / ${totalPages}</span><button id="cvNextPage" type="button" ${cvState.previewPage>=totalPages-1?'disabled':''}>下一页</button><select id="cvPreviewSize" title="每页显示行数"><option value="50" ${cvState.previewSize===50?'selected':''}>50 行/页</option><option value="100" ${cvState.previewSize===100?'selected':''}>100 行/页</option><option value="250" ${cvState.previewSize===250?'selected':''}>250 行/页</option></select></span>`:''}`;if(!item.valid){box.innerHTML='<div class="cvPreviewEmpty">该项目没有可转换的数据</div>'}else{box.innerHTML=`<table class="cvTable"><thead><tr><th>#</th>${item.channels.map(ch=>`<th>${esc(ch)}</th>`).join('')}</tr></thead><tbody>${pageRows.map((row,i)=>`<tr><td>${start+i+1}</td>${row.map(v=>`<td>${isFinite(v)?formatNumber(Math.round(v)):'--'}</td>`).join('')}</tr>`).join('')}</tbody></table>`;let prev=cv('cvPrevPage'),next=cv('cvNextPage'),size=cv('cvPreviewSize');if(prev)prev.onclick=()=>{cvState.previewPage--;renderPreview();box.scrollTop=0};if(next)next.onclick=()=>{cvState.previewPage++;renderPreview();box.scrollTop=0};if(size)size.onchange=()=>{let first=start;cvState.previewSize=Number(size.value);cvState.previewPage=Math.floor(first/cvState.previewSize);renderPreview();box.scrollTop=0}}let notes=[];if(item.ignored?.length)notes.push(`已忽略非通道列：${item.ignored.slice(0,8).join('、')}`);notes.push(...item.issues.slice(0,8));issues.hidden=!notes.length;issues.innerHTML=notes.map(x=>`<div>• ${esc(x)}</div>`).join('')+(item.issues.length>8?`<div>另有 ${item.issues.length-8} 条提示未展开</div>`:'')}
+  function renderSummary(){let selected=selectedItems(),rows=selected.reduce((n,x)=>n+x.dataCount,0),problems=selected.reduce((n,x)=>n+x.issueCount,0);cv('cvMetricFiles').textContent=formatNumber(selected.length);cv('cvMetricRows').textContent=formatNumber(rows);cv('cvMetricIssues').textContent=formatNumber(problems);cv('cvMetricFilesLabel').textContent=cvState.direction==='txt-xlsx'?'文件':'工作表';cv('cvConvert').disabled=!selected.length||cvState.busy;let current=currentItems().find(x=>x.id===cvState.currentId);cv('cvLoadEditor').disabled=!current?.valid||cvState.busy}
+  function renderConverter(){let reverse=cvState.direction==='xlsx-txt';cv('cvDropTitle').textContent=reverse?'拖入 Excel 文件':'拖入 TXT 文件';cv('cvDropHint').textContent=reverse?'支持 .xlsx，可一次添加多个工作簿':'支持一次添加多个文件，也可以点击选择';cv('cvFileInput').accept=reverse?'.xlsx':'.txt';cv('cvOutputGroup').hidden=reverse;cv('cvReverseGroup').hidden=!reverse;document.querySelectorAll('[data-direction]').forEach(b=>{let active=b.dataset.direction===cvState.direction;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});renderList();renderPreview();renderSummary()}
+  function genericSheetXml(headers,rows){let head='<row r="1">'+headers.map((h,i)=>`<c r="${colName(i)}1" t="inlineStr" s="1"><is><t>${esc(h)}</t></is></c>`).join('')+'</row>',body=rows.map((row,r)=>`<row r="${r+2}">${row.map((v,i)=>isFinite(v)?`<c r="${colName(i)}${r+2}"><v>${Math.round(v)}</v></c>`:'').join('')}</row>`).join(''),cols=headers.map((_,i)=>`<col min="${i+1}" max="${i+1}" width="14" customWidth="1"/>`).join('');return `<?xml version="1.0" encoding="UTF-8"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>${cols}</cols><sheetData>${head}${body}</sheetData></worksheet>`}
+  function workbookStyles(){return '<?xml version="1.0" encoding="UTF-8"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Times New Roman"/></font><font><b/><sz val="11"/><name val="Times New Roman"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFD9E1F2"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles><dxfs count="0"/><tableStyles count="0" defaultTableStyle="TableStyleMedium2" defaultPivotStyle="PivotStyleLight16"/></styleSheet>'}
+  function converterSheetName(name){let illegal='\\/*?:[]',clean=[...String(name||'Sheet')].map(ch=>illegal.includes(ch)?'_':ch).join('').slice(0,31);return clean||'Sheet'}
+  function uniqueNames(names){let used=new Set();return names.map(name=>{let base=converterSheetName(name),next=base,n=1;while(used.has(next.toLowerCase())){let suffix='_'+n++;next=base.slice(0,31-suffix.length)+suffix}used.add(next.toLowerCase());return next})}
+  async function makeWorkbook(sheets){let names=uniqueNames(sheets.map(s=>s.name)),contentTypes='<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'+sheets.map((_,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')+'</Types>',workbook=`<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${names.map((name,i)=>`<sheet name="${esc(name)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join('')}</sheets></workbook>`,rels=`<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((_,i)=>`<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('')}<Relationship Id="rId${sheets.length+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`,entries=[{name:'[Content_Types].xml',data:contentTypes},{name:'_rels/.rels',data:'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'},{name:'xl/workbook.xml',data:workbook},{name:'xl/_rels/workbook.xml.rels',data:rels},{name:'xl/styles.xml',data:workbookStyles()}];sheets.forEach((sheet,i)=>entries.push({name:`xl/worksheets/sheet${i+1}.xml`,data:genericSheetXml(sheet.headers,sheet.rows)}));return await zip(entries)}
+  function uniqueFileNames(names,ext){let used=new Set();return names.map(name=>{let base=safeFileName(name)||'data',next=base,n=1;while(used.has((next+ext).toLowerCase()))next=base+'_'+n++;used.add((next+ext).toLowerCase());return next+ext})}
+  async function convertTxtToExcel(items){let sheets=items.map(item=>({name:baseName(item.name),headers:item.channels,rows:item.rows}));if(cvState.output==='merged'){let blob=await makeWorkbook(sheets),name=items.length===1?safeFileName(baseName(items[0].name))+'.xlsx':'converted_data.xlsx';downloadBlob(blob,name);return}let names=uniqueFileNames(items.map(x=>baseName(x.name)),'.xlsx');if(items.length===1){downloadBlob(await makeWorkbook([sheets[0]]),names[0]);return}let entries=[];for(let i=0;i<items.length;i++){let blob=await makeWorkbook([sheets[i]]);entries.push({name:names[i],data:new Uint8Array(await blob.arrayBuffer())})}let packed=await zip(entries);downloadBlob(new Blob([packed],{type:'application/zip'}),'converted_excel_files.zip')}
+  async function convertExcelToTxt(items){let names=uniqueFileNames(items.map(x=>x.name),'.txt'),contents=items.map(item=>item.rows.map(row=>item.channels.map((ch,i)=>isFinite(row[i])?`${ch} = ${Math.round(row[i])}`:'').filter(Boolean).join(', ')).filter(Boolean).join('\r\n'));if(items.length===1){downloadBlob(new Blob(['\uFEFF'+contents[0]],{type:'text/plain;charset=utf-8'}),names[0]);return}let enc=new TextEncoder(),entries=contents.map((text,i)=>({name:names[i],data:enc.encode('\uFEFF'+text)})),packed=await zip(entries);downloadBlob(new Blob([packed],{type:'application/zip'}),'converted_txt_files.zip')}
+  async function runConversion(){let items=selectedItems();if(!items.length)return cvToast('请先选择可转换的数据');cvState.busy=true;renderSummary();cv('cvConvert').textContent='正在生成...';cv('cvStatus').textContent='正在生成下载文件，请稍候...';try{if(cvState.direction==='txt-xlsx')await convertTxtToExcel(items);else await convertExcelToTxt(items);cvToast('转换完成，文件已开始下载');cv('cvStatus').textContent=`转换完成：${items.length} ${cvState.direction==='txt-xlsx'?'个文件':'个工作表'}`}catch(error){console.error(error);cvToast('转换失败：'+(error.message||error));cv('cvStatus').textContent='转换失败，请检查文件和异常提示'}finally{cvState.busy=false;cv('cvConvert').textContent='转换并下载';renderSummary()}}
+  function switchTool(tool){let converter=tool==='converter';if(!converter&&state.dirty&&!confirmDiscard())return;document.body.classList.toggle('converter-mode',converter);document.body.dataset.currentTool=tool;document.title=converter?'ResiScope - 数据转换':'ResiScope';document.querySelectorAll('button[data-tool]').forEach(b=>{let active=b.dataset.tool===tool;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});if(typeof syncViewport==='function')setTimeout(()=>syncViewport(true),0);if(!converter)setTimeout(()=>{resize();draw()},0)}
+  function loadCurrentIntoEditor(){let item=currentItems().find(x=>x.id===cvState.currentId);if(!item?.valid)return cvToast('请先选择可载入的数据');try{if(item.kind==='txt'){useRows([item.channels,...item.rows],item.name,baseName(item.name),0);wb=null}else{useRows(sheetRows(item.book,item.sheetIndex),item.file.name,item.name,item.sheetIndex);wb=item.book}let picked=cv('pickedName');if(picked)picked.textContent=item.file?.name||item.name;switchTool('editor');toast('数据已载入曲线编辑器')}catch(error){console.error(error);cvToast('载入失败：'+(error.message||error))}}
+  function clearCurrent(){if(cvState.direction==='txt-xlsx')cvState.txtItems=[];else cvState.excelItems=[];cvState.currentId=null;cvState.previewPage=0;renderConverter()}
+  let sharedHeader=document.createElement('header');sharedHeader.id='sharedHeader';
+  let sharedBrand=document.createElement('div');sharedBrand.className='sharedBrand';let editorBrand=document.querySelector('.app .brandBlock');if(editorBrand)sharedBrand.append(editorBrand);
+  let sharedSwitch=document.createElement('div');sharedSwitch.className='sharedToolSwitch';sharedSwitch.setAttribute('role','group');sharedSwitch.setAttribute('aria-label','工具切换');sharedSwitch.innerHTML='<button type="button" class="active" data-tool="editor" aria-pressed="true">曲线编辑</button><button type="button" data-tool="converter" aria-pressed="false">数据转换</button>';
+  let sharedContext=document.createElement('div');sharedContext.className='sharedContextHost';
+  let editorContext=document.createElement('div');editorContext.className='sharedContext sharedEditorContext';let fileBar=document.querySelector('.topFileBar');if(fileBar)editorContext.append(fileBar);
+  let converterContext=document.createElement('div');converterContext.className='sharedContext sharedConverterContext';let directionSwitch=document.querySelector('.directionSwitch');if(directionSwitch)converterContext.append(directionSwitch);sharedContext.append(editorContext,converterContext);
+  let sharedActions=document.createElement('div');sharedActions.className='sharedActionHost';let editorActions=document.createElement('div');editorActions.className='sharedActions sharedEditorActions';let topActions=document.querySelector('.topActions');let sharedAbout=cv('aboutBtn');if(sharedAbout)sharedAbout.remove();if(topActions)editorActions.append(topActions);let converterActions=document.createElement('div');converterActions.className='sharedActions sharedConverterActions';sharedActions.append(editorActions,converterActions);
+  if(!sharedAbout){sharedAbout=document.createElement('button');sharedAbout.type='button';sharedAbout.innerHTML='<svg class="uiIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5"></path><path d="M12 8h.01"></path></svg><span>关于</span>'}sharedAbout.id='sharedAboutBtn';sharedAbout.className='sharedAbout withIcon';sharedAbout.title='关于 ResiScope（F1）';sharedAbout.setAttribute('aria-label','关于 ResiScope');sharedAbout.onclick=()=>cv('aboutModal')?.classList.add('show');
+  sharedHeader.append(sharedBrand,sharedSwitch,sharedContext,sharedActions,sharedAbout);document.body.prepend(sharedHeader);document.querySelector('.app')?.classList.add('sharedShell');document.body.dataset.currentTool='editor';
+  document.querySelectorAll('button[data-tool]').forEach(button=>button.addEventListener('click',()=>switchTool(button.dataset.tool)));
+  document.querySelectorAll('[data-direction]').forEach(button=>button.addEventListener('click',()=>{cvState.direction=button.dataset.direction;cvState.previewPage=0;let items=currentItems();cvState.currentId=items[0]?.id||null;renderConverter()}));
+  cv('cvMerge').onclick=()=>{cvState.output='merged';cv('cvMerge').classList.add('active');cv('cvMerge').setAttribute('aria-pressed','true');cv('cvIndividual').classList.remove('active');cv('cvIndividual').setAttribute('aria-pressed','false');cv('cvOutputHint').textContent='每个 TXT 对应一个工作表；文件名自动作为 Sheet 名称。'};
+  cv('cvIndividual').onclick=()=>{cvState.output='individual';cv('cvIndividual').classList.add('active');cv('cvIndividual').setAttribute('aria-pressed','true');cv('cvMerge').classList.remove('active');cv('cvMerge').setAttribute('aria-pressed','false');cv('cvOutputHint').textContent='每个 TXT 生成一个 Excel；多个结果自动打包为 ZIP。'};
+  cv('cvChoose').onclick=e=>{e.stopPropagation();cv('cvFileInput').click()};cv('cvDrop').onclick=e=>{if(e.target!==cv('cvChoose'))cv('cvFileInput').click()};cv('cvDrop').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();cv('cvFileInput').click()}};cv('cvFileInput').onchange=e=>{addFiles(e.target.files);e.target.value=''};
+  cv('cvSelectAll').onclick=()=>{let valid=currentItems().filter(x=>x.valid),all=valid.length&&valid.every(x=>x.selected);valid.forEach(x=>x.selected=!all);renderConverter()};cv('cvRemove').onclick=()=>{if(cvState.direction==='txt-xlsx')cvState.txtItems=cvState.txtItems.filter(x=>!x.selected);else cvState.excelItems=cvState.excelItems.filter(x=>!x.selected);let items=currentItems();cvState.currentId=items[0]?.id||null;renderConverter()};cv('cvClear').onclick=clearCurrent;cv('cvConvert').onclick=runConversion;cv('cvLoadEditor').onclick=loadCurrentIntoEditor;
+  ['dragenter','dragover','dragleave','drop'].forEach(type=>document.addEventListener(type,e=>{if(!document.body.classList.contains('converter-mode'))return;e.preventDefault();e.stopImmediatePropagation();if(type==='dragenter'||type==='dragover')cv('cvDrop').classList.add('over');else cv('cvDrop').classList.remove('over');if(type==='drop'&&e.dataTransfer?.files?.length)addFiles(e.dataTransfer.files)},true));
+  document.addEventListener('keydown',e=>{if(!document.body.classList.contains('converter-mode'))return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='o'){e.preventDefault();cv('cvFileInput').click()}},true);
+  let aboutBox=cv('aboutModal')?.querySelector('.modalBox');if(aboutBox&&!aboutBox.querySelector('.converterAboutSection')){let section=document.createElement('div');section.className='converterAboutSection';section.innerHTML='<p><b>数据转换：</b></p><ul><li>支持 TXT 与 Excel 双向转换；多个结果自动合并为工作簿或打包为 ZIP。</li><li>TXT 使用 CHx = 整数 格式；Excel 逆向转换时只读取 CH 通道列并忽略时间及说明列。</li><li>原始电阻在导入、公式、滤波、移动和格式转换后统一按整数保存。</li></ul>';aboutBox.append(section)}
+  renderConverter();if(location.hash==='#converter')switchTool('converter');
+})();
+</script>
+</body></html>
 
 
 

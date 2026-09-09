@@ -3,6 +3,11 @@
 
 
 
+<script>
+// Restore before first paint; unavailable storage falls back to the original palette.
+try {const theme=localStorage.getItem('resiscope.theme.v1');document.documentElement.dataset.theme=['pink','blue','sage','sand','slate','lavender'].includes(theme)?theme:'pink';}
+catch {document.documentElement.dataset.theme='pink';}
+</script>
 <style id="resiscope-ui">
 :root {
   --shell: #d8f3ff;
@@ -11,7 +16,7 @@
   --panel-solid: #fbfdff;
   --ink: #29344d;
   --ink-soft: #59647a;
-  --muted: #7a8399;
+  --muted: #626e82;
   --line: rgba(145, 164, 196, 0.46);
   --line-blue: rgba(137, 160, 203, 0.48);
   --teal: #4caec1;
@@ -316,11 +321,12 @@ body.converter-mode .sharedConverterActions { display: flex; }
 }
 
 .topFileBar #fileName {
-  min-width: 0;
-  max-width: min(245px, 18vw);
+  flex: 1 1 220px;
+  min-width: 100px;
+  max-width: min(300px, 22vw);
   height: 36px;
-  display: flex;
-  align-items: center;
+  display: block;
+  line-height: 34px;
   padding: 0 10px;
   color: #576278;
   background: rgba(255, 255, 255, 0.72);
@@ -332,7 +338,7 @@ body.converter-mode .sharedConverterActions { display: flex; }
 }
 
 .topFileBar #fileName.dirty { border-color: #daa55d; background: rgba(255, 248, 225, 0.84); }
-.topFieldLabel { color: #7c8397; font-size: 11px; white-space: nowrap; }
+.topFieldLabel { color: #7c8397; font-size: 12px; white-space: nowrap; }
 .topFileBar #sheet { width: min(270px, 21vw); height: 36px; }
 
 .saveState {
@@ -358,11 +364,19 @@ body.converter-mode .sharedConverterActions { display: flex; }
 
 .topActions #undo,
 .topActions #redo {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  gap: 0;
+  flex: 0 0 34px;
   color: #677188;
   background: transparent;
   border-color: transparent;
   box-shadow: none;
 }
+
+.topActions #undo span,
+.topActions #redo span { display: none; }
 
 .topActions #export {
   min-width: 112px;
@@ -543,7 +557,7 @@ canvas { width: 100%; height: 100%; display: block; background: #fbfdff; }
   color: #647086;
   background: rgba(255, 255, 255, 0.48);
   border-top: 1px solid rgba(255, 255, 255, 0.7);
-  font-size: 10.5px;
+  font-size: 11.5px;
 }
 
 .side {
@@ -569,8 +583,15 @@ canvas { width: 100%; height: 100%; display: block; background: #fbfdff; }
   padding: 2px 3px 8px;
 }
 
+.side .channelGroup > .label { font-size: 13px; }
+.channelGroup .small { font-size: 12px; }
+.channelGroup .sampleInline { font-size: 11px; }
+.channelGroup .sampleInline input { font-size: 12px; }
+.channelGroup .ch { font-size: 12px; }
+.channelGroup .chHead { font-size: 11px; }
+.channelGroup .baseInput, .channelGroup .baseBtn { font-size: 11.5px; }
 .sideIntro strong { color: #35405a; font-size: 15px; }
-.sideIntro span { color: #7e879b; font-size: 10.5px; }
+.sideIntro span { color: #7e879b; font-size: 11.5px; }
 
 .side .group {
   margin: 0 0 7px;
@@ -663,23 +684,23 @@ canvas { width: 100%; height: 100%; display: block; background: #fbfdff; }
 
 .selectionGroup { background: linear-gradient(135deg, rgba(224, 244, 255, 0.74), rgba(238, 235, 255, 0.72)); }
 .timeAdjustGroup { background: linear-gradient(135deg, rgba(226, 248, 242, 0.76), rgba(233, 242, 255, 0.74)); }
-.timeAdjustRow {
+.toolControlRow {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: center;
-  gap: 6px;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 0.85fr) 72px;
+  align-items: end;
+  gap: 8px;
 }
-.timeAdjustRow select,
-.timeAdjustRow input { height: 30px; }
-.timeAdjustRow input { min-width: 0; }
-.timeAdjustPointField { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 6px; min-width: 0; }
-.timeAdjustUnit { color: #738097; font-size: 10.5px; white-space: nowrap; }
-#applyTimeAdjust {
-  width: 100%;
-  height: 31px;
-  margin-top: 6px;
-}
-#timeAdjustHint { min-height: 13px; }
+.toolField { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.toolFieldLabel { color: var(--muted); font-size: 11.5px; line-height: 1.4; }
+.toolNumberField { position: relative; min-width: 0; }
+.toolNumberField input { padding-right: 30px; }
+.toolNumberField input::-webkit-inner-spin-button { margin-right: -2px; }
+.toolUnit { position: absolute; top: 50%; right: 9px; transform: translateY(-50%); color: var(--muted); font-size: 11px; pointer-events: none; }
+.toolNumberField:focus-within input { padding-right: 9px; }
+.toolNumberField:focus-within .toolUnit { display: none; }
+.toolControlRow > button { width: 100%; margin: 0; padding: 0 8px; }
+#timeAdjustHint { min-height: 16px; }
+
 .rangeBox {
   min-height: 36px;
   padding: 7px;
@@ -693,27 +714,26 @@ canvas { width: 100%; height: 100%; display: block; background: #fbfdff; }
 
 .selectionSideActions {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 31px 31px auto;
-  gap: 5px;
-  margin-top: 6px;
+  grid-template-columns: minmax(0, 1fr) 32px 32px 76px;
+  gap: 6px;
+  margin-top: 8px;
 }
+.selectionSideActions button { height: 34px; padding: 0 6px; font-size: 12px; }
+.selectionSideActions .moveButton { padding: 0; font-size: 16px; }
 
-.selectionSideActions button { height: 29px; padding: 0 7px; font-size: 10.5px; }
-.moveButton { padding: 0; font-size: 16px; }
+
 .operationGroup { background: linear-gradient(135deg, rgba(229, 247, 255, 0.7), rgba(255, 233, 242, 0.72)); }
 .operationGroup .grid2 { grid-template-columns: minmax(0, 1fr); }
 .formulaLibrary {
-  margin-top: 6px;
-  padding-top: 6px;
-  border-top: 1px solid rgba(144, 163, 199, 0.24);
+  margin-top: 8px;
 }
 .formulaLibrary[hidden],
 .formulaManageMenu[hidden] { display: none !important; }
-.formulaLibraryRow { display: grid; grid-template-columns: minmax(0, 1fr) repeat(3, 30px); gap: 5px; }
-.formulaLibraryRow select { min-width: 0; height: 30px; font-size: 10.5px; }
+.formulaLibraryRow { display: grid; grid-template-columns: minmax(0, 1fr) repeat(3, 34px); gap: 6px; }
+.formulaLibraryRow select { min-width: 0; height: 34px; font-size: 12px; }
 .formulaIconButton {
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -734,15 +754,40 @@ canvas { width: 100%; height: 100%; display: block; background: #fbfdff; }
   border-radius: 6px;
 }
 .formulaManageMenu button { height: 27px; padding: 0 6px; color: #63719a; font-size: 10px; }
-#applyOp,
-#applyFilter { width: 100%; height: 31px; margin-top: 6px; }
+.formulaHeading { display: flex; align-items: center; justify-content: space-between; }
+.formulaHeading .formulaMark { color: var(--muted); font: italic 17px Georgia, serif; font-weight: 400; }
+.formulaActionRow { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.formulaActionRow .hint { margin: 0; }
+.formulaActionRow #applyOp { flex: 0 0 126px; width: auto; height: 34px; margin: 0; }
+
+
 .filterGroup { background: linear-gradient(135deg, rgba(232, 240, 255, 0.76), rgba(241, 232, 255, 0.72)); }
 .sampleGroup { background: linear-gradient(135deg, rgba(222, 248, 244, 0.72), rgba(230, 242, 255, 0.7)); }
 .sampleRow { display: grid; grid-template-columns: minmax(0, 1fr) auto 58px; gap: 5px; align-items: center; }
 .sampleRow span { color: #758096; font-size: 10px; white-space: nowrap; }
 .exportGroup { background: linear-gradient(135deg, rgba(255, 237, 243, 0.76), rgba(237, 239, 255, 0.74)); }
 .exportGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.exportGrid select { font-size: 10.5px; }
+.exportGrid select { font-size: 12px; padding-left: 7px; padding-right: 3px; }
+
+/* Compact processing controls; the existing channel layout and palette stay shared. */
+.side .group:not(.channelGroup) { padding: 10px; margin-bottom: 8px; }
+.side .group:not(.channelGroup) > .label { margin-bottom: 8px; font-size: 13px; }
+.side .group:not(.channelGroup) .hint { font-size: 11px; line-height: 1.5; margin-top: 7px; }
+.side .group:not(.channelGroup) input,
+.side .group:not(.channelGroup) select { height: 34px; min-width: 0; font-size: 13px; }
+.side .group:not(.channelGroup) .formulaLibraryRow select,
+.side .group:not(.channelGroup) .exportGrid select { font-size: 12px; }
+.side .toolControlRow > button { height: 34px; font-size: 12px; gap: 4px; }
+.side .toolControlRow .uiIcon { width: 14px; height: 14px; }
+.side .formulaActionRow #applyOp { font-size: 13px; }
+.side .formulaActionRow .hint { margin-top: 0; }
+.side .formulaManageMenu button { height: 30px; font-size: 11.5px; }
+.side #operand { font-size: 15px; }
+.side .rangeBox { padding: 9px; min-height: 40px; font-size: 12px; line-height: 1.5; }
+.side .exportGrid { gap: 8px; }
+.side .exportHint { display: flex; gap: 5px; align-items: flex-start; }
+.exportHint .uiIcon { width: 13px; height: 13px; flex: 0 0 auto; margin-top: 2px; }
+.side .toolControlRow select { padding-left: 7px; padding-right: 2px; }
 
 .selPicker {
   position: absolute;
@@ -1068,6 +1113,178 @@ body.dragging .plotWrap { outline: 2px dashed var(--teal); outline-offset: -8px;
   .status span:last-child { display: none; }
 }
 
+html[data-theme="sand"] {
+  --ink: #463c30; --ink-soft: #655744; --muted: #796950;
+  --line: #dfd7c8; --line-blue: #d8cbb5;
+  --teal: #926832; --teal-dark: #775326;
+  --theme-bg: #f2eee5; --theme-panel: #fcf9f1; --theme-side: #eee7d9;
+  --theme-soft: #f6f0e4; --theme-hover: #eee5d2; --theme-selected: #eae0ca;
+  --theme-accent: #926832; --theme-accent-hover: #775326;
+  --theme-disabled: #efeade; --theme-disabled-text: #978d7e;
+  --theme-shadow: rgba(88,69,40,.08); --theme-focus: #926832;
+  --theme-popover: #fcf9f1; --theme-option: #f6f0e4;
+  --plot-bg: #fcf9f1; --plot-grid: #e5ddce; --plot-text: #655744;
+  --plot-axis: #c7bba4; --plot-label: #463c30;
+  --plot-reference: rgba(70,60,48,.24); --plot-reference-text: #796950;
+  --plot-selection: rgba(146,104,50,.10); --plot-selection-line: rgba(146,104,50,.7);
+  --plot-point: #926832; --plot-drag: rgba(146,104,50,.12); --plot-drag-line: rgba(146,104,50,.82);
+}
+html[data-theme="slate"] {
+  --ink: #293c49; --ink-soft: #4e6270; --muted: #586b79;
+  --line: #cdd8de; --line-blue: #bfced7;
+  --teal: #4a7188; --teal-dark: #365a70;
+  --theme-bg: #e9eef1; --theme-panel: #f3f6f7; --theme-side: #e2e9ed;
+  --theme-soft: #edf2f4; --theme-hover: #dde8ee; --theme-selected: #d6e4eb;
+  --theme-accent: #4a7188; --theme-accent-hover: #365a70;
+  --theme-disabled: #e5ecef; --theme-disabled-text: #87959d;
+  --theme-shadow: rgba(43,65,79,.08); --theme-focus: #4a7188;
+  --theme-popover: #f3f6f7; --theme-option: #edf2f4;
+  --plot-bg: #f3f6f7; --plot-grid: #dbe4e9; --plot-text: #4e6270;
+  --plot-axis: #afc1cc; --plot-label: #293c49;
+  --plot-reference: rgba(41,60,73,.24); --plot-reference-text: #586b79;
+  --plot-selection: rgba(74,113,136,.10); --plot-selection-line: rgba(74,113,136,.7);
+  --plot-point: #4a7188; --plot-drag: rgba(74,113,136,.12); --plot-drag-line: rgba(74,113,136,.82);
+}
+html[data-theme="lavender"] {
+  --ink: #40374e; --ink-soft: #635670; --muted: #756681;
+  --line: #dcd3e3; --line-blue: #cec0da;
+  --teal: #7d6398; --teal-dark: #654b81;
+  --theme-bg: #efeaf3; --theme-panel: #faf6fc; --theme-side: #e9e1ef;
+  --theme-soft: #f3edf7; --theme-hover: #eae0f1; --theme-selected: #e5d8ef;
+  --theme-accent: #7d6398; --theme-accent-hover: #654b81;
+  --theme-disabled: #ede7f0; --theme-disabled-text: #968b9e;
+  --theme-shadow: rgba(70,50,90,.07); --theme-focus: #7d6398;
+  --theme-popover: #faf6fc; --theme-option: #f3edf7;
+  --plot-bg: #faf6fc; --plot-grid: #e6deed; --plot-text: #635670;
+  --plot-axis: #c4b5cf; --plot-label: #40374e;
+  --plot-reference: rgba(64,55,78,.24); --plot-reference-text: #756681;
+  --plot-selection: rgba(125,99,152,.10); --plot-selection-line: rgba(125,99,152,.7);
+  --plot-point: #7d6398; --plot-drag: rgba(125,99,152,.12); --plot-drag-line: rgba(125,99,152,.82);
+}
+/* Small supporting text gets more contrast without changing the layout. */
+html[data-theme] :is(.sharedBrand .sub, .topFieldLabel, .sideIntro span, .side .hint, .sampleInline, .chHead, .ptCount, .empty, .modalBox .aboutLead, .converterSettings > .cvLead, .cvDrop p, .cvPanelHead span, .cvSubName, .cvPreviewEmpty, .cvPreviewRange, .cvPager span, .cvMetricHint, .cvOutputInfo, .cvMetric span, .cvPrivacy) { color: var(--muted); }
+html[data-theme] input::placeholder { color: var(--muted); opacity: 1; }
+
+/* Themes change paint only; control sizing and layout remain shared. */
+:root {
+  --plot-bg: #fbfdff;
+  --plot-grid: #dce3ef;
+  --plot-text: #344059;
+  --plot-axis: #a8b6ce;
+  --plot-label: #35405a;
+  --plot-reference: rgba(15,23,42,.22);
+  --plot-reference-text: rgba(36,48,68,.55);
+  --plot-selection: rgba(37,99,235,.10);
+  --plot-selection-line: rgba(37,99,235,.7);
+  --plot-point: rgba(37,99,235,.95);
+  --plot-drag: rgba(104,139,224,.12);
+  --plot-drag-line: rgba(112,126,211,.82);
+  --theme-popover: linear-gradient(145deg, #f1f8ff, #f9f0fa);
+  --theme-option: rgba(255,255,255,.65);
+  --theme-selected: rgba(113,143,221,.12);
+  --theme-focus: #879ee4;
+}
+html[data-theme="blue"] {
+  --ink: #26364c; --ink-soft: #52657c; --muted: #617189;
+  --line: #d5dfeb; --line-blue: #cad8e9;
+  --teal: #356ad8; --teal-dark: #2858bb;
+  --theme-bg: #f2f5fa; --theme-panel: #ffffff; --theme-side: #edf2f8;
+  --theme-soft: #f5f8fc; --theme-hover: #eaf1fc; --theme-selected: #e4edfc;
+  --theme-accent: #356ad8; --theme-accent-hover: #2858bb;
+  --theme-disabled: #edf1f6; --theme-disabled-text: #8b98aa;
+  --theme-shadow: rgba(41,65,103,.09); --theme-focus: #356ad8;
+  --theme-popover: #ffffff; --theme-option: #f5f8fc;
+  --plot-bg: #ffffff; --plot-grid: #e2e8f1; --plot-text: #52657c;
+  --plot-axis: #b8c7da; --plot-label: #26364c;
+}
+html[data-theme="sage"] {
+  --ink: #2c4039; --ink-soft: #546b61; --muted: #5f7165;
+  --line: #d5dfd5; --line-blue: #cad9ce;
+  --teal: #367b65; --teal-dark: #28634f;
+  --theme-bg: #f4f4ee; --theme-panel: #fffef9; --theme-side: #eaf0e7;
+  --theme-soft: #f3f6ef; --theme-hover: #e9f1e7; --theme-selected: #e1eddf;
+  --theme-accent: #367b65; --theme-accent-hover: #28634f;
+  --theme-disabled: #edf0e9; --theme-disabled-text: #909b90;
+  --theme-shadow: rgba(54,79,61,.08); --theme-focus: #367b65;
+  --theme-popover: #fffef9; --theme-option: #f3f6ef;
+  --plot-bg: #fffef9; --plot-grid: #e4e8dd; --plot-text: #546b61;
+  --plot-axis: #bccbbd; --plot-label: #2c4039;
+  --plot-reference: rgba(44,64,57,.24); --plot-reference-text: #738379;
+  --plot-selection: rgba(54,123,101,.10); --plot-selection-line: rgba(54,123,101,.7);
+  --plot-point: #367b65; --plot-drag: rgba(54,123,101,.12); --plot-drag-line: rgba(54,123,101,.82);
+}
+html[data-theme]:not([data-theme="pink"]) {
+  --shadow-sm: 0 6px 18px var(--theme-shadow);
+  --shadow-md: 0 16px 40px var(--theme-shadow);
+}
+html[data-theme]:not([data-theme="pink"]) body { background: var(--theme-bg); }
+html[data-theme]:not([data-theme="pink"]) body::before { background: none; }
+html[data-theme]:not([data-theme="pink"]) :is(#sharedHeader, .modalHead, .cvPanelHead) { background: var(--theme-panel); border-color: var(--line); box-shadow: 0 8px 28px var(--theme-shadow); }
+html[data-theme]:not([data-theme="pink"]) #sharedHeader::after { background: none; }
+html[data-theme]:not([data-theme="pink"]) :is(.stage, .converterWorkspace) { background: var(--theme-bg); }
+html[data-theme]:not([data-theme="pink"]) :is(.side, .converterSettings) { background: var(--theme-side); border-color: var(--line); box-shadow: -14px 0 34px var(--theme-shadow); scrollbar-color: var(--line-blue) transparent; }
+html[data-theme]:not([data-theme="pink"]) :is(.side .group, .plotWrap, .cvPanel, .modalBox, .selPicker) { background: var(--theme-panel); border-color: var(--line); box-shadow: var(--shadow-sm); }
+html[data-theme]:not([data-theme="pink"]) :is(.sharedToolSwitch, .directionSwitch, .modeTabs, .formulaManageMenu, .cvOutputChoice, .cvMetric) { background: var(--theme-soft); border-color: var(--line); box-shadow: var(--shadow-sm); }
+html[data-theme]:not([data-theme="pink"]) :is(input[type="number"], input[type="text"], select, button) { color: var(--ink-soft); background: var(--theme-panel); border-color: var(--line-blue); box-shadow: none; }
+html[data-theme]:not([data-theme="pink"]) button:hover:not(:disabled) { color: var(--ink); background: var(--theme-hover); border-color: var(--theme-accent); box-shadow: none; }
+html[data-theme]:not([data-theme="pink"]) :is(input, select):focus { border-color: var(--theme-accent); box-shadow: 0 0 0 3px var(--theme-selected); }
+html[data-theme]:not([data-theme="pink"]) :is(.sharedToolSwitch button, .directionSwitch button, .modeBtn, .cvOutputChoice button) { background: transparent; border-color: transparent; box-shadow: none; color: var(--ink-soft); }
+html[data-theme]:not([data-theme="pink"]) .topActions :is(#undo, #redo) { background: transparent; border-color: transparent; box-shadow: none; color: var(--ink-soft); }
+html[data-theme]:not([data-theme="pink"]) :is(#fileBtn, #sharedAboutBtn, #themeButton, #fileName, .chartToolbar #fit, .zeroToggle, .rangeBox, .cvTag, .cvSecondary, .cvPrivacy, .cvReverseRule, .cvDrop) { color: var(--ink-soft); background: var(--theme-soft); border-color: var(--line-blue); box-shadow: none; }
+html[data-theme]:not([data-theme="pink"]) :is(.cvDrop.over, .selOption:hover, .cvTable tbody tr:hover) { background: var(--theme-hover); border-color: var(--theme-accent); box-shadow: none; }
+html[data-theme]:not([data-theme="pink"]) :is(.ch, .ch:nth-child(even):not(.chHead)) { color: var(--ink-soft); background: var(--theme-panel); }
+html[data-theme]:not([data-theme="pink"]) .ch:nth-child(odd):not(.chHead) { background: var(--theme-soft); }
+html[data-theme]:not([data-theme="pink"]) .ch:not(.chHead):hover { background: var(--theme-hover); box-shadow: none; }
+html[data-theme]:not([data-theme="pink"]) .chHead { color: var(--muted); background: transparent; border-color: var(--line); }
+html[data-theme]:not([data-theme="pink"]) :is(.status, .converterStatus, .cvTable th) { color: var(--ink-soft); background: var(--theme-soft); border-color: var(--line); }
+html[data-theme]:not([data-theme="pink"]) :is(.cvTable td, .cvSettingGroup, .selPickerHead, .selAll) { color: var(--ink-soft); border-color: var(--line); }
+html[data-theme]:not([data-theme="pink"]) .cvTable tbody tr.current { background: var(--theme-selected); }
+html[data-theme]:not([data-theme="pink"]) :is(.sharedBrand .brand, .sideIntro strong, .side .label, .modalHead strong, .modalBox h3, .converterSettings h2, .cvDrop strong, .cvPanelHead strong, .cvFileName, .cvSettingTitle, .cvMetric b) { color: var(--ink); }
+html[data-theme]:not([data-theme="pink"]) :is(.cursorReadout, .ch, .sampleInline input, .modalBox li, .selOption) { color: var(--ink-soft); }
+html[data-theme]:not([data-theme="pink"]) :is(.sharedBrand .sub, .topFieldLabel, .sideIntro span, .side .hint, .sampleInline, .ptCount, .empty, .modalBox .aboutLead, .converterSettings > .cvLead, .cvDrop p, .cvPanelHead span, .cvSubName, .cvPreviewEmpty, .cvPreviewRange, .cvPager span, .cvMetricHint, .cvOutputInfo, .cvMetric span) { color: var(--muted); }
+html[data-theme]:not([data-theme="pink"]) :is(.sharedBrand .brandMark, .baseBtn, .formulaIconButton, .formulaManageMenu button, .cvDropIcon, .cvPrivacy svg, .selAll) { color: var(--theme-accent); }
+html[data-theme]:not([data-theme="pink"]) :is(button.primary, button.blue, #export, .cvPrimary, .sharedToolSwitch button.active, .directionSwitch button.active, .modeBtn.active, .formulaIconButton.isActive, .cvOutputChoice button.active) { color: #fff; background: var(--theme-accent); border-color: transparent; box-shadow: 0 4px 12px var(--theme-shadow); }
+html[data-theme]:not([data-theme="pink"]) :is(button.primary, button.blue, #export, .cvPrimary, .sharedToolSwitch button.active, .directionSwitch button.active, .modeBtn.active, .formulaIconButton.isActive, .cvOutputChoice button.active):hover:not(:disabled) { color: #fff; background: var(--theme-accent-hover); border-color: transparent; filter: none; }
+html[data-theme]:not([data-theme="pink"]) :is(button, input, select):disabled { color: var(--theme-disabled-text); background: var(--theme-disabled); border-color: var(--line); box-shadow: none; }
+html[data-theme]:not([data-theme="pink"]) :is(button.primary, button.blue, #export, .cvPrimary, .formulaIconButton.isActive):disabled { color: var(--theme-disabled-text); background: var(--theme-disabled); border-color: var(--line); box-shadow: none; }
+html[data-theme]:not([data-theme="pink"]) .modeBtn:disabled { background: transparent; border-color: transparent; }
+html[data-theme]:not([data-theme="pink"]) button.danger:not(:disabled) { color: #bc4f62; background: #fff6f7; border-color: #e7bdc6; }
+html[data-theme]:not([data-theme="pink"]) button.danger:hover:not(:disabled) { color: #a64052; background: #ffedf0; border-color: #dca6b2; }
+html[data-theme]:not([data-theme="pink"]) #fileName.dirty { border-color: #daa55d; background: #fff8e1; }
+html[data-theme]:not([data-theme="pink"]) .cvTag.correction { color: #28756d; background: #f0fbf8; border-color: #a9ddd4; }
+html[data-theme]:not([data-theme="pink"]) .cvTag.warning { color: #93600c; background: #fff9ec; border-color: #edd1a1; }
+html[data-theme]:not([data-theme="pink"]) .toast { background: var(--ink); box-shadow: var(--shadow-md); }
+html[data-theme]:not([data-theme="pink"]) .modal { background: var(--theme-shadow); }
+html[data-theme]:not([data-theme="pink"]) kbd { color: var(--ink-soft); background: var(--theme-soft); border-color: var(--line-blue); }
+canvas { background: var(--plot-bg); }
+
+.headerUtilities { display: flex; align-items: center; gap: 6px; }
+#themeButton { height: 38px; padding: 0 10px; font-size: 12px; white-space: nowrap; }
+#themeButton:focus-visible, .themeChoice:focus-within { outline: 2px solid var(--theme-focus); outline-offset: 2px; }
+.themePopover { position: fixed; top: calc(var(--header-h) + 8px); right: 12px; z-index: 100; width: min(270px, calc(100vw - 24px)); padding: 14px; background: var(--theme-popover); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow-md); color: var(--ink); }
+.themePopover { max-height: calc(100dvh - var(--header-h) - 24px); overflow-y: auto; overscroll-behavior: contain; }
+.themePopover[hidden] { display: none; }
+.themePopover fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.themePopover legend { padding: 0; margin-bottom: 10px; font-size: 13px; font-weight: 700; }
+.themeChoice { display: flex; align-items: center; gap: 9px; padding: 11px 9px; margin-top: 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--theme-option); cursor: pointer; font-size: 13px; }
+.themeChoice:has(input:checked) { border-color: var(--theme-focus); background: var(--theme-selected); }
+.themeChoice input { margin: 0; accent-color: var(--theme-focus); }
+.themeSwatch { display: inline-flex; margin-left: auto; overflow: hidden; border-radius: 4px; border: 1px solid rgba(100,120,145,.2); }
+.themeSwatch i { width: 13px; height: 22px; }
+.themePopover p { margin: 11px 0 0; font-size: 11px; color: var(--muted); }
+@media (max-width: 900px) { #themeButton { width: 34px; height: 34px; padding: 0; } #themeButton span { display: none; } .headerUtilities { gap: 4px; } }
+@media (max-width: 620px) {
+  #sharedHeader { grid-template-columns: 90px auto minmax(0, 1fr) auto auto; }
+  .topActions #menu { width: 34px; padding: 0; font-size: 11px; white-space: nowrap; }
+  .cursorReadout { display: none !important; }
+  .modeBtn { white-space: nowrap; font-size: 11px; }
+  .modeTabs { flex-shrink: 0; }
+}
+@media (max-width: 380px) {
+  #sharedHeader { grid-template-columns: 26px auto minmax(0, 1fr) auto auto; }
+  .sharedBrand .brand { display: none; }
+}
+
 </style>
 </head><body><div class="app"><aside class="side" id="side"><h1 class="brand">ResiScope</h1><p class="sub">电阻曲线预览、编辑与导出工具</p><div class="group" style="border-top:0;margin-top:0;padding-top:0"><p class="label">数据文件</p><div class="filePick"><button id="fileBtn" type="button">选择文件</button><span id="pickedName" class="pickedName">未选择文件</span><input id="file" type="file" accept=".xlsx,.csv,.tsv"></div><select id="sheet" style="margin-top:10px"></select><p class="hint">支持 .xlsx / .csv / .tsv，可点击选择或直接拖入文件。</p></div><div class="group"><p class="label">采样间隔</p><div class="sampleRow"><input id="dt" type="number" value="0.2" min="0.001" step="0.001"><span>秒/点</span><button id="applyDt">应用</button></div><p class="hint" id="dtHint">无时间列时自动按采样间隔生成横轴。</p></div><div class="group"><p class="label">通道显示</p><div class="row" style="margin-bottom:8px"><button id="allOn" class="small">全选</button><button id="allOff" class="small">全关</button><button id="fit" class="small">全图</button><label class="zeroToggle" id="zeroRefWrap" title="控制电阻视图是否包含并显示 0 Ω 基准线"><input id="zeroRef" type="checkbox" checked><span>0 Ω</span></label></div><div class="channels" id="channels"></div></div><div class="group"><p class="label">框选区间</p><div class="rangeBox" id="rangeText">尚未框选。拖动图表可框选，单击清除。</div><div class="grid2" style="margin-top:8px"><button id="selectAllData">全选显示数据</button><button id="deleteSel" class="danger">删除选中数据</button></div></div><div class="group"><p class="label">局部数据处理</p><div class="grid2" style="grid-template-columns:92px 1fr"><select id="op"><option value="+">加 +</option><option value="-">减 -</option><option value="*" selected>乘 ×</option><option value="/">除 ÷</option><option value="=">设为 =</option><option value="formula">公式 f(x)</option></select><input id="operand" type="text" value="1.0" placeholder="1.0"></div><button id="applyOp" class="primary" style="width:100%;margin-top:8px">应用到框选区间</button></div><div class="group"><p class="label">滤波</p><div class="grid2"><select id="filterType"><option value="moving">移动平均</option><option value="median">中值滤波</option><option value="gaussian">高斯平滑</option><option value="exp">指数平滑</option><option value="edge">保边三点平滑</option></select><input id="filterWin" type="number" value="5" min="3" max="1001" step="2"></div><button id="applyFilter" class="blue" style="width:100%;margin-top:8px">应用滤波到框选区间</button></div><div class="group"><p class="label">导出方式</p><div class="exportGrid"><select id="exportDataMode"><option value="resistance">导出电阻</option><option value="response" disabled>导出响应值</option><option value="percent" disabled>导出响应百分比</option></select><select id="exportMode"><option value="new">新 Excel：sheet 保持原名</option><option value="append">原文件副本：添加修改 sheet</option></select></div><div class="grid3" style="margin-top:8px"><button id="undo" class="danger" title="撤销上一次数据操作 (Ctrl+Z)">撤销</button><button id="redo" title="重新执行刚撤销的操作 (Ctrl+Y)">重做</button><button id="export" class="primary" title="导出当前修改结果 (Ctrl+S)">导出 Excel</button></div><p class="hint">不会覆盖原文件；添加 sheet 会导出副本。</p></div></aside><main class="main"><div class="top"><div class="tools"><button class="mobileBtn" id="menu">菜单</button><div class="modeTabs"><button id="modeResistance" class="modeBtn active" data-view="resistance">电阻</button><button id="modeResponse" class="modeBtn" data-view="response" disabled>响应值</button><button id="modePercent" class="modeBtn" data-view="percent" disabled>响应百分比</button></div><div class="cursorReadout" id="cursorReadout">时间 -- / 电阻 --</div></div><div class="tools"><span class="pill" id="fileName">未加载文件</span><span class="saveState" id="saveState" hidden>未导出</span><button id="aboutBtn" class="pill">关于</button></div></div><div class="stage"><div class="plotWrap"><canvas id="plot"></canvas><div class="selPicker" id="selPicker"></div><div class="empty" id="empty">选择或拖入 Excel 文件开始预览<br>表头可为 CH1、CH2、CH3，也可包含 Time/时间列</div><div class="toast" id="toast"></div></div><div class="modal" id="aboutModal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle"><div class="modalBox"><div class="modalHead"><strong id="aboutTitle">关于 ResiScope</strong><button id="aboutClose" type="button">关闭</button></div><p><b>ResiScope</b></p><p class="aboutLead">电阻曲线预览、编辑、导出与实验数据格式转换工具</p><p>开发者：橙汁</p><p class="aboutNotice"><b>免责声明：</b>本工具用于数据预览、清洗和辅助分析。请始终保留原始文件与必要的处理记录，避免为追求曲线外观而过度滤波、选择性删除或改变实验结论；自动纠正和需检查行应由使用者核实，导出结果应结合实验记录和专业判断使用。</p><h3>工具组成</h3><ul><li><b>曲线编辑：</b>读取 .xlsx / .csv / .tsv，预览多通道电阻曲线并进行局部处理、基线响应计算和结果导出。</li><li><b>数据转换：</b>支持 TXT → Excel 与 Excel → TXT，可合并或分别导出，并提供分页数据预览和格式检查。</li></ul><h3>曲线编辑</h3><ul><li>支持多工作表；可识别 Time、时间、秒、sec、second、s 等时间列。没有时间列时按采样间隔生成横轴，默认 0.2 秒/点。</li>
 <li>滚轮同时缩放横纵坐标；可从画布、坐标轴或轴标题区域开始拖动框选，拖出画布时选框会吸附到绘图区边界；单击清除选区，单点选中以圆圈标记。</li>
@@ -1108,7 +1325,7 @@ function updateModeButtons(){let ok=hasAnyBaseline();[['modeResistance','resista
 function refreshYRangeKeepingView(){let old=state.yr?state.yr.slice():null;refreshYRange();if(old){let full=state.fullYr||old;state.fullYr=[Math.min(full[0],old[0]),Math.max(full[1],old[1])];state.yr=old}}
 function refreshYRange(){let y0=Infinity,y1=-Infinity;state.channels.forEach(c=>{if(!state.visible[c.key])return;for(let i=0;i<c.values.length;i++){let v=displayValue(c,i);if(isFinite(v)){if(v<y0)y0=v;if(v>y1)y1=v}}});if(!isFinite(y0)){state.fullYr=[0,1];state.yr=[0,1];return}if(y0===y1){y0-=1;y1+=1}let pad=Math.max((y1-y0)*.08,state.view==='response'?.02:state.view==='percent'?1:0),includeZero=state.view==='resistance'&&state.includeZero;state.fullYr=[includeZero?Math.min(0,y0-pad):y0-pad,includeZero?Math.max(0,y1+pad):y1+pad];state.yr=state.fullYr.slice()}function yRange(){if(!state.yr)refreshYRange();return state.yr||[0,1]}function iy(py,p,yr){return yr[1]-(py-p.t)/p.h*(yr[1]-yr[0])}function limitYView(){if(!state.fullYr)refreshYRange();let full=state.fullYr||[0,1],yr=state.yr||full.slice(),fullSpan=Math.max(full[1]-full[0],1e-9),minSpan=Math.max(fullSpan/100000,1e-9),maxSpan=fullSpan*1.05,span=yr[1]-yr[0],mid=(yr[0]+yr[1])/2;if(span<minSpan){yr=[mid-minSpan/2,mid+minSpan/2];span=minSpan}if(span>maxSpan){yr=[full[0],full[1]];span=yr[1]-yr[0]}if(yr[0]<full[0]){yr[1]+=full[0]-yr[0];yr[0]=full[0]}if(yr[1]>full[1]){yr[0]-=yr[1]-full[1];yr[1]=full[1]}if(yr[0]<full[0]||yr[1]>full[1]||yr[0]>=yr[1])yr=full.slice();state.yr=yr}
 function drawChannel(c,a,b,p,yr,maxPts){ctx.beginPath();let n=b-a+1,first=true,emit=i=>{let v=displayValue(c,i);if(!isFinite(v)){first=true;return}let x=sx(state.x[i],p),y=sy(v,p,yr);if(first){ctx.moveTo(x,y);first=false}else ctx.lineTo(x,y)};if(n<=maxPts){for(let i=a;i<=b;i++)emit(i)}else{let buckets=Math.max(1,Math.floor(maxPts/2)),size=Math.ceil(n/buckets);for(let s=a;s<=b;s+=size){let e=Math.min(b,s+size-1),minI=-1,maxI=-1,minV=Infinity,maxV=-Infinity;for(let i=s;i<=e;i++){let v=displayValue(c,i);if(!isFinite(v))continue;if(v<minV){minV=v;minI=i}if(v>maxV){maxV=v;maxI=i}}if(minI<0){first=true;continue}if(minI===maxI)emit(minI);else if(minI<maxI){emit(minI);emit(maxI)}else{emit(maxI);emit(minI)}}}ctx.stroke()}
-function niceTicks(lo,hi,target=7,whole=false){if(!isFinite(lo)||!isFinite(hi)||hi<=lo)return[lo];let span=hi-lo,raw=span/Math.max(2,target-1),mag=Math.pow(10,Math.floor(Math.log10(raw))),multipliers=[1,1.25,2,2.5,5,10],best=null;for(let scale of [mag/10,mag,mag*10])for(let m of multipliers){let step=m*scale;if(whole&&step<1)step=1;let first=Math.ceil((lo-step*1e-9)/step)*step,last=Math.floor((hi+step*1e-9)/step)*step,count=Math.max(0,Math.floor((last-first)/step+1.000001)),penalty=Math.abs(count-target)+(count<5||count>8?8:0)+(m===1.25?.08:0);if(!best||penalty<best.penalty||(penalty===best.penalty&&step>best.step))best={step,first,last,count,penalty}}let out=[];if(!best||!best.count)return[lo,hi];for(let i=0;i<best.count;i++){let value=best.first+i*best.step;if(Math.abs(value)<best.step*1e-10)value=0;out.push(whole?Math.round(value):value)}while(out.length>7){let lowGap=out[0]-lo,highGap=hi-out[out.length-1];if(lowGap<=highGap)out.shift();else out.pop()}return out}function draw(){resizePending=false;ctx.imageSmoothingEnabled=false;let p=plotBox(),d=p.d;ctx.clearRect(0,0,C.width,C.height);ctx.fillStyle='#fbfdff';ctx.fillRect(0,0,C.width,C.height);if(!state.channels.length)return;let yr=yRange();ctx.strokeStyle='#dce3ef';ctx.lineWidth=px(d);ctx.font=`${12*d}px Segoe UI`;ctx.fillStyle='#344059';ctx.textAlign='right';ctx.textBaseline='middle';let yTicks=niceTicks(yr[0],yr[1],7,state.view!=='response');for(let v of yTicks){let y=crisp(sy(v,p,yr));ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(p.r,y);ctx.stroke();ctx.fillText(fmtDisplay(v),p.l-9*d,y)}ctx.textAlign='center';ctx.textBaseline='top';let xTicks=niceTicks(state.x0,state.x1,7,false);for(let v of xTicks){let x=crisp(sx(v,p));ctx.beginPath();ctx.moveTo(x,p.t);ctx.lineTo(x,p.b);ctx.stroke();ctx.fillText(v.toFixed(1),x,p.b+8*d)}let ref=state.view==='response'?1:0;if((state.view!=='resistance'||state.includeZero)&&yr[0]<ref&&yr[1]>ref){let zy=sy(ref,p,yr);ctx.save();ctx.setLineDash([4*d,5*d]);ctx.strokeStyle='rgba(15,23,42,.22)';ctx.lineWidth=px(d);ctx.beginPath();ctx.moveTo(p.l,zy);ctx.lineTo(p.r,zy);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='rgba(36,48,68,.55)';ctx.textAlign='left';ctx.textBaseline='bottom';ctx.fillText(state.view==='response'?'1.00':(state.view==='percent'?'0%':'0 Ω'),p.l+6*d,zy-4*d);ctx.restore()}ctx.save();ctx.beginPath();ctx.rect(p.l,p.t,p.w,p.h);ctx.clip();let a=idx0(state.x0),b=idx1(state.x1),maxPts=Math.max(1000,Math.floor(p.w/d*2));state.channels.forEach(c=>{if(!state.visible[c.key])return;ctx.strokeStyle=c.color;ctx.lineWidth=px(d);ctx.lineCap='butt';ctx.lineJoin='miter';drawChannel(c,a,b,p,yr,maxPts)});if(state.sel){ctx.fillStyle='rgba(37,99,235,.10)';ctx.strokeStyle='rgba(37,99,235,.7)';let x1=sx(state.sel.a,p),x2=sx(state.sel.b,p),yTop=sy(state.sel.y1,p,yr),yBot=sy(state.sel.y0,p,yr);ctx.fillRect(x1,yTop,x2-x1,yBot-yTop);ctx.strokeRect(x1,yTop,x2-x1,yBot-yTop);if(selectedCount()===1){ctx.save();ctx.lineWidth=px(d);ctx.strokeStyle='rgba(37,99,235,.95)';state.channels.forEach(c=>{let set=state.sel.members&&state.sel.members[c.key];if(!set)return;set.forEach(i=>{let v=displayValue(c,i);if(!isFinite(v))return;ctx.beginPath();ctx.arc(sx(state.x[i],p),sy(v,p,yr),5*d,0,Math.PI*2);ctx.stroke()})});ctx.restore()}}if(drag&&drag.kind==='select'){ctx.fillStyle='rgba(104,139,224,.12)';ctx.strokeStyle='rgba(112,126,211,.82)';let x=Math.min(drag.x,drag.cx),y=Math.min(drag.y,drag.cy),w=Math.abs(drag.cx-drag.x),h=Math.abs(drag.cy-drag.y);ctx.fillRect(x,y,w,h);ctx.strokeRect(x,y,w,h)}ctx.restore();ctx.strokeStyle='#a8b6ce';ctx.lineWidth=px(d);ctx.strokeRect(crisp(p.l),crisp(p.t),Math.round(p.w),Math.round(p.h));ctx.fillStyle='#35405a';ctx.textAlign='center';ctx.fillText('时间 (s)',p.l+p.w/2,C.height-20*d);ctx.save();ctx.translate(20*d,p.t+p.h/2);ctx.rotate(-Math.PI/2);ctx.fillText(axisLabel(),0,0);ctx.restore()}let resizePending=false;function reqDraw(){if(!resizePending){resizePending=true;requestAnimationFrame(draw)}}
+function niceTicks(lo,hi,target=7,whole=false){if(!isFinite(lo)||!isFinite(hi)||hi<=lo)return[lo];let span=hi-lo,raw=span/Math.max(2,target-1),mag=Math.pow(10,Math.floor(Math.log10(raw))),multipliers=[1,1.25,2,2.5,5,10],best=null;for(let scale of [mag/10,mag,mag*10])for(let m of multipliers){let step=m*scale;if(whole&&step<1)step=1;let first=Math.ceil((lo-step*1e-9)/step)*step,last=Math.floor((hi+step*1e-9)/step)*step,count=Math.max(0,Math.floor((last-first)/step+1.000001)),penalty=Math.abs(count-target)+(count<5||count>8?8:0)+(m===1.25?.08:0);if(!best||penalty<best.penalty||(penalty===best.penalty&&step>best.step))best={step,first,last,count,penalty}}let out=[];if(!best||!best.count)return[lo,hi];for(let i=0;i<best.count;i++){let value=best.first+i*best.step;if(Math.abs(value)<best.step*1e-10)value=0;out.push(whole?Math.round(value):value)}while(out.length>7){let lowGap=out[0]-lo,highGap=hi-out[out.length-1];if(lowGap<=highGap)out.shift();else out.pop()}return out}function draw(){const plotStyle=getComputedStyle(document.documentElement),paint=name=>plotStyle.getPropertyValue('--plot-'+name).trim();resizePending=false;ctx.imageSmoothingEnabled=false;let p=plotBox(),d=p.d;ctx.clearRect(0,0,C.width,C.height);ctx.fillStyle=paint('bg');ctx.fillRect(0,0,C.width,C.height);if(!state.channels.length)return;let yr=yRange();ctx.strokeStyle=paint('grid');ctx.lineWidth=px(d);ctx.font=`${12*d}px Segoe UI`;ctx.fillStyle=paint('text');ctx.textAlign='right';ctx.textBaseline='middle';let yTicks=niceTicks(yr[0],yr[1],7,state.view!=='response');for(let v of yTicks){let y=crisp(sy(v,p,yr));ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(p.r,y);ctx.stroke();ctx.fillText(fmtDisplay(v),p.l-9*d,y)}ctx.textAlign='center';ctx.textBaseline='top';let xTicks=niceTicks(state.x0,state.x1,7,false);for(let v of xTicks){let x=crisp(sx(v,p));ctx.beginPath();ctx.moveTo(x,p.t);ctx.lineTo(x,p.b);ctx.stroke();ctx.fillText(v.toFixed(1),x,p.b+8*d)}let ref=state.view==='response'?1:0;if((state.view!=='resistance'||state.includeZero)&&yr[0]<ref&&yr[1]>ref){let zy=sy(ref,p,yr);ctx.save();ctx.setLineDash([4*d,5*d]);ctx.strokeStyle=paint('reference');ctx.lineWidth=px(d);ctx.beginPath();ctx.moveTo(p.l,zy);ctx.lineTo(p.r,zy);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=paint('reference-text');ctx.textAlign='left';ctx.textBaseline='bottom';ctx.fillText(state.view==='response'?'1.00':(state.view==='percent'?'0%':'0 Ω'),p.l+6*d,zy-4*d);ctx.restore()}ctx.save();ctx.beginPath();ctx.rect(p.l,p.t,p.w,p.h);ctx.clip();let a=idx0(state.x0),b=idx1(state.x1),maxPts=Math.max(1000,Math.floor(p.w/d*2));state.channels.forEach(c=>{if(!state.visible[c.key])return;ctx.strokeStyle=c.color;ctx.lineWidth=px(d);ctx.lineCap='butt';ctx.lineJoin='miter';drawChannel(c,a,b,p,yr,maxPts)});if(state.sel){ctx.fillStyle=paint('selection');ctx.strokeStyle=paint('selection-line');let x1=sx(state.sel.a,p),x2=sx(state.sel.b,p),yTop=sy(state.sel.y1,p,yr),yBot=sy(state.sel.y0,p,yr);ctx.fillRect(x1,yTop,x2-x1,yBot-yTop);ctx.strokeRect(x1,yTop,x2-x1,yBot-yTop);if(selectedCount()===1){ctx.save();ctx.lineWidth=px(d);ctx.strokeStyle=paint('point');state.channels.forEach(c=>{let set=state.sel.members&&state.sel.members[c.key];if(!set)return;set.forEach(i=>{let v=displayValue(c,i);if(!isFinite(v))return;ctx.beginPath();ctx.arc(sx(state.x[i],p),sy(v,p,yr),5*d,0,Math.PI*2);ctx.stroke()})});ctx.restore()}}if(drag&&drag.kind==='select'){ctx.fillStyle=paint('drag');ctx.strokeStyle=paint('drag-line');let x=Math.min(drag.x,drag.cx),y=Math.min(drag.y,drag.cy),w=Math.abs(drag.cx-drag.x),h=Math.abs(drag.cy-drag.y);ctx.fillRect(x,y,w,h);ctx.strokeRect(x,y,w,h)}ctx.restore();ctx.strokeStyle=paint('axis');ctx.lineWidth=px(d);ctx.strokeRect(crisp(p.l),crisp(p.t),Math.round(p.w),Math.round(p.h));ctx.fillStyle=paint('label');ctx.textAlign='center';ctx.fillText('时间 (s)',p.l+p.w/2,C.height-20*d);ctx.save();ctx.translate(20*d,p.t+p.h/2);ctx.rotate(-Math.PI/2);ctx.fillText(axisLabel(),0,0);ctx.restore()}let resizePending=false;function reqDraw(){if(!resizePending){resizePending=true;requestAnimationFrame(draw)}}
 function updateCursor(e){let box=$('cursorReadout');if(!box)return;box.style.display='flex';if(!state.channels.length){box.textContent='时间 -- / 电阻 --';return}let p=plotBox(),x=e.offsetX*p.d,y=e.offsetY*p.d;if(x<p.l||x>p.r||y<p.t||y>p.b){box.textContent='时间 -- / '+viewLabel()+' --';return}let xv=ix(x,p),i=idx0(xv);if(i>0&&Math.abs(state.x[i-1]-xv)<Math.abs(state.x[i]-xv))i--;let best=null,dist=Infinity,yr=yRange();state.channels.forEach(c=>{if(!state.visible[c.key])return;let v=displayValue(c,i);if(!isFinite(v))return;let d=Math.abs(sy(v,p,yr)-y);if(d<dist){dist=d;best={c,v}}});if(best){let unit=viewUnit();box.textContent=`${channelLabel(best.c)}  ${fmtDisplay(best.v)}${unit?(' '+unit):''} / 时间 ${state.x[i].toFixed(1)} s / 第 ${i+1} 点`}else{let yv=iy(y,p,yr),unit=viewUnit();box.textContent=`时间 ${xv.toFixed(1)} s / ${viewLabel()} ${fmtDisplay(yv)}${unit?(' '+unit):''}`}}
 function selectionHit(x,y,p){if(!state.sel)return false;let yr=yRange(),x1=Math.min(sx(state.sel.a,p),sx(state.sel.b,p)),x2=Math.max(sx(state.sel.a,p),sx(state.sel.b,p)),y1=sy(state.sel.y1,p,yr),y2=sy(state.sel.y0,p,yr),pad=4*p.d;return x>=x1-pad&&x<=x2+pad&&y>=Math.min(y1,y2)-pad&&y<=Math.max(y1,y2)+pad}
 function selectionItems(){let items=[];if(!state.sel)return items;state.channels.forEach(c=>{let set=state.sel.members&&state.sel.members[c.key];if(!set)return;set.forEach(i=>{let old=c.values[i];if(isFinite(old))items.push([c,i,old])})});return items}
@@ -1218,17 +1435,60 @@ function initWorkbenchLayout(){
   top.replaceChildren(brandBlock,fileBar,topActions);app.insertBefore(top,app.firstChild);
   fileGroup.remove();let oldHistory=exportGroup.querySelector('.grid3');if(oldHistory)oldHistory.remove();
   let chartToolbar=document.createElement('div');chartToolbar.className='chartToolbar';let chartLeft=document.createElement('div');chartLeft.className='chartToolbarLeft';chartLeft.append(modeTabs,cursor);let chartRight=document.createElement('div');chartRight.className='chartToolbarRight';chartRight.append(fit,zero);chartToolbar.append(chartLeft,chartRight);stage.insertBefore(chartToolbar,plotWrap);
-  let rangeActions=selectionGroup.querySelector('.grid2'),selectAll=$('selectAllData'),del=$('deleteSel');rangeActions.className='selectionSideActions';let up=document.createElement('button');up.id='moveSelUp';up.className='moveButton';up.title='向上移动选中数据（Shift + ↑ 可增大步长）';up.textContent='↑';let down=document.createElement('button');down.id='moveSelDown';down.className='moveButton';down.title='向下移动选中数据（Shift + ↓ 可增大步长）';down.textContent='↓';rangeActions.replaceChildren(selectAll,up,down,del);
+  let rangeActions=selectionGroup.querySelector('.grid2'),selectAll=$('selectAllData'),del=$('deleteSel');rangeActions.className='selectionSideActions';rangeActions.style.marginTop='';del.title='删除框选区间中的选中数据';let up=document.createElement('button');up.id='moveSelUp';up.className='moveButton';up.title='向上移动选中数据（Shift + ↑ 可增大步长）';up.textContent='↑';let down=document.createElement('button');down.id='moveSelDown';down.className='moveButton';down.title='向下移动选中数据（Shift + ↓ 可增大步长）';down.textContent='↓';rangeActions.replaceChildren(selectAll,up,down,del);
   let formulaLibrary=document.createElement('div');formulaLibrary.id='formulaLibrary';formulaLibrary.className='formulaLibrary';formulaLibrary.hidden=true;formulaLibrary.innerHTML='<div class="formulaLibraryRow"><select id="savedFormula" aria-label="选择已保存公式" title="选择后会将公式填回上方输入框"><option value="">选择已保存公式</option></select><button id="formulaSaveNew" class="formulaIconButton" type="button" title="将当前公式另存为新公式" aria-label="另存为新公式">'+uiIcon('<path d="M19 21 12 16l-7 5V5a2 2 0 0 1 2-2h7"></path><path d="M19 4v6M22 7h-6"></path>')+'</button><button id="formulaUpdate" class="formulaIconButton" type="button" title="用当前输入内容更新选中的公式" aria-label="更新选中的公式">'+uiIcon('<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path><path d="M17 21v-8H7v8M7 3v5h8"></path>')+'</button><button id="formulaMore" class="formulaIconButton" type="button" title="管理、导入或导出公式" aria-label="更多公式操作" aria-expanded="false">'+uiIcon('<circle cx="5" cy="12" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle>')+'</button></div><div id="formulaManageMenu" class="formulaManageMenu" hidden><button id="formulaRename" type="button">重命名</button><button id="formulaDelete" type="button">删除</button><button id="formulaExport" type="button">导出公式库</button><button id="formulaImport" type="button">导入公式库</button></div><input id="formulaImportFile" type="file" accept=".json,application/json" hidden>';
   operationGroup.querySelector('.grid2').after(formulaLibrary);
   let opSelect=$('op'),opGrid=opSelect.parentElement;opSelect.remove();opGrid.style.gridTemplateColumns='minmax(0, 1fr)';operationGroup.querySelector('.label').textContent='公式处理';prepareFormulaInput(true);
+  let formulaHeading=operationGroup.querySelector('.label');formulaHeading.classList.add('formulaHeading');formulaHeading.insertAdjacentHTML('beforeend','<span class="formulaMark" aria-hidden="true">f(x)</span>');
+  let formulaAction=document.createElement('div');formulaAction.className='formulaActionRow';formulaAction.innerHTML='<p class="hint" id="formulaInputHint">x 为原始电阻值</p>';let applyFormulaButton=$('applyOp');applyFormulaButton.removeAttribute('style');applyFormulaButton.title='应用公式到框选区间';formulaAction.append(applyFormulaButton);operationGroup.append(formulaAction);$('operand').setAttribute('aria-label','处理公式');$('operand').setAttribute('aria-describedby','formulaInputHint');
   let aboutHeads=[...$('aboutModal').querySelectorAll('h3')],curveList=aboutHeads.find(h=>h.textContent.trim()==='曲线编辑')?.nextElementSibling,limitList=aboutHeads.find(h=>h.textContent.trim()==='适配性与限制')?.nextElementSibling,toolItem=curveList&&[...curveList.children].find(li=>li.textContent.includes('支持加、减、乘、除'));if(toolItem)toolItem.textContent='支持自定义公式 f(x)、常用滤波、删除、时间伸缩、撤销和重做。';if(curveList)curveList.insertAdjacentHTML('beforeend','<li>自定义公式可保存为当前浏览器中的常用公式；选择后会填回输入框，可继续编辑并更新，也可重命名、删除或通过 JSON 文件导入导出。</li><li>没有时间列时，可在通道显示栏直接修改采样间隔；输入完成后点击其他位置即应用。存在原始时间列时不会覆盖原时间。</li>');if(limitList)limitList.insertAdjacentHTML('beforeend','<li>常用公式库保存在当前浏览器和当前网页地址下，不会写入 Excel，也不会自动跨浏览器或跨设备同步；清除浏览器站点数据、移动本地 HTML 路径前，建议先导出公式库备份。</li>');
-  let timeGroup=document.createElement('div');timeGroup.className='group timeAdjustGroup';timeGroup.innerHTML='<p class="label">时间伸缩</p><div class="timeAdjustRow"><select id="timeAdjustMode" title="拉长使用线性插值；缩短使用保峰重采样"><option value="extend">拉长（增加）</option><option value="compress">缩短（保峰）</option></select><label class="timeAdjustPointField"><input id="timeAdjustPoints" type="number" value="10" min="1" max="1000000" step="1" aria-label="增减点数"><span class="timeAdjustUnit">点</span></label></div><button id="applyTimeAdjust" class="primary" type="button">应用时间伸缩到框选区间</button><p class="hint" id="timeAdjustHint">按框选横向范围处理所选通道的连续曲线段。</p>';
+  let timeGroup=document.createElement('div');timeGroup.className='group timeAdjustGroup';timeGroup.innerHTML='<p class="label">时间伸缩</p><div class="toolControlRow"><label class="toolField"><span class="toolFieldLabel">调整方式</span><select id="timeAdjustMode" title="拉长使用线性插值；缩短使用保峰重采样"><option value="extend">拉长（增加）</option><option value="compress">缩短（保峰）</option></select></label><label class="toolField"><span class="toolFieldLabel">调整点数</span><span class="toolNumberField"><input id="timeAdjustPoints" type="number" value="10" min="1" max="1000000" step="1" aria-label="增减点数" aria-describedby="timeAdjustHint"><span class="toolUnit" aria-hidden="true">点</span></span></label><button id="applyTimeAdjust" class="primary" type="button" title="应用时间伸缩到框选区间">应用</button></div><p class="hint" id="timeAdjustHint">按框选横向范围处理所选通道的连续曲线段。</p>';
+  function fieldWrap(control,label,unit){let field=document.createElement('label');field.className='toolField';let caption=document.createElement('span');caption.className='toolFieldLabel';caption.textContent=label;field.append(caption);if(unit){let number=document.createElement('span');number.className='toolNumberField';let suffix=document.createElement('span');suffix.className='toolUnit';suffix.textContent=unit;suffix.setAttribute('aria-hidden','true');number.append(control,suffix);field.append(number)}else field.append(control);return field}
+  let filterRow=filterGroup.querySelector('.grid2'),filterButton=$('applyFilter');filterRow.className='toolControlRow';filterButton.removeAttribute('style');filterButton.title='应用滤波到框选区间';filterRow.replaceChildren(fieldWrap($('filterType'),'滤波方法'),fieldWrap($('filterWin'),'窗口大小','点'),filterButton);filterGroup.insertAdjacentHTML('beforeend','<p class="hint" id="filterHint">仅应用于框选区间</p>');$('filterWin').setAttribute('aria-describedby','filterHint');
+  let exportGrid=exportGroup.querySelector('.exportGrid');exportGrid.replaceChildren(fieldWrap($('exportDataMode'),'数据类型'),fieldWrap($('exportMode'),'文件方式'));let exportMode=$('exportMode');exportMode.options[0].textContent='新 Excel：保留原名';exportMode.options[1].textContent='原文件副本：添加 sheet';exportMode.title='新 Excel 保留工作表原名；原文件副本添加修改后的工作表';let exportHint=exportGroup.querySelector('.hint');exportHint.classList.add('exportHint');exportHint.innerHTML=uiIcon('<circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path>')+'<span>不会覆盖原文件；添加 sheet 会导出副本。</span>';
+
   let channelQuickRow=channelGroup.querySelector('.row'),dtInput=$('dt'),applyDt=$('applyDt'),dtHint=$('dtHint');channelQuickRow.classList.add('channelQuickRow');dtInput.setAttribute('aria-label','采样间隔（秒/点）');let sampleInline=document.createElement('label');sampleInline.className='sampleInline';sampleInline.title='无时间列时，修改后点击其他位置即可应用';sampleInline.innerHTML='<span>采样间隔：</span>';sampleInline.append(dtInput);sampleInline.insertAdjacentHTML('beforeend','<span>秒/点</span>');channelQuickRow.append(sampleInline);let sampleSupport=document.createElement('div');sampleSupport.hidden=true;sampleSupport.append(applyDt,dtHint);channelGroup.append(sampleSupport);sampleGroup.remove();
   channelGroup.classList.add('channelGroup');selectionGroup.classList.add('selectionGroup');operationGroup.classList.add('operationGroup');filterGroup.classList.add('filterGroup');exportGroup.classList.add('exportGroup');
   let sideIntro=document.createElement('div');sideIntro.className='sideIntro';sideIntro.innerHTML='<strong>数据工具</strong><span>通道、处理与导出</span>';side.prepend(sideIntro);side.append(channelGroup,selectionGroup,operationGroup,timeGroup,filterGroup,exportGroup);
   up.onclick=()=>{if(state.sel)nudgeSelection(1,false)};down.onclick=()=>{if(state.sel)nudgeSelection(-1,false)};
 }
+// Theme preferences stay separate from experiment data and formula storage.
+function initThemePicker(host) {
+  const root = document.documentElement;
+  const names = {pink:'蓝粉渐变', blue:'清爽蓝白', sage:'暖白青绿', sand:'米白暖砂', slate:'雾灰蓝', lavender:'柔雾紫'};
+  const themeButton = document.createElement('button');
+  themeButton.id = 'themeButton';
+  themeButton.type = 'button';
+  themeButton.className = 'withIcon';
+  themeButton.setAttribute('aria-expanded','false');
+  themeButton.setAttribute('aria-controls','themePopover');
+  themeButton.innerHTML = uiIcon('<path d="M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 1.5-3.3 1.4 1.4 0 0 1 1-2.4H17a4 4 0 0 0 4-4A8 8 0 0 0 12 3Z"></path><path d="M7.5 10h.01M10 6.5h.01M14.5 6.5h.01M17.5 10h.01"></path>')+'<span>主题</span>';
+  const panel = document.createElement('div');
+  panel.id = 'themePopover'; panel.className = 'themePopover'; panel.hidden = true;
+  const swatches = {pink:['#c9efff','#ece8ff','#ffdde8'],blue:['#f2f5fa','#ffffff','#356ad8'],sage:['#f4f4ee','#eaf0e7','#367b65'],sand:['#fcf9f1','#eee7d9','#926832'],slate:['#f3f6f7','#e2e9ed','#4a7188'],lavender:['#faf6fc','#e9e1ef','#7d6398']};
+  panel.innerHTML = '<fieldset><legend>界面主题</legend>'+Object.entries(names).map(([value,name])=>'<label class="themeChoice"><input type="radio" name="interfaceTheme" value="'+value+'"><span>'+name+'</span><span class="themeSwatch" aria-hidden="true">'+swatches[value].map(color=>'<i style="background:'+color+'"></i>').join('')+'</span></label>').join('')+'</fieldset><p id="themePreferenceStatus" role="status">自动记住本浏览器中的选择</p>';
+  function sync() {
+    const current = Object.hasOwn(names,root.dataset.theme) ? root.dataset.theme : 'pink';
+    panel.querySelectorAll('input').forEach(input=>input.checked=input.value===current);
+    themeButton.title='切换主题：'+names[current];
+    themeButton.setAttribute('aria-label','切换主题，当前为'+names[current]);
+  }
+  function close(restoreFocus=false) { panel.hidden=true; themeButton.setAttribute('aria-expanded','false'); if(restoreFocus)themeButton.focus(); }
+  themeButton.onclick=()=>{const open=panel.hidden;panel.hidden=!open;themeButton.setAttribute('aria-expanded',String(open));if(open)panel.querySelector('input:checked').focus();};
+  panel.addEventListener('change',event=>{
+    const value=event.target.value;if(!Object.hasOwn(names,value))return;
+    root.dataset.theme=value;
+    try {localStorage.setItem('resiscope.theme.v1',value);panel.querySelector('p').textContent='自动记住本浏览器中的选择';}
+    catch {panel.querySelector('p').textContent='当前浏览器无法保存，主题本次有效';}
+    sync();draw();
+  });
+  document.addEventListener('pointerdown',event=>{if(!panel.hidden&&!panel.contains(event.target)&&!themeButton.contains(event.target))close();});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!panel.hidden){event.preventDefault();event.stopImmediatePropagation();close(true);}},true);
+  document.addEventListener('focusin',event=>{if(!panel.hidden&&!panel.contains(event.target)&&event.target!==themeButton)close();});
+  window.addEventListener('storage',event=>{if(event.key==='resiscope.theme.v1'||event.key===null){root.dataset.theme=Object.hasOwn(names,event.newValue)?event.newValue:'pink';sync();draw();}});
+  host.prepend(themeButton);document.body.append(panel);sync();
+}
+
 function uiIcon(paths){return '<svg class="uiIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+paths+'</svg>'}
 function setButtonIcon(id,paths,label){let button=$(id);if(!button)return;button.classList.add('withIcon');button.innerHTML=uiIcon(paths)+'<span>'+label+'</span>'}
 function decorateUiIcons(){
@@ -1238,12 +1498,13 @@ function decorateUiIcons(){
   setButtonIcon('export','<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"></path><path d="M14 2v6h6"></path><path d="M8 13h2M8 17h2M14 13h2M14 17h2"></path>','导出 Excel');
   setButtonIcon('aboutBtn','<circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path>','关于');
   setButtonIcon('fit','<path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"></path>','全图');
-  setButtonIcon('applyOp','<path d="m5 12 4 4L19 6"></path>','应用到框选区间');
-  setButtonIcon('applyTimeAdjust','<path d="m8 7-5 5 5 5"></path><path d="m16 7 5 5-5 5"></path><path d="M3 12h18"></path>','应用时间伸缩到框选区间');
-  setButtonIcon('applyFilter','<path d="M22 3H2l8 9.5V19l4 2v-8.5Z"></path>','应用滤波到框选区间');
-  setButtonIcon('deleteSel','<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5"></path>','删除选中数据');
+  setButtonIcon('applyOp','<path d="m5 12 4 4L19 6"></path>','应用公式');
+  setButtonIcon('applyTimeAdjust','<path d="m8 7-5 5 5 5"></path><path d="m16 7 5 5-5 5"></path><path d="M3 12h18"></path>','应用');
+  setButtonIcon('applyFilter','<path d="M22 3H2l8 9.5V19l4 2v-8.5Z"></path>','应用');
+  setButtonIcon('deleteSel','<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5"></path>','删除');
 }
 initWorkbenchLayout();decorateUiIcons();
+['undo','redo'].forEach(id=>$(id).setAttribute('aria-label',$(id).title));
 $('fileBtn').onclick=()=>$('file').click();$('file').onchange=e=>{loadFile(e.target.files[0]);e.target.value=''};
 ['dragenter','dragover'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();document.body.classList.add('dragging')}));['dragleave','drop'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();if(ev==='drop'){let f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];loadFile(f)}document.body.classList.remove('dragging')}));
 
@@ -1363,7 +1624,8 @@ addEventListener('beforeunload',e=>{if(!state.dirty)return;e.preventDefault();e.
   let converterContext=document.createElement('div');converterContext.className='sharedContext sharedConverterContext';let directionSwitch=document.querySelector('.directionSwitch');if(directionSwitch)converterContext.append(directionSwitch);sharedContext.append(editorContext,converterContext);
   let sharedActions=document.createElement('div');sharedActions.className='sharedActionHost';let editorActions=document.createElement('div');editorActions.className='sharedActions sharedEditorActions';let topActions=document.querySelector('.topActions');let sharedAbout=cv('aboutBtn');if(sharedAbout)sharedAbout.remove();if(topActions)editorActions.append(topActions);let converterActions=document.createElement('div');converterActions.className='sharedActions sharedConverterActions';sharedActions.append(editorActions,converterActions);
   if(!sharedAbout){sharedAbout=document.createElement('button');sharedAbout.type='button';sharedAbout.innerHTML='<svg class="uiIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5"></path><path d="M12 8h.01"></path></svg><span>关于</span>'}sharedAbout.id='sharedAboutBtn';sharedAbout.className='sharedAbout withIcon';sharedAbout.title='关于 ResiScope（F1）';sharedAbout.setAttribute('aria-label','关于 ResiScope');sharedAbout.onclick=openAbout;
-  sharedHeader.append(sharedBrand,sharedSwitch,sharedContext,sharedActions,sharedAbout);document.body.prepend(sharedHeader);document.querySelector('.app')?.classList.add('sharedShell');document.body.dataset.currentTool='editor';
+  let headerUtilities=document.createElement('div');headerUtilities.className='headerUtilities';headerUtilities.append(sharedAbout);initThemePicker(headerUtilities);
+  sharedHeader.append(sharedBrand,sharedSwitch,sharedContext,sharedActions,headerUtilities);document.body.prepend(sharedHeader);document.querySelector('.app')?.classList.add('sharedShell');document.body.dataset.currentTool='editor';
   document.querySelectorAll('button[data-tool]').forEach(button=>button.addEventListener('click',()=>switchTool(button.dataset.tool)));
   document.querySelectorAll('[data-direction]').forEach(button=>button.addEventListener('click',()=>{cvState.direction=button.dataset.direction;cvState.previewPage=0;let items=currentItems();cvState.currentId=items[0]?.id||null;renderConverter()}));
   cv('cvMerge').onclick=()=>{cvState.output='merged';cv('cvMerge').classList.add('active');cv('cvMerge').setAttribute('aria-pressed','true');cv('cvIndividual').classList.remove('active');cv('cvIndividual').setAttribute('aria-pressed','false');cv('cvOutputHint').textContent='每个 TXT 对应一个工作表；文件名自动作为 Sheet 名称。'};

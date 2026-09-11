@@ -290,6 +290,8 @@ const server = http.createServer(async (req, res) => {
     if (files[url] && req.method === 'GET') {
       const name = files[url];
       res.setHeader('Content-Type', name.endsWith('.js') ? 'text/javascript; charset=utf-8' : name.endsWith('.css') ? 'text/css; charset=utf-8' : 'text/html; charset=utf-8');
+      // 必须每次校验：否则浏览器会启发式缓存旧的 app.js/style.css，改了代码却看到旧界面
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
       fs.createReadStream(path.join(__dirname, 'public', name)).pipe(res); return;
     }
   } catch (e) { return json(res, 502, { code: -1, msg: e.name === 'TimeoutError' ? 'OneNET请求超时' : e.message }); }

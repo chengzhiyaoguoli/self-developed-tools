@@ -75,11 +75,17 @@ function gapLimit(pts){let med=0;if(pts&&pts.length>=3){const d=[];for(let i=1;i
 function buildSegments(pts){const lim=gapLimit(pts),segs=[];let seg=[],voidHead=false;for(const p of pts){if(seg.length&&p.time-seg[seg.length-1].time>lim){segs.push({pts:seg,voidHead});voidHead=inHideSpan(seg[seg.length-1].time,p.time);seg=[];}seg.push(p);}if(seg.length)segs.push({pts:seg,voidHead});return segs;}
 function time(t){return new Date(t).toLocaleTimeString('zh-CN',{hour12:false});}
 function stamp(t){if(t===null||t===undefined||t==='')return NaN;if(typeof t==='number'||/^\d+$/.test(t)){const n=Number(t);return n<1e12?n*1000:n;}return Date.parse(t);}
-// 纵轴刻度标签：K/M/G 单位（数值本身与上下限仍是精确值，这里只是显示缩写以免占用过多左侧留白）
+// 纵轴刻度标签：统一 3 位有效数字 + K/M/G/T 单位（数值本身不受影响，完整值在点击气泡里）
 function axisUnit(low,high){
- const maxAbs=Math.max(Math.abs(low),Math.abs(high)),step=Math.abs(high-low)/4;
- for(const [s,suf] of [[1e12,'T'],[1e9,'G'],[1e6,'M'],[1e3,'K'],[1,'']]) if(maxAbs>=s&&step/s>=0.01) return {scale:s,suffix:suf,dec:step/s>=1?0:(step/s>=0.05?1:2)};
- return {scale:1,suffix:'',dec:step>=1?0:(step>=0.05?1:2)};
+ const maxAbs=Math.max(Math.abs(low),Math.abs(high));
+ let scale=1,suffix='';
+ for(const [s,suf] of [[1e12,'T'],[1e9,'G'],[1e6,'M'],[1e3,'K'],[1,'']]) if(maxAbs>=s){scale=s;suffix=suf;break;}
+ const m=Math.max(Math.abs(low/scale),Math.abs(high/scale),1e-12);
+ let dec=Math.max(0,Math.min(10,2-Math.floor(Math.log10(m))));
+ const make=()=>{const o=[];for(let i=0;i<5;i++)o.push(axisLabel(high-(high-low)*i/4,{scale,suffix,dec}));return o;};
+ // 若 5 个刻度四舍五入后出现重复（数值极大而量程极小），再逐位提高精度直到能区分
+ let L=make(),guard=0;while(new Set(L).size<5&&dec<10&&guard++<10){dec++;L=make();}
+ return {scale,suffix,dec};
 }
 function axisLabel(v,u){return (v/u.scale).toLocaleString('zh-CN',{minimumFractionDigits:u.dec,maximumFractionDigits:u.dec})+u.suffix;}
 function renderTabs(){const box=$('#chartTabs');box.replaceChildren();widgets.forEach(w=>{const b=el('button',w.name,'tab'+(w.id===selectedId?' active':''));b.type='button';b.onclick=()=>{if(selectedId===w.id){drawTrend();return;}selectedId=w.id;render();};box.append(b);});}

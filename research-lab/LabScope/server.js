@@ -23,7 +23,7 @@ let creds = {
   token: process.env.TOKEN || fileConfig.token || ''
 };
 
-let records = [], seen = new Map(), oldestAt = 0, deviceState = 'unknown', lastAt = 0, lastError = '', tick = 0;
+let records = [], seen = new Map(), oldestAt = 0, deviceState = 'unknown', deviceAt = 0, lastAt = 0, lastError = '', tick = 0;
 const stamp = t => { if (t === null || t === undefined || t === '') return NaN; if (typeof t === 'number' || /^\d+$/.test(t)) { const n = Number(t); return n < 1e12 ? n * 1000 : n; } return Date.parse(t); };
 const okCreds = () => !!(creds.productId && creds.deviceName && creds.token);
 const json = (res, code, obj) => { res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(obj)); };
@@ -217,7 +217,8 @@ async function collect() {
     }
     lastAt = Date.now(); lastError = '';
   } catch (e) { lastError = e && e.name === 'TimeoutError' ? '查询超时' : ((e && e.message) || String(e)); }
-  if (tick++ % 10 === 0) {
+  // 设备在线状态：默认每 30 秒查一次（按采集间隔换算成次数，避免高频占用平台配额）
+  if (tick++ % Math.max(1, Math.round(30000 / POLL_MS)) === 0) {
     try {
       const u = new URL('/device/detail', BASE);
       u.searchParams.set('product_id', creds.productId); u.searchParams.set('device_name', creds.deviceName);
@@ -225,7 +226,8 @@ async function collect() {
       const j = await r.json();
       const s = j && j.code === 0 && j.data ? j.data.status : undefined;
       deviceState = (s === 1 || s === true || s === '1') ? 'online' : (s === 0 || s === false || s === '0') ? 'offline' : 'unknown';
-    } catch (e) { deviceState = 'unknown'; }
+      deviceAt = Date.now();
+    } catch (e) { deviceState = 'unknown'; deviceAt = Date.now(); }
   }
 }
 
@@ -250,7 +252,7 @@ const server = http.createServer(async (req, res) => {
       return json(res, up.ok ? 200 : 502, data);
     }
     if (url === '/api/status' && req.method === 'GET') {
-      return json(res, 200, { code: 0, data: { owner: OWNER, collecting: OWNER && okCreds(), deviceState: OWNER ? deviceState : 'unknown', lastAt, lastError: OWNER ? lastError : '', records: records.length, pollMs: POLL_MS, retentionDays: RETENTION_DAYS } });
+      return json(res, 200, { code: 0, data: { owner: OWNER, collecting: OWNER && okCreds(), deviceState: OWNER ? deviceState : 'unknown', deviceAt: OWNER ? deviceAt : 0, lastAt, lastError: OWNER ? lastError : '', records: records.length, pollMs: POLL_MS, retentionDays: RETENTION_DAYS } });
     }
     if (url === '/api/history' && req.method === 'GET') {
       const minutes = Math.min(RETENTION_DAYS * 1440, Math.max(1, Number((q && q.searchParams.get('minutes')) || 5)));

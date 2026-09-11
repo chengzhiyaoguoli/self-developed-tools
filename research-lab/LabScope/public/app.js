@@ -40,7 +40,10 @@ if(migrated){persist();if(!$('#notice').textContent)setNotice('info','已为旧�
 let credentials=null, demo=false,busy=false,timer=null,editing=null,dragged=null;
 // 自建服务端走 /api/properties 代理；静态托管或 file:// 直开时由浏览器直连 OneNET。
 let useProxy=location.protocol!=='file:';
-let latest={},records=[],seen=new Map(),lastResponse=0,selectedId=null,pauseAt=null,deviceState='unknown',connError='',pollTick=0;
+let latest={},records=[],seen=new Map(),lastResponse=0,selectedId=null,pauseAt=null,deviceState='unknown',deviceAt=0,deviceForce=false,newestTime=0,connError='',pollTick=0;
+// 设备在线状态默认每 DEVICE_EVERY 次数据查询刷新一次（约 10 秒，省 OneNET 配额）；
+// 数据断流（设备很可能刚掉线）、刚回到前台、手动刷新时会立即补查一次，不必干等一个周期。
+const DEVICE_EVERY=10,DEVICE_MIN_GAP=5000,DEVICE_MAX_AGE=30000;
 function validate(v){if(!Array.isArray(v)||v.length>40)throw Error('配置最多包含40个控件');return v.map(w=>{if(!w||typeof w.name!=='string'||typeof w.key!=='string'||!/^\w{1,100}$/.test(w.key)||!Number.isInteger(Number(w.decimals))||w.decimals<0||w.decimals>6)throw Error('控件配置格式错误');const min=w.min===undefined||w.min===null?'':String(w.min).trim(),max=w.max===undefined||w.max===null?'':String(w.max).trim();if(min!==''&&!Number.isFinite(Number(min))||max!==''&&!Number.isFinite(Number(max)))throw Error('阈值范围错误');if(min!==''&&max!==''&&Number(min)>=Number(max))throw Error('上限阈值必须大于下限');return {...w,id:crypto.randomUUID(),type:['card','chart'].includes(w.type)?w.type:'card',auto:w.auto===true,name:w.name.slice(0,60),unit:String(w.unit||'').slice(0,20),min,max,icon:ICON_KEYS.includes(w.icon)?w.icon:'',color:/^#[0-9a-f]{6}$/i.test(w.color)?w.color:'#3b82f6'};});}
 let persistWarned=false;
 // 本浏览器存储可能被禁用或写满（隐私模式/配额），失败时不能中断后续操作
@@ -165,7 +168,7 @@ if(!compact&&hoverIdx>=0&&hoverKey===w.key&&chartGeom&&chartGeom.pts.length){
  ctx.textBaseline='alphabetic';ctx.restore();
 }
 if(!pts.length){ctx.fillStyle='#9ca3af';ctx.font=(compact?11:12)+'px -apple-system,"Segoe UI","Microsoft YaHei",sans-serif';ctx.textAlign='left';ctx.fillText('等待新时间戳数据',compact?left+6:left+16,compact?h/2+4:top+plotH/2);}}
-function ingest(data){const now=Date.now();for(const item of data){const key=item&&typeof item.identifier==='string'?item.identifier.trim():'';if(!key)continue;const value=Number(item.value);if(item.value===''||item.value===null||!Number.isFinite(value))continue;const t=stamp(item.time);latest[key]={value,time:t};if(!Number.isFinite(t))continue;const prior=seen.get(key);if(prior!==undefined&&t<=prior)continue;seen.set(key,t);records.push({key,time:t,received:now,value});}if(records.length>100000){records.splice(0,records.length-100000);setNotice('warn','记录达到100000条，已移除最早记录，请及时导出。');}update();}
+function ingest(data){const now=Date.now();for(const item of data){const key=item&&typeof item.identifier==='string'?item.identifier.trim():'';if(!key)continue;const value=Number(item.value);if(item.value===''||item.value===null||!Number.isFinite(value))continue;const t=stamp(item.time);latest[key]={value,time:t};if(Number.isFinite(t)&&t>newestTime)newestTime=t;if(!Number.isFinite(t))continue;const prior=seen.get(key);if(prior!==undefined&&t<=prior)continue;seen.set(key,t);records.push({key,time:t,received:now,value});}if(records.length>100000){records.splice(0,records.length-100000);setNotice('warn','记录达到100000条，已移除最早记录，请及时导出。');}update();}
 // 取数适配层：自建服务端走 /api/properties，静态托管（GitHub Pages）或 file:// 直连 OneNET。
 function parseResult(result,ok){if(!ok||result.code!==0)throw Error(result.msg||`接口错误 ${result.code}`);if(!Array.isArray(result.data))throw Error('平台返回的数据格式不正确');return result.data;}
 async function queryDirect(){const url=new URL('https://iot-api.heclouds.com/thingmodel/query-device-property');url.searchParams.set('product_id',credentials.productId);url.searchParams.set('device_name',credentials.deviceName);const r=await fetch(url,{headers:{Authorization:credentials.token},signal:AbortSignal.timeout(10000)});return parseResult(await r.json(),r.ok);}
@@ -189,6 +192,8 @@ async function queryProperties(){
 function parseDevice(result,ok){if(!ok||result.code!==0)return 'unknown';const s=(result.data||{}).status;if(s===1||s===true||s==='1'||s==='online')return 'online';if(s===0||s===false||s==='0'||s==='offline')return 'offline';return 'unknown';}
 async function queryDeviceDirect(){const url=new URL('https://iot-api.heclouds.com/device/detail');url.searchParams.set('product_id',credentials.productId);url.searchParams.set('device_name',credentials.deviceName);const r=await fetch(url,{headers:{Authorization:credentials.token},signal:AbortSignal.timeout(10000)});return parseDevice(await r.json(),r.ok);}
 async function queryDevice(){if(!useProxy)return queryDeviceDirect();const r=await fetch('/api/device',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(credentials),signal:AbortSignal.timeout(10000)});const type=r.headers.get('content-type')||'';if(r.status===404||r.status===405||!type.includes('json')){useProxy=false;return queryDeviceDirect();}return parseDevice(await r.json(),r.ok);}
+// 刷新设备在线状态：网络抖动时保留上一次结果，避免状态在两个值之间乱跳
+async function refreshDevice(){if(!credentials||demo)return;try{deviceState=await queryDevice();}catch(e){}deviceAt=Date.now();}
 // 顶部状态机：未配置 / 连接中 / 设备在线 / 设备离线 / 查询失败 / 演示数据 / 后台暂停
 function renderState(){const node=$('#state');let kind='idle',text='未配置 OneNET';
  if(demo){kind='demo';text='演示数据（非设备数据）';}
@@ -200,7 +205,7 @@ function renderState(){const node=$('#state');let kind='idle',text='未配置 On
  else if(deviceState==='offline'){kind='warn';text='设备离线';}
  else{kind='ok';text='查询成功';}
  node.dataset.kind=kind;node.textContent=text;
- node.title=(demo?'演示模式：数据为模拟生成':(!credentials?'点击填写 OneNET 连接参数':(connError?connError:'最近查询 '+(lastResponse?time(lastResponse):'—'))))+(serverMode?'（历史由服务端常驻采集提供）':((!useProxy&&location.protocol!=='file:')?'（本机服务端已断开，正在浏览器直连 OneNET）':''));
+ node.title=(demo?'演示模式：数据为模拟生成':(!credentials?'点击填写 OneNET 连接参数':(connError?connError:'最近查询 '+(lastResponse?time(lastResponse):'—'))))+(serverMode?'（历史由服务端常驻采集提供）':((!useProxy&&location.protocol!=='file:')?'（本机服务端已断开，正在浏览器直连 OneNET）':''))+((!demo&&credentials&&deviceAt)?(' · 设备状态更新于 '+time(deviceAt)):'');
  renderBindInfo();
 }
 // 顶栏设备标签：只显示产品 ID / 设备名（绝不显示 Token），点击打开连接设置
@@ -254,8 +259,11 @@ async function shareCredentials(){
  if(!useProxy||!credentials)return;
  try{const r=await fetch('/api/credentials',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(credentials),signal:AbortSignal.timeout(8000)});if(r.ok){serverMode=true;pingServer();}}catch(e){}
 }
-async function poll(){if(busy||document.hidden||(!credentials&&!demo))return;busy=true;clearTimeout(timer);$('#refresh').disabled=true;try{let data;if(demo){const t=Date.now();data=widgets.map(w=>({identifier:w.key,time:t,value:demoValue(w.key,t)}));}else{data=await queryProperties();if(pollTick++%10===0){try{deviceState=await queryDevice();}catch(err){deviceState='unknown';}}}lastResponse=Date.now();connError='';ingest(data);$('#last').textContent=`最近查询 ${time(lastResponse)}`;setNotice(demo?'demo':'',demo?'演示模式：数据为模拟生成，不代表OneNET设备。':'');}catch(e){connError=e.message||String(e);setNotice('error',e.name==='TimeoutError'?'请求超时，稍后自动重试':e.message);}finally{busy=false;$('#refresh').disabled=false;renderState();if(!document.hidden)timer=setTimeout(poll,1000);}}
-function resetSession(){latest={};records=[];seen.clear();pauseAt=null;deviceState='unknown';connError='';lastResponse=0;update();}
+async function poll(){if(busy||document.hidden||(!credentials&&!demo))return;busy=true;clearTimeout(timer);$('#refresh').disabled=true;try{let data;if(demo){const t=Date.now();data=widgets.map(w=>({identifier:w.key,time:t,value:demoValue(w.key,t)}));}else{data=await queryProperties();
+ // 设备状态：周期刷新之外，数据断流 / 刚回前台 / 手动刷新 / 超过 30 秒未更新时立即补查
+ if(pollTick++%DEVICE_EVERY===0||deviceForce||(newestTime>0&&Date.now()-newestTime>10000&&Date.now()-deviceAt>DEVICE_MIN_GAP)||Date.now()-deviceAt>DEVICE_MAX_AGE){deviceForce=false;await refreshDevice();}
+ }lastResponse=Date.now();connError='';ingest(data);$('#last').textContent=`最近查询 ${time(lastResponse)}`;setNotice(demo?'demo':'',demo?'演示模式：数据为模拟生成，不代表OneNET设备。':'');}catch(e){connError=e.message||String(e);setNotice('error',e.name==='TimeoutError'?'请求超时，稍后自动重试':e.message);}finally{busy=false;$('#refresh').disabled=false;renderState();if(!document.hidden)timer=setTimeout(poll,1000);}}
+function resetSession(){latest={};records=[];seen.clear();pauseAt=null;deviceState='unknown';deviceAt=0;deviceForce=true;newestTime=0;connError='';lastResponse=0;update();}
 function openConnectionDialog(){const f=$('#connectionForm'),saved=loadCredentials(),c=credentials||saved||{};f.elements.productId.value=c.productId||'';f.elements.deviceName.value=c.deviceName||'';f.elements.token.value=c.token||'';let pref=true;try{pref=localStorage.getItem('labscope.remember')!=='0';}catch(err){}f.elements.remember.checked=saved?true:pref;$('#forget').hidden=!saved;$('#connection').showModal();}
 $('#connect').onclick=openConnectionDialog;
 $('#forget').onclick=()=>{saveCredentials(null);credentials=null;clearTimeout(timer);const f=$('#connectionForm');f.elements.productId.value='';f.elements.deviceName.value='';f.elements.token.value='';f.elements.remember.checked=true;$('#forget').hidden=true;resetSession();renderState();setNotice('warn','已清除本浏览器保存的连接信息，刷新后需重新填写。');};
@@ -263,7 +271,7 @@ $('#connectionForm').onsubmit=e=>{e.preventDefault();if(busy){setNotice('warn','
 // 用户取消（未提交）时不要留下「想开后后台采集」的意图，避免之后一次普通连接意外开启后台
 $('#connection').addEventListener('close',()=>{wantBackground=false;});
 $('#demo').onclick=()=>{if(busy)return;if(records.length&&!confirm('切换模式会清空本次记录，请先导出。继续？'))return;demo=!demo;credentials=null;resetSession();clearTimeout(timer);if(demo)poll();else{const c=loadCredentials();if(c){credentials=c;setNotice('info','已恢复保存的连接信息并重新连接。');poll();}else{renderState();setNotice('info','演示已结束，请配置 OneNET 连接');}}};
-$('#refresh').onclick=()=>{if(!credentials&&!demo){setNotice('warn','尚未配置 OneNET 连接：请先点「连接设置」填写凭据，或点「演示模式」预览。');return;}poll();};document.addEventListener('visibilitychange',()=>{if(document.hidden){markHidden();clearTimeout(timer);renderState();if(!(serverMode&&serverStatus&&serverStatus.collecting))setNotice('warn',serverMode?'已切到后台，本页暂停查询。当前后台也没在采集，这段时间回来后会以虚线标注；点工具行的「后台未采集 · 点此开启」可让后台持续记录。':'已切到后台，本页暂停查询，这段时间回来后会以虚线标注。若希望关掉页面也不中断，请用 http://localhost:<端口>/ 打开并开启后台采集。');}else{const away=hiddenSince?Date.now()-hiddenSince:0;markVisible();if(serverMode)fetchServerHistory(Math.max(5,Math.round(windowMs/60000),Math.ceil(away/60000)+1));poll();}});
+$('#refresh').onclick=()=>{if(!credentials&&!demo){setNotice('warn','尚未配置 OneNET 连接：请先点「连接设置」填写凭据，或点「演示模式」预览。');return;}deviceForce=true;poll();};document.addEventListener('visibilitychange',()=>{if(document.hidden){markHidden();clearTimeout(timer);renderState();if(!(serverMode&&serverStatus&&serverStatus.collecting))setNotice('warn',serverMode?'已切到后台，本页暂停查询。当前后台也没在采集，这段时间回来后会以虚线标注；点工具行的「后台未采集 · 点此开启」可让后台持续记录。':'已切到后台，本页暂停查询，这段时间回来后会以虚线标注。若希望关掉页面也不中断，请用 http://localhost:<端口>/ 打开并开启后台采集。');}else{const away=hiddenSince?Date.now()-hiddenSince:0;markVisible();if(serverMode)fetchServerHistory(Math.max(5,Math.round(windowMs/60000),Math.ceil(away/60000)+1));deviceForce=true;poll();}});
 $('#trendPause').onclick=()=>{pauseAt=pauseAt?null:Date.now();setPauseLabel();drawTrend();};
 $('#axisMin').onchange=applyAxis;$('#axisMax').onchange=applyAxis;
 $('#windowSelect').onchange=e=>setWindow(Number(e.target.value));
@@ -304,6 +312,7 @@ function fillAbout(){const box=$('#aboutList');if(!box)return;const saved=loadCr
   ['后台记录',serverMode?(serverStatus&&serverStatus.collecting?('正在记录（已存 '+Number(serverStatus.records||0).toLocaleString()+' 条）'):'未开启，可在工具行点「后台未采集 · 点此开启」'):'网页版没有这个功能'],
   ['登录信息',credentials?(saved?'已连接，并已记住（下次自动连接）':'已连接（未记住，刷新需重填）'):(saved?'已记住，但还没连上':'还没填写')],
   ['绑定的设备',bound?(bound.productId+' / '+bound.deviceName):'未配置'],
+  ['设备状态',(demo?'演示模式不查询设备状态':(credentials?(deviceState==='online'?'在线':deviceState==='offline'?'离线':'未取到（平台未返回状态字段）')+(deviceAt?('（页面 '+time(deviceAt)+' 判断）'):''):'未连接'))+(serverMode&&serverStatus&&serverStatus.deviceState?('；服务端 '+(serverStatus.deviceState==='online'?'在线':serverStatus.deviceState==='offline'?'离线':'未知')+(serverStatus.deviceAt?('（'+time(serverStatus.deviceAt)+'）'):'')):'')],
   ['卡片数量',widgets.length+' 个'],
   ['本次已记录',records.length+' 条（工具行的「导出本次记录」就是这个）']
  ];box.replaceChildren();for(const [k,v] of rows){const r=el('div',undefined,'about-row');r.append(el('span',k,'about-key'),el('span',v,'about-val'));box.append(r);}}

@@ -143,7 +143,6 @@ canvas.spark{width:100%;height:62px;display:block;min-width:0;opacity:.95;transi
 @keyframes trendFlash{0%{border-color:#93c5fd;box-shadow:0 0 0 5px rgba(59,130,246,.22)}100%{border-color:var(--line);box-shadow:var(--shadow)}}
 .trend-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:16px}
 .trend-head h2{font-size:16.5px;margin:0;color:var(--ink);letter-spacing:-.01em}
-.trend-head .sub{font-size:12.5px;color:var(--muted);font-weight:600;margin:5px 0 0;line-height:1.65}
 .trend-head button{padding:7px 12px;font-size:12.5px;flex:none}
 /* 「自动」开关：亮起 = 纵轴按数据自适应（上下限数值保留） */
 #axisAuto.active{background:var(--primary-soft);border-color:#bfdbfe;color:var(--primary-strong);box-shadow:0 0 0 3px rgba(59,130,246,.12)}
@@ -158,7 +157,6 @@ canvas.spark{width:100%;height:62px;display:block;min-width:0;opacity:.95;transi
 .tab:hover{background:rgba(255,255,255,.75);color:var(--primary-strong);transform:none}
 .tab.active{background:#fff;color:var(--primary-strong);box-shadow:0 2px 8px rgba(23,49,67,.08)}
 #trendCanvas{width:100%;height:280px;display:block;border-radius:.75rem;background:linear-gradient(180deg,#fbfdff,#f7fafc)}
-.foot{font-size:12.5px;text-align:center;margin-top:26px;color:#94a3b8;font-weight:600}
 
 /* ---------- 设备标签（顶栏，等宽字体；未配置时虚线） ---------- */
 #bindChip{display:inline-flex;align-items:center;gap:7px;max-width:34vw;padding:5px 11px;border:1px dashed var(--line);border-radius:var(--r-pill);background:transparent;color:var(--muted);font:600 12px/1 ui-monospace,Consolas,"Microsoft YaHei",monospace;cursor:pointer;transition:background .25s var(--ease),border-color .25s var(--ease),color .25s var(--ease)}
@@ -282,7 +280,6 @@ button.rounddanger:hover{background:#fee2e2;color:#dc2626;transform:none}
   .trend-head button{padding:6px 10px;font-size:12.5px}
   .tab{padding:7px 12px;font-size:13px}
   #trendCanvas{height:210px}
-  .foot{font-size:12px;line-height:1.7}
   /* 弹窗：底部抽屉，全宽可滚动，底部留出安全区 */
   dialog{position:fixed;inset:auto 0 0 0;margin:0;width:100%;max-width:none;border-radius:1rem 1rem 0 0}
   dialog[open]{max-height:88vh;max-height:88dvh;animation:sheetUp .22s var(--ease)}

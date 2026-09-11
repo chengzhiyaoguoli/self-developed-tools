@@ -70,7 +70,8 @@ function buildSegments(pts){const lim=gapLimit(pts),segs=[];let seg=[],voidHead=
 function time(t){return new Date(t).toLocaleTimeString('zh-CN',{hour12:false});}
 function stamp(t){if(t===null||t===undefined||t==='')return NaN;if(typeof t==='number'||/^\d+$/.test(t)){const n=Number(t);return n<1e12?n*1000:n;}return Date.parse(t);}
 // 纵轴标签：默认千分位；过长（>14 字符）才退回 万/亿，避免被左侧留白区裁掉。
-function axisLabel(v){const s=Number(v).toLocaleString('zh-CN',{maximumFractionDigits:2});if(s.length<=14)return s;const a=Math.abs(v);if(a>=1e8)return (v/1e8).toFixed(1)+'亿';if(a>=1e4)return (v/1e4).toFixed(1)+'万';return s.slice(0,14);}
+function axisDecimals(low,high){const step=Math.abs(high-low)/4;return step>=1?0:step>=0.05?1:2;}
+function axisLabel(v,dec){return Number(v).toLocaleString('zh-CN',{minimumFractionDigits:dec,maximumFractionDigits:dec});}
 function renderTabs(){const box=$('#chartTabs');box.replaceChildren();widgets.forEach(w=>{const b=el('button',w.name,'tab'+(w.id===selectedId?' active':''));b.type='button';b.onclick=()=>{if(selectedId===w.id){drawTrend();return;}selectedId=w.id;render();};box.append(b);});}
 function setPauseLabel(){const b=$('#trendPause');b.replaceChildren(icon(pauseAt?'play':'pause'),document.createTextNode(pauseAt?'恢复滚动':'暂停滚动'));}
 function syncAxisInputs(){const w=widgets.find(x=>x.id===selectedId);const a=$('#axisMin'),b=$('#axisMax');if(!a||!b)return;a.value=w&&w.min!==''?w.min:'';b.value=w&&w.max!==''?w.max:'';const btn=$('#axisAuto');if(btn)btn.classList.toggle('active',!!(w&&w.auto===true));}
@@ -106,9 +107,9 @@ function update(){widgets.forEach(w=>{const card=[...$('#grid').children].find(x
 const WIN_KEY='labscope.window',WIN_OPTIONS=[60000,300000,900000,1800000,3600000];
 let windowMs=(function(){try{const v=Number(localStorage.getItem(WIN_KEY));return WIN_OPTIONS.indexOf(v)>=0?v:300000;}catch(e){return 300000;}})();
 function windowLabel(){return windowMs>=3600000?(windowMs/3600000)+' 小时':(windowMs/60000)+' 分钟';}
-function renderWindowLabels(){const t=$('#trendTitle');if(t)t.textContent='最近 '+windowLabel()+'变化趋势';const f=$('#footText');if(f)f.textContent='约 1 秒查询 · 曲线窗口 '+windowLabel()+' · 仅记录页面获取到的新时间戳数据 · 后台暂停查询';const s=$('#windowSelect');if(s)s.value=String(windowMs);}
+function renderWindowLabels(){const t=$('#trendTitle');if(t)t.textContent='最近 '+windowLabel()+'变化趋势';const s=$('#windowSelect');if(s)s.value=String(windowMs);}
 function setWindow(ms){if(WIN_OPTIONS.indexOf(ms)<0)return;windowMs=ms;try{localStorage.setItem(WIN_KEY,String(ms));}catch(e){}renderWindowLabels();if(serverMode)fetchServerHistory(Math.max(5,Math.round(ms/60000)));update();}
-function drawSeries(canvas,w,compact){if(!canvas)return;const box=canvas.getBoundingClientRect();if(box.width<1)return;const dpr=devicePixelRatio||1,h=compact?62:280;canvas.width=Math.max(1,Math.round(box.width*dpr));canvas.height=Math.round(h*dpr);const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);const width=box.width,left=compact?4:100,right=compact?4:16,top=compact?9:16,bottom=compact?9:32,anchor=pauseAt||Date.now();let end=anchor,start=end-windowMs,pts=records.filter(p=>p.key===w.key&&p.time>=start&&p.time<=end);
+function drawSeries(canvas,w,compact){if(!canvas)return;const box=canvas.getBoundingClientRect();if(box.width<1)return;const dpr=devicePixelRatio||1,h=compact?62:280;canvas.width=Math.max(1,Math.round(box.width*dpr));canvas.height=Math.round(h*dpr);const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);const width=box.width,right=compact?4:16,top=compact?9:16,bottom=compact?9:32,anchor=pauseAt||Date.now();let left=compact?4:100,end=anchor,start=end-windowMs,pts=records.filter(p=>p.key===w.key&&p.time>=start&&p.time<=end);
 // 设备时钟快于浏览器时，点会全部落在窗口右侧之外（窗口内一个点都没有）→ 以该属性最新的点为窗口右端重新取
 if(!pts.length){let newest=0;for(const p of records)if(p.key===w.key&&p.time>newest)newest=p.time;if(newest>end){end=newest;start=end-windowMs;pts=records.filter(p=>p.key===w.key&&p.time>=start&&p.time<=end);}}
 let dLow=Infinity,dHigh=-Infinity;for(const p of pts){if(p.value<dLow)dLow=p.value;if(p.value>dHigh)dHigh=p.value;}
@@ -117,8 +118,15 @@ let low,high;if(w.auto===true||(w.min===''&&w.max==='')){low=dLow;high=dHigh;}el
 if(!Number.isFinite(low))low=0;if(!Number.isFinite(high))high=1;
 if(high<low){const t=low;low=high;high=t;}
 if(low===high){low-=Math.abs(low)*.05||1;high+=Math.abs(high)*.05||1;}
+// 纵轴标签宽度自适应：千分位后的长数字（如 1,306,747,326）需要更宽的左侧留白；窄屏用更小字号换回绘图区
+const dec=compact?0:axisDecimals(low,high),axisFont=(width<420?'10px':'11px')+' -apple-system,"Segoe UI","Microsoft YaHei",sans-serif';
+if(!compact){ctx.font=axisFont;let lw=0;for(let i=0;i<5;i++)lw=Math.max(lw,ctx.measureText(axisLabel(high-(high-low)*i/4,dec)).width);left=Math.min(Math.max(left,lw+14),Math.max(48,width*0.42));}
 const plotW=width-left-right,plotH=h-top-bottom,X=t=>left+(t-start)/windowMs*plotW,Y=v=>{const c=v<low?low:(v>high?high:v);return top+(high-c)/(high-low)*plotH;};
- if(!compact){ctx.font='11px -apple-system,"Segoe UI","Microsoft YaHei",sans-serif';ctx.lineWidth=1;for(let i=0;i<5;i++){const y=top+plotH*i/4;ctx.strokeStyle='#eef2f7';ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(width-right,y);ctx.stroke();ctx.fillStyle='#9ca3af';ctx.textAlign='right';ctx.fillText(axisLabel(high-(high-low)*i/4),left-10,y+4);}ctx.textAlign='center';const ticks=5,step=windowMs/ticks;for(let i=0;i<=ticks;i++){ctx.fillStyle='#9ca3af';const ts=start+i*step;ctx.fillText(windowMs<3600000?time(ts):time(ts).slice(0,5),left+plotW*i/ticks,h-9);}ctx.textAlign='left';}
+ if(!compact){ctx.font=axisFont;ctx.lineWidth=1;ctx.fillStyle='#9ca3af';for(let i=0;i<5;i++){const y=top+plotH*i/4;ctx.strokeStyle='#eef2f7';ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(width-right,y);ctx.stroke();ctx.textAlign='right';ctx.fillText(axisLabel(high-(high-low)*i/4,dec),left-9,y+4);}
+  // 横轴：按可用宽度决定刻度数量与格式（窄屏或长窗口去掉秒），首尾标签贴边对齐避免被裁
+  const short=windowMs>=3600000||plotW<520,fmt=t=>{const s=time(t);return short?s.slice(0,5):s;},slot=ctx.measureText(fmt(start)).width+18,ticks=Math.max(2,Math.min(5,Math.floor(plotW/slot)));
+  for(let i=0;i<=ticks;i++){ctx.textAlign=i===0?'left':(i===ticks?'right':'center');ctx.fillText(fmt(start+(end-start)*i/ticks),left+plotW*i/ticks,h-9);}
+  ctx.textAlign='left';}
  const segs=buildSegments(pts);
 ctx.save();ctx.beginPath();ctx.rect(left,top,plotW,plotH);ctx.clip();
 for(let i=0;i<segs.length;i++){const s=segs[i].pts,prev=i>0?segs[i-1].pts[segs[i-1].pts.length-1]:null;if(segs[i].voidHead&&prev){ctx.save();ctx.setLineDash([4,4]);ctx.globalAlpha=.45;ctx.beginPath();ctx.moveTo(X(prev.time),Y(prev.value));ctx.lineTo(X(s[0].time),Y(s[0].value));ctx.strokeStyle=w.color;ctx.lineWidth=2;ctx.stroke();ctx.restore();}if(s.length>1){const g=ctx.createLinearGradient(0,top,0,top+plotH);g.addColorStop(0,w.color+'40');g.addColorStop(1,w.color+'00');ctx.beginPath();ctx.moveTo(X(s[0].time),Y(s[0].value));for(const p of s)ctx.lineTo(X(p.time),Y(p.value));ctx.lineTo(X(s[s.length-1].time),top+plotH);ctx.lineTo(X(s[0].time),top+plotH);ctx.closePath();ctx.fillStyle=g;ctx.fill();}ctx.beginPath();ctx.moveTo(X(s[0].time),Y(s[0].value));for(const p of s)ctx.lineTo(X(p.time),Y(p.value));ctx.strokeStyle=w.color;ctx.lineWidth=2;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke();}

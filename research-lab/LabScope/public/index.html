@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LabScope · 实验数据监测</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="brand">
+    <span class="logo">∿</span>
+    <div><h1>LabScope</h1><small>RESEARCH DATA MONITOR</small></div>
+  </div>
+  <span class="divider"></span>
+  <span id="state" data-kind="idle">未配置 OneNET</span>
+  <button type="button" id="bindChip" data-kind="idle" title="点击填写 OneNET 连接参数"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h9a4 4 0 0 0 0-8 6 6 0 0 0-11.5 2A3.5 3.5 0 0 0 7 18z"/></svg><span class="id">未配置设备</span></button>
+  <div class="actions">
+    <button id="about" class="ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>关于</button>
+    <button id="demo"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4l12 8-12 8z"/></svg>演示模式</button>
+    <button id="connect"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>连接设置</button>
+    <button class="primary" id="add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>添加控件</button>
+  </div>
+</header>
+<main>
+  <div class="toolbar">
+    <span id="last" class="meta">尚无平台数据</span>
+    <span id="count" class="meta">本次记录 0 条属性数据</span>
+    <span id="server" hidden></span>
+    <div class="actions">
+      <select id="historyRange" class="mini" title="服务端历史的时间范围" hidden>
+        <option value="30">最近 30 分钟</option>
+        <option value="60">最近 1 小时</option>
+        <option value="360">最近 6 小时</option>
+        <option value="1440" selected>最近 24 小时</option>
+        <option value="4320">最近 3 天</option>
+        <option value="10080">最近 7 天</option>
+      </select>
+      <button id="exportHistory" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>导出服务端历史</button>
+      <button id="export"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>导出本次记录</button>
+      <button id="save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>导出配置</button>
+      <label class="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21V9"/><path d="M7 14l5-5 5 5"/><path d="M5 3h14"/></svg>导入配置<input id="import" type="file" accept="application/json" hidden></label>
+      <button id="refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>立即刷新</button>
+    </div>
+  </div>
+  <p id="notice" role="status" data-kind=""></p>
+  <section id="grid" class="grid"></section>
+  <section class="trend">
+    <div class="trend-head">
+      <div>
+        <h2 id="trendTitle">最近 5 分钟变化趋势</h2>
+        <p class="sub">点击上方任意卡片或标签可切换查看；曲线按平台时间戳绘制，断点超过采样间隔即断开。</p>
+      </div>
+      <div class="trend-tools">
+        <span class="axis-label">窗口</span>
+        <select id="windowSelect" class="mini" title="曲线显示的时间窗口（保存在本浏览器）">
+          <option value="60000">1 分钟</option>
+          <option value="300000" selected>5 分钟</option>
+          <option value="900000">15 分钟</option>
+          <option value="1800000">30 分钟</option>
+          <option value="3600000">1 小时</option>
+        </select>
+        <span class="axis-label">纵轴</span>
+        <input id="axisMin" type="number" step="any" placeholder="下限" aria-label="纵轴下限" title="留空表示按数据自动">
+        <input id="axisMax" type="number" step="any" placeholder="上限" aria-label="纵轴上限" title="留空表示按数据自动">
+        <button id="axisAuto" type="button" title="纵轴自适应开关：亮起时按数据自动缩放（上下限数值会保留），熄灭时使用输入的上下限">自动</button>
+        <button id="trendPause"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 5v14M15 5v14" stroke-width="3"/></svg>暂停滚动</button>
+      </div>
+    </div>
+    <div id="chartTabs" class="tabs"></div>
+    <canvas id="trendCanvas"></canvas>
+  </section>
+  <p class="foot" id="footText">约 1 秒查询 · 曲线窗口 5 分钟 · 仅记录页面获取到的新时间戳数据 · 后台暂停查询</p>
+</main>
+
+<dialog id="connection" aria-labelledby="connectionTitle">
+  <form id="connectionForm" class="sheet">
+    <div class="sheet-head">
+      <div>
+        <h2 id="connectionTitle">OneNet 平台配置</h2>
+        <p class="sub">在 OneNet 控制台创建产品与设备后，将以下信息完整复制到这里即可。</p>
+      </div>
+    </div>
+    <div class="sheet-body">
+      <div>
+        <label>产品 ID (Product ID)</label>
+        <p class="hint">来自 OneNet 控制台「产品管理」页面，例如：abc123。</p>
+        <input name="productId" placeholder="例如：abc123" required>
+      </div>
+      <div>
+        <label>设备名称 (Device Name)</label>
+        <p class="hint">来自该产品下的「设备列表」，需与云端设备名称保持一致。</p>
+        <input name="deviceName" placeholder="例如：机房网关001" required>
+      </div>
+      <div>
+        <label>鉴权 Token (Authorization)</label>
+        <p class="hint">需要具有属性查询权限。勾选下面的「记住连接信息」时会以明文保存在本浏览器；不勾选则只存在本页内存，刷新后需重填。</p>
+        <textarea name="token" rows="4" placeholder="粘贴 OneNET 的鉴权 Token" required></textarea>
+      </div>
+      <label class="check"><input type="checkbox" name="remember" checked><span>记住连接信息（下次打开本页面自动连接）</span></label>
+      <p class="hint">连接后由<b>本页面</b>负责查询（每秒一次，仅在本页面可见时）。希望关掉页面也继续记录，可点工具行的「后台未采集 · 点此开启」，或在服务端目录放置 labscope.config.json 让后台自动采集。</p>
+    </div>
+    <div class="sheet-foot"><button type="button" id="forget" class="ghost auto" hidden>清除已保存</button><button type="button" class="ghost" data-close>取消</button><button class="primary">测试并连接</button></div>
+  </form>
+</dialog>
+
+<dialog id="editor" aria-labelledby="editorTitle">
+  <form id="widgetForm" class="sheet">
+    <div class="sheet-head">
+      <div>
+        <h2 id="editorTitle">添加控件</h2>
+        <p class="sub">自定义数据模型与标识符</p>
+      </div>
+      <button type="button" id="editorDelete" class="rounddanger" hidden aria-label="删除控件" title="删除控件"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
+    </div>
+    <div class="sheet-body">
+      <div>
+        <label>控件名称</label>
+        <p class="hint">显示在卡片上的名称，如 二氧化碳。</p>
+        <input name="name" maxlength="60" placeholder="例如：二氧化碳" required>
+      </div>
+      <div>
+        <label>属性标识符</label>
+        <p class="hint">OneNET 物模型标识符，只能使用字母、数字与下划线，如 co2_value。</p>
+        <input name="key" class="mono" maxlength="100" placeholder="例如：co2_value" required pattern="[A-Za-z0-9_]+">
+      </div>
+      <div>
+        <label class="label-row"><span>选择图标</span><span id="iconPreview" class="preview"></span></label>
+        <input type="hidden" name="icon" value="activity">
+        <div id="iconPicker" class="picker"></div>
+      </div>
+      <div class="col2">
+        <div><label>单位</label><input name="unit" maxlength="20" placeholder="如 ℃、ppm"></div>
+        <div><label>小数位</label><input name="decimals" type="number" min="0" max="6" value="2" required></div>
+      </div>
+      <div>
+        <label>主题颜色</label>
+        <select name="color"></select>
+      </div>
+      <div class="section">
+        <label>上下限</label>
+        <p class="hint">同时用作：趋势图与卡片迷你曲线的纵轴范围（超出部分贴在边缘显示）、以及卡片的「超限」提示。留空表示按数据自动。也可在趋势图右上角直接调整。</p>
+        <div class="col2">
+          <div><label class="low">下限</label><input name="min" type="number" step="any" placeholder="留空自动"></div>
+          <div><label class="high">上限</label><input name="max" class="focus-red" type="number" step="any" placeholder="留空自动"></div>
+        </div>
+      </div>
+    </div>
+    <div class="sheet-foot"><button type="button" class="ghost" data-close>取消</button><button class="primary">保存控件</button></div>
+  </form>
+</dialog>
+<dialog id="aboutDialog" aria-labelledby="aboutTitle">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div>
+        <h2 id="aboutTitle">LabScope</h2>
+        <p class="sub">实验数据监测面板 · v0.1.0</p>
+      </div>
+    </div>
+    <div class="sheet-body">
+      <div class="about-hero">
+        <span class="logo">∿</span>
+        <div>
+          <div class="about-name">开发者：橙汁</div>
+          <div class="about-desc">一个看实验数据的网页：把云端设备的数据变成卡片和曲线。有两种用法，区别只在于「关掉页面后还记不记录」。</div>
+        </div>
+      </div>
+      <div class="about-modes">
+        <div class="mode-card" id="modeLocal">
+          <div class="mh">本机运行<span class="badge" hidden>当前</span></div>
+          <div class="md">双击 start.bat 打开的那种</div>
+          <ul>
+            <li>打开页面就记录数据</li>
+            <li>在工具行开启「后台采集」后，<b>关掉页面也继续记录</b></li>
+            <li>数据存成这台电脑上的文件，<b>关机也不会丢</b>，下次打开会自动补上中间那段曲线</li>
+            <li>可以按时间范围（30 分钟 ~ 7 天）导出历史表格</li>
+          </ul>
+        </div>
+        <div class="mode-card" id="modeWeb">
+          <div class="mh">网页版<span class="badge" hidden>当前</span></div>
+          <div class="md">直接双击 index.html，或打开别人给的网址</div>
+          <ul>
+            <li>打开页面就记录数据</li>
+            <li class="no">关掉页面就停止记录（切到别的页面也会停）</li>
+            <li class="no">数据只留在页面里，<b>刷新就没了</b></li>
+            <li class="no">没有历史文件可导出，只能当场把「本次记录」导出</li>
+          </ul>
+        </div>
+      </div>
+      <p class="about-note">一句话：想让数据长期留着、关掉页面也继续记，就用<b>本机运行</b>；只是随手看看当前数值，<b>网页版</b>就够用。</p>
+      <div class="about-list" id="aboutList"></div>
+      <div class="about-actions">
+        <div>
+          <div class="t">恢复默认 / 清除缓存</div>
+          <div class="d">清除本浏览器保存的控件配置与连接信息（服务端已采集的历史不受影响）</div>
+        </div>
+        <button type="button" id="aboutReset" class="ghost auto">清除</button>
+      </div>
+    </div>
+    <div class="sheet-foot"><button type="button" class="primary" data-close>关闭</button></div>
+  </div>
+</dialog>
+<script src="app.js"></script>
+</body>
+</html>

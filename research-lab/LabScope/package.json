@@ -1,0 +1,1 @@
+{"name":"labscope","version":"0.1.0","private":true,"scripts":{"start":"node server.js","check":"node --check server.js && node --check public/app.js"},"engines":{"node":">=18"}}

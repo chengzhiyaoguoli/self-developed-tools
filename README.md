@@ -7,6 +7,7 @@
 如果仓库已经开启 GitHub Pages，并且发布源设置为 `main / root`，仓库里的静态 HTML 工具可以像网页一样访问。
 
 - ResiScope：<https://chengzhiyaoguoli.github.io/self-developed-tools/research-lab/ResiScope/ResiScope.html>
+- LabScope：<https://chengzhiyaoguoli.github.io/self-developed-tools/research-lab/LabScope/public/>
 - HEX 转图片：<https://chengzhiyaoguoli.github.io/self-developed-tools/internship/hex-to-image/hex-to-image.html>
 - MCU 转 RGB 图片：<https://chengzhiyaoguoli.github.io/self-developed-tools/internship/mcu-to-rgb/mcu_to_rgb.html>
 
@@ -15,6 +16,7 @@
 ## 当前内容
 
 - `research-lab/ResiScope/ResiScope.html`：电阻曲线预览、编辑与导出工具，支持 Excel/CSV/TSV、多通道曲线、框选处理、滤波、基线响应、导出 Excel 等功能。
+- `research-lab/LabScope/`：OneNET 实验数据监测面板，纯前端静态页 + 可选的本地采集服务端（Node，零依赖）。
 - `research-lab/txt2excel/`：TXT 转 Excel 工具，包含 Python 源码、运行脚本和已打包的 exe。
 - `internship/hex-to-image/hex-to-image.html`：HEX 数据转图片的网页工具。
 - `internship/mcu-to-rgb/mcu_to_rgb.html`：MCU 图像数据转 RGB 图片的网页工具。
@@ -34,6 +36,31 @@ research-lab/ResiScope/ResiScope.html
 - 框选局部数据后进行加减乘除、公式处理、滤波、删除、纵向移动和撤销。
 - 设置通道基线，显示/导出响应值和响应百分比。
 - 导出为新 Excel，或基于原 xlsx 导出添加修改 sheet 的副本。
+
+## LabScope
+
+本地直接打开（静态模式，浏览器直连 OneNET）：
+
+```text
+research-lab/LabScope/public/index.html
+```
+
+本地/局域网运行（可后台常驻采集，关掉页面或关机后数据仍在）：
+
+```powershell
+cd "research-lab\LabScope"
+.\start.bat
+```
+
+主要用途：
+
+- 把 OneNET 云端设备的属性实时显示为卡片 + 曲线，每个控件都带迷你趋势曲线。
+- 卡片可添加/编辑/删除/拖动排序，可设上下限（超限提醒）与纵轴自动/手动范围。
+- 趋势图窗口可调（1 分钟 ~ 1 小时），可暂停滚动、切换属性标签，已适配手机。
+- 导出：`导出本次记录`（当前会话）与 `导出服务端历史`（可选最近 30 分钟 ~ 7 天）。
+- 在线访问时使用**访问者自己填写的** OneNET 凭据（产品 ID / 设备名 / Token），仓库内不含任何 Token；未填写时可点「演示模式」预览界面。
+
+更多说明见 `research-lab/LabScope/README.md`。
 
 ## TXT 转 Excel
 
@@ -64,6 +91,8 @@ pip install -r requirements.txt
 
 - `.vscode/`：本机 VS Code 配置。
 - `.claude/`：本机助手配置和权限记录。
+- `research-lab/LabScope/data/`：本机采集到的历史记录（`history.jsonl`）。
+- `research-lab/LabScope/labscope.config.json`：本机采集凭据配置。
 - `__pycache__/`、`build/`、`*.spec`：Python 缓存和打包临时文件。
 - `*.log`、`*.tmp`、`*.bak` 等临时文件。
 
